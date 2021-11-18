@@ -27,7 +27,7 @@ async function scrap () {
         const context = await browser.newContext({
           javaScriptEnabled: false
         })
-        context.setDefaultTimeout(2000)
+        context.setDefaultTimeout(5000)
         const page = await context.newPage()
 
         const key = `${vendor.key}_${item.article}`.replace(' ', '')
@@ -36,14 +36,15 @@ async function scrap () {
         let image = null
 
         try {
-          await page.goto(item.url, { waitUntil: 'domcontentloaded' })
-          image = await page.screenshot({ path: `screenshots/${key}.png` })
+          await page.goto(item.url, { waitUntil: 'networkidle' })
           price = (await vendor.checkPrice({ page })).replace(' ', '')
           console.log(`\t\t${item.article} - ${price}`)
         } catch (err) {
           // console.error(err)
-          console.log(`\t\t${item.article} - ERROR`)
+          console.log(`\t\t${item.article} - NO STOCK`)
         }
+
+        image = await page.screenshot({ path: `screenshots/${key}.png` })
 
         if (price && (!prices[key] || prices[key] !== price)) {
           console.log('\t\t\tUPDATED PRICE!')

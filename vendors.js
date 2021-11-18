@@ -49,5 +49,15 @@ exports.vendors = [
     checkPrice: async ({ page }) => {
       return (await page.textContent('.a-price.a-text-price.a-size-medium'))?.split('€')[0] + '€'
     }
+  },
+  {
+    key: 'game',
+    name: vendorsData.game.name,
+    items: vendorsData.game.items,
+    checkPrice: async ({ page }) => {
+      const price = (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '')
+      console.log(price)
+      return price
+    }
   }
 ]

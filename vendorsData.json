@@ -22,13 +22,19 @@
       {
         "article": "Sony 65A80J",
         "url":
-          "https://www.elcorteingles.es/electronica/A39246850-tv-oled-16510-cm-65-sony-xr-65a84j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro-hands-free-voice-search/?aff_id=2118094"
+          "https://www.elcorteingles.es/electronica/A39246850-tv-oled-16510-cm-65-sony-xr-65a84j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro-hands-free-voice-search/"
 
       },
       {
         "article": "LG 65C1",
         "url":
-          "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/?color=Negro%20mate"
+          "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/"
+
+      },
+      {
+        "article": "PS5",
+        "url":
+          "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
 
       }
     ]
@@ -39,13 +45,13 @@
       {
         "article": "Sony 65A80J",
         "url":
-          "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-sony-xr65a80j-oled-65-165-cm-4k-ultra-hd-smart-tv-7390627?utm_source=TradeTracker&utm_medium=afiliacion&utm_campaign=219346"
+          "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-sony-xr65a80j-oled-65-165-cm-4k-ultra-hd-smart-tv-7390627"
 
       },
       {
         "article": "LG 65C1",
         "url":
-          "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-lg-65c15-oled-65-165-cm-4k-ultra-hd-smart-tv-7383171?utm_source=TradeTracker&utm_medium=afiliacion&utm_campaign=219346"
+          "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-lg-65c15-oled-65-165-cm-4k-ultra-hd-smart-tv-7383171"
 
       }
     ]
@@ -56,7 +62,13 @@
       {
         "article": "LG 65C1",
         "url":
-          "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k?utm_source=298823&utm_medium=afi&utm_campaign=www.kitele.com&awc=20982_1637166509_e796eecbed4d781bfd0f3a15f3ca631c&utm_term=deeplink&utm_content=63f2cd05-47c3-11ec-9142-0ac209a0733c"
+          "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k"
+
+      },
+      {
+        "article": "PS5",
+        "url":
+          "https://www.pccomponentes.com/sony-playstation-5"
 
       }
     ]
@@ -73,7 +85,7 @@
       {
         "article": "LG 65C1",
         "url":
-          "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/?tduid=5918f6cdc8bb675656c0dfdf96348ca4&utm_source=tradedoubler&utm_medium=2439276"
+          "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/"
 
       }
     ]
@@ -84,13 +96,31 @@
       {
         "article": "Sony 65A80J",
         "url":
-          "https://www.amazon.es/gp/product/B097YBDGXK/ref=ox_sc_saved_image_1?smid=A1RPXFZYKE1ZP3&psc=1"
+          "https://www.amazon.es/gp/product/B097YBDGXK/ref=ox_sc_saved_image_1"
 
       },
       {
         "article": "LG 65C1",
         "url":
-          "https://www.amazon.es/dp/B08Y3YSMV7/ref=twister_B0944BGRSK?_encoding=UTF8&psc=1"
+          "https://www.amazon.es/dp/B08Y3YSMV7/ref=twister_B0944BGRSK"
+
+      },
+      {
+        "article": "PS5",
+        "url":
+          "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B08KKJ37F7/ref=sr_1_7"
+
+      }
+    ]
+  },
+  "game": {
+    "name": "Game",
+    "items": [
+
+      {
+        "article": "PS5",
+        "url":
+          "https://www.game.es/HARDWARE/CONSOLA/PLAYSTATION-5/CONSOLA-PLAYSTATION-5/183224"
 
       }
     ]
