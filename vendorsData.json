@@ -1,0 +1,75 @@
+{
+  "mediamarkt": {
+    "name": "Mediamarkt",
+    "items": [
+      {
+        "article": "Sony 65A80J",
+        "url":
+          "https://www.mediamarkt.es/es/product/_tv-oled-65-sony-xr65a80jaep-uhd4k-procesador-cognitivo-xr-smart-tv-google-tv-acoustic-surface-negro-1504723.html"
+
+      }
+    ]
+  },
+  "elcorteingles": {
+    "name": "El corte inglés",
+    "items": [
+      {
+        "article": "Sony 65A80J",
+        "url":
+          "https://www.elcorteingles.es/electronica/A39246850-tv-oled-16510-cm-65-sony-xr-65a84j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro-hands-free-voice-search/?aff_id=2118094"
+
+      },
+      {
+        "article": "LG 65C1",
+        "url":
+          "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/?color=Negro%20mate"
+
+      }
+    ]
+  },
+  "worten": {
+    "name": "Worten",
+    "items": [
+      {
+        "article": "Sony 65A80J",
+        "url":
+          "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-sony-xr65a80j-oled-65-165-cm-4k-ultra-hd-smart-tv-7390627?utm_source=TradeTracker&utm_medium=afiliacion&utm_campaign=219346"
+
+      },
+      {
+        "article": "LG 65C1",
+        "url":
+          "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-lg-65c15-oled-65-165-cm-4k-ultra-hd-smart-tv-7383171?utm_source=TradeTracker&utm_medium=afiliacion&utm_campaign=219346"
+
+      }
+    ]
+  },
+  "pcccomponentes": {
+    "name": "PcComponentes",
+    "items": [
+      {
+        "article": "LG 65C1",
+        "url":
+          "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k?utm_source=298823&utm_medium=afi&utm_campaign=www.kitele.com&awc=20982_1637166509_e796eecbed4d781bfd0f3a15f3ca631c&utm_term=deeplink&utm_content=63f2cd05-47c3-11ec-9142-0ac209a0733c"
+
+      }
+    ]
+  },
+  "mielectro": {
+    "name": "Mi electro",
+    "items": [
+      {
+        "article": "Sony 65A80J",
+        "url":
+          "https://www.mielectro.es/tv-65pulgadas-oled-sony-xr-65a80j-bravia-7044071/"
+
+      },
+      {
+        "article": "LG 65C1",
+        "url":
+          "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/?tduid=5918f6cdc8bb675656c0dfdf96348ca4&utm_source=tradedoubler&utm_medium=2439276"
+
+      }
+    ]
+  }
+}
