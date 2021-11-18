@@ -1,13 +1,14 @@
 const vendorsData = require('./vendorsData.json')
 
 exports.vendors = [
-  // {
-  //   name: 'Mediamarkt',
-  //   items: vendorsData.mediamarkt.items,
-  //   checkPrice: async ({ page }) => {
-  //     return true
-  //   }
-  // },
+  {
+    key: 'mediamarkt',
+    name: 'Mediamarkt',
+    items: vendorsData.mediamarkt.items,
+    checkPrice: async ({ page }) => {
+      return await page.textContent('[font-family="price"]')
+    }
+  },
   {
     key: 'worten',
     name: vendorsData.worten.name,
