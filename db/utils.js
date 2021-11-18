@@ -16,7 +16,7 @@ exports.getPricesFromDb = () => {
 exports.updateDb = (prices) => {
   try {
     fs.writeFileSync('./db/prices.json', JSON.stringify(prices))
-    console.log('DB updated')
+    console.log('\nDB updated!')
   } catch (err) {
     console.error('Error on DB update', err)
   }

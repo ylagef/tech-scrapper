@@ -41,5 +41,13 @@ exports.vendors = [
       const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
       return price[3]
     }
+  },
+  {
+    key: 'amazon',
+    name: vendorsData.amazon.name,
+    items: vendorsData.amazon.items,
+    checkPrice: async ({ page }) => {
+      return (await page.textContent('.a-price.a-text-price.a-size-medium'))?.split('€')[0] + '€'
+    }
   }
 ]

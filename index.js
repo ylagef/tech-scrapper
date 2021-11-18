@@ -21,27 +21,36 @@ async function scrap () {
     const browser = await firefox.launch({ headless: true })
 
     for (const vendor of vendors) {
-      console.log(`\n${vendor.name}`)
+      console.log(`\n\t${vendor.name}`)
 
       for (const item of vendor.items) {
-        const page = await browser.newPage()
-        let price = null
-        try {
-          await page.goto(item.url)
-          price = (await vendor.checkPrice({ page })).replace(' ', '')
-          console.log(`\t${item.article} - ${price}`)
-        } catch (err) {
-          // console.error(err)
-          console.log(`\t${item.article} - ERROR`)
-        }
+        const context = await browser.newContext({
+          javaScriptEnabled: false
+        })
+        context.setDefaultTimeout(2000)
+        const page = await context.newPage()
 
         const key = `${vendor.key}_${item.article}`.replace(' ', '')
-        const image = await page.screenshot({ path: `screenshots/${key}.png` })
+
+        let price = null
+        let image = null
+
+        try {
+          await page.goto(item.url, { waitUntil: 'domcontentloaded' })
+          image = await page.screenshot({ path: `screenshots/${key}.png` })
+          price = (await vendor.checkPrice({ page })).replace(' ', '')
+          console.log(`\t\t${item.article} - ${price}`)
+        } catch (err) {
+          // console.error(err)
+          console.log(`\t\t${item.article} - ERROR`)
+        }
 
         if (price && (!prices[key] || prices[key] !== price)) {
-          console.log('\t\tUPDATED PRICE!')
+          console.log('\t\t\tUPDATED PRICE!')
 
-          const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'} => ${price}\n<a href='${item.url}'>LINK</a>`
+          const message = `<b>${vendor.name} - ${item.article}</b>\n${
+            prices[key] || 'NONE'
+          } => ${price}\n<a href='${item.url}'>LINK</a>`
           bot
             .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
             .then(() => 'Telegram mensage sent')
