@@ -23,7 +23,7 @@ bot.addListener('message', (data) => {
   } else if (data.text === '/vendors') {
     const vendorsMessage = Object.values(vendorsData).map(vendor => {
       let message = `<b>${vendor.name}</b>\n`
-      message+= vendor.items.map(item => `<a href="${item.url}">${item.article}</a>`).join('\n')
+      message += vendor.items.map(item => `<a href="${item.url}">${item.article}</a>`).join('\n')
       return message
     }).join('\n\n')
     bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML' })
@@ -43,6 +43,7 @@ async function scrap() {
       for (const item of vendor.items) {
         const context = await browser.newContext({
           javaScriptEnabled: false,
+
 
         })
         context.setDefaultTimeout(5000)
