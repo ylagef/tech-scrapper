@@ -6,7 +6,7 @@ exports.vendors = [
     name: 'Mediamarkt',
     items: vendorsData.mediamarkt.items,
     checkPrice: async ({ page }) => {
-      return await page.textContent('[font-family="price"]')
+      return (await page.textContent('[font-family="price"]')).split(".")[0] + "€"
     }
   },
   {
@@ -22,7 +22,7 @@ exports.vendors = [
     name: vendorsData.elcorteingles.name,
     items: vendorsData.elcorteingles.items,
     checkPrice: async ({ page }) => {
-      return await page.textContent('[data-synth="LOCATOR_PRECIO_OFERTA"]')
+      return (await page.textContent('.price._big')).replaceAll(".", "")
     }
   },
   {
@@ -39,7 +39,7 @@ exports.vendors = [
     items: vendorsData.mielectro.items,
     checkPrice: async ({ page }) => {
       const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
-      return price[3]
+      return price[3].replaceAll(".", "")
     }
   },
   {
@@ -47,7 +47,7 @@ exports.vendors = [
     name: vendorsData.amazon.name,
     items: vendorsData.amazon.items,
     checkPrice: async ({ page }) => {
-      return (await page.textContent('.a-price.a-text-price.a-size-medium'))?.split('€')[0] + '€'
+      return (await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll(".", "").split('€')[0] + '€'
     }
   },
   {

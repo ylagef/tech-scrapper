@@ -104,3 +104,6 @@ dist
 .tern-port
 
 screenshots/*
+
+nohup.out
+prices.json
