@@ -9,16 +9,14 @@ const { vendors } = require('./vendors')
 console.log('started!')
 const prices = getPricesFromDb()
 
-
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
 const bot = new TelegramBot(token, { polling: true })
 const chatId = 133337935
 
-
-bot.on("polling_error", console.error);
+bot.on('polling_error', console.error)
 bot.addListener('message', (data) => {
   if (data.text === '/prices') {
-    const pricesMessage = Object.entries(prices).map(([key, value]) => `<b>${key}</b> · ${value}`).join('\n').replaceAll('_', " ")
+    const pricesMessage = Object.entries(prices).map(([key, value]) => `<b>${key}</b> · ${value}`).join('\n').replaceAll('_', ' ')
     bot.sendMessage(chatId, pricesMessage, { parse_mode: 'HTML' })
   } else if (data.text === '/vendors') {
     const vendorsMessage = Object.values(vendorsData).map(vendor => {
@@ -30,7 +28,7 @@ bot.addListener('message', (data) => {
   }
 })
 
-async function scrap() {
+async function scrap () {
   try {
     console.log('\n\nSTART SCRAPPING...')
     console.log((new Date()).toLocaleTimeString())
@@ -39,7 +37,7 @@ async function scrap() {
 
     const promises = []
     for (const vendor of vendors) {
-      console.log(`\n\t${vendor.name}`)
+      // console.log(`\n\t${vendor.name}`)
 
       for (const item of vendor.items) {
         promises.push(new Promise((resolve, reject) => {
@@ -49,7 +47,6 @@ async function scrap() {
                 javaScriptEnabled: false
 
               })
-              context.setDefaultTimeout(5000)
               const page = await context.newPage()
 
               const key = `${vendor.key}_${item.article}`.replace(' ', '')
@@ -61,10 +58,10 @@ async function scrap() {
                 await page.goto(item.url, { waitUntil: 'load' })
 
                 price = (await vendor.checkPrice({ page }))
-                console.log(`\t\t${item.article} - ${price}`)
+                console.log(`\t\t(${vendor.name}) - ${item.article} · ${price}`)
               } catch (err) {
                 console.error(err)
-                console.log(`\t\t${item.article} - (err)`)
+                console.log(`\t\t(${vendor.name}) - ${item.article} · (err)`)
               }
 
               try {
@@ -95,7 +92,6 @@ async function scrap() {
         ))
       }
     }
-
 
     await Promise.all(promises)
 

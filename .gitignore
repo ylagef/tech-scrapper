@@ -107,3 +107,4 @@ screenshots/*
 
 nohup.out
 prices.json
+.DS_Store
