@@ -43,6 +43,7 @@ async function scrap () {
         promises.push(new Promise((resolve, reject) => {
           (async () => {
             try {
+              console.log(`SCRAPPING ${vendor.name} - ${item.article}...`)
               const context = await browser.newContext({
                 javaScriptEnabled: false
 
@@ -58,20 +59,22 @@ async function scrap () {
                 await page.goto(item.url, { waitUntil: 'load' })
 
                 price = (await vendor.checkPrice({ page }))
-                console.log(`\t\t(${vendor.name}) - ${item.article} · ${price}`)
+                console.log(`(${vendor.name}) - ${item.article} · ${price}`)
               } catch (err) {
                 console.error(err)
-                console.log(`\t\t(${vendor.name}) - ${item.article} · (err)`)
+                bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · (err)`)
+                console.log(`(${vendor.name}) - ${item.article} · (err)`)
               }
 
               try {
                 image = await page.screenshot({ path: `screenshots/${key}.png` })
               } catch (err) {
+                bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · Err on screenshot`)
                 console.error('Err on screenshot', err)
               }
 
               if (price && (!prices[key] || prices[key] !== price)) {
-                console.log('\t\t\tUPDATED PRICE!')
+                console.log('\tUPDATED PRICE!')
 
                 const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
                   } => ${price}\n<a href='${item.url}'>LINK</a>`
