@@ -1,20 +1,32 @@
 const vendorsData = require('./vendorsData.json')
 
 exports.vendors = [
+  // {
+  //   key: 'worten',
+  //   name: vendorsData.worten.name,
+  //   items: vendorsData.worten.items,
+  //   checkPrice: async ({ page }) => {
+  //     return await page.textContent('.iss-product-current-price')
+  //   }
+  // },
   {
-    key: 'mediamarkt',
-    name: 'Mediamarkt',
-    items: vendorsData.mediamarkt.items,
+    key: 'wivai',
+    name: vendorsData.wivai.name,
+    items: vendorsData.wivai.items,
     checkPrice: async ({ page }) => {
-      return (await page.textContent('[font-family="price"]')).split(".")[0] + "€"
+      const items = (await page.$$('.product-tile')).length
+      return `${items} productos`
     }
   },
   {
-    key: 'worten',
-    name: vendorsData.worten.name,
-    items: vendorsData.worten.items,
+    key: 'mediamarkt',
+    name: vendorsData.mediamarkt.name,
+    items: vendorsData.mediamarkt.items,
     checkPrice: async ({ page }) => {
-      return await page.textContent('.iss-product-current-price')
+      const price = (await page.textContent('[font-family="price"]'))?.split(".")[0] + "€"
+      const stock = (await page.$$('#pdp-add-to-cart-button')).length > 0 ? "" : '(NO STOCK)'
+
+      return `${price} ${stock}`
     }
   },
   {
@@ -22,7 +34,8 @@ exports.vendors = [
     name: vendorsData.elcorteingles.name,
     items: vendorsData.elcorteingles.items,
     checkPrice: async ({ page }) => {
-      return (await page.textContent('.price._big')).replaceAll(".", "")
+      const stock = (await page.$$('.price._big')).length > 0
+      return stock ? (await page.textContent('.price._big'))?.replaceAll(".", "").replace(/\s/g, '') : 'NO STOCK'
     }
   },
   {
@@ -30,7 +43,8 @@ exports.vendors = [
     name: vendorsData.pcccomponentes.name,
     items: vendorsData.pcccomponentes.items,
     checkPrice: async ({ page }) => {
-      return await page.textContent('#precio-main')
+      const stock = (await page.$$('#precio-main')).length > 0
+      return stock ? await page.textContent('#precio-main') : 'NO STOCK'
     }
   },
   {
@@ -39,7 +53,7 @@ exports.vendors = [
     items: vendorsData.mielectro.items,
     checkPrice: async ({ page }) => {
       const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
-      return price[3].replaceAll(".", "")
+      return price[3] ? price[3]?.replaceAll(".", "") : 'NO STOCK'
     }
   },
   {
@@ -47,7 +61,11 @@ exports.vendors = [
     name: vendorsData.amazon.name,
     items: vendorsData.amazon.items,
     checkPrice: async ({ page }) => {
-      return (await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll(".", "").split('€')[0] + '€'
+      // [data-action="sp-cc"]
+      await page.$$eval('[data-action="sp-cc"]', nodes => nodes.forEach(node => node.style.display = "none"))
+      const stock = (await page.$$('.a-price.a-text-price.a-size-medium')).length > 0
+      return stock ? ((await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll(".", "").split('€')[0] + '€') : 'NO STOCK'
+
     }
   },
   {
@@ -55,9 +73,16 @@ exports.vendors = [
     name: vendorsData.game.name,
     items: vendorsData.game.items,
     checkPrice: async ({ page }) => {
-      const price = (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '')
-      console.log(price)
-      return price
+      const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
+      return stock ? (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '') : 'NO STOCK'
+    }
+  },
+  {
+    key: 'sonyexperience',
+    name: vendorsData.sonyexperience.name,
+    items: vendorsData.sonyexperience.items,
+    checkPrice: async ({ page }) => {
+      return (await page.textContent('.current-price > span'))?.replace(".", "").replace(/\s/g, '')
     }
   }
 ]

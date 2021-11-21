@@ -1,3 +1,4 @@
+const TelegramBot = require('node-telegram-bot-api')
 const { firefox } = require('playwright')
 
 const { getPricesFromDb, updateDb } = require('./db/utils.js')
@@ -8,7 +9,6 @@ const { vendors } = require('./vendors')
 console.log('started!')
 const prices = getPricesFromDb()
 
-const TelegramBot = require('node-telegram-bot-api')
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
 const bot = new TelegramBot(token, { polling: true })
@@ -55,12 +55,12 @@ async function scrap() {
         let image = null
 
         try {
-          await page.goto(item.url, { waitUntil: 'load' })
+          await page.goto(item.url, { waitUntil: "domcontentloaded" })
 
-          price = (await vendor.checkPrice({ page })).replace(' ', '')
+          price = (await vendor.checkPrice({ page }))
           console.log(`\t\t${item.article} - ${price}`)
         } catch (err) {
-          // console.error(err)
+          console.error(err)
           console.log(`\t\t${item.article} - NO STOCK`)
         }
 
