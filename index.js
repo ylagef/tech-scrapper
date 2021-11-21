@@ -10,7 +10,7 @@ console.log('started!')
 const prices = getPricesFromDb()
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
-const bot = new TelegramBot(token, { polling: true })
+const bot = new TelegramBot(token, { polling: false })
 const chatId = 133337935
 
 bot.on('polling_error', console.error)
@@ -35,68 +35,54 @@ async function scrap () {
 
     const browser = await firefox.launch({ headless: true })
 
-    const promises = []
     for (const vendor of vendors) {
-      // console.log(`\n\t${vendor.name}`)
+      console.log(`\n\t${vendor.name}`)
 
       for (const item of vendor.items) {
-        promises.push(new Promise((resolve, reject) => {
-          (async () => {
-            try {
-              console.log(`SCRAPPING ${vendor.name} - ${item.article}...`)
-              const context = await browser.newContext({
-                javaScriptEnabled: false
+        const context = await browser.newContext({
+          javaScriptEnabled: false
 
-              })
-              const page = await context.newPage()
+        })
+        const page = await context.newPage()
 
-              const key = `${vendor.key}_${item.article}`.replace(' ', '')
+        const key = `${vendor.key}_${item.article}`.replace(' ', '')
 
-              let price = null
-              let image = null
+        let price = null
+        let image = null
 
-              try {
-                await page.goto(item.url, { waitUntil: 'load' })
+        try {
+          await page.goto(item.url, { waitUntil: 'load' })
 
-                price = (await vendor.checkPrice({ page }))
-                console.log(`(${vendor.name}) - ${item.article} · ${price}`)
-              } catch (err) {
-                console.error(err)
-                bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · (err)`)
-                console.log(`(${vendor.name}) - ${item.article} · (err)`)
-              }
-
-              try {
-                image = await page.screenshot({ path: `screenshots/${key}.png` })
-              } catch (err) {
-                bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · Err on screenshot`)
-                console.error('Err on screenshot', err)
-              }
-
-              if (price && (!prices[key] || prices[key] !== price)) {
-                console.log('\tUPDATED PRICE!')
-
-                const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
-                  } => ${price}\n<a href='${item.url}'>LINK</a>`
-                bot
-                  .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
-                  .then(() => 'Telegram mensage sent')
-
-                prices[key] = price
-              }
-
-              await page.close()
-              resolve(true)
-            } catch (e) {
-              reject(e)
-            }
-          })()
+          price = (await vendor.checkPrice({ page }))
+          console.log(`\t\t(${vendor.name}) - ${item.article} · ${price}`)
+        } catch (err) {
+          console.error(err)
+          bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · (err)`)
+          console.log(`\t\t(${vendor.name}) - ${item.article} · (err)`)
         }
-        ))
+
+        try {
+          image = await page.screenshot({ path: `screenshots/${key}.png` })
+        } catch (err) {
+          bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · Err on screenshot`)
+          console.error('Err on screenshot', err)
+        }
+
+        if (price && (!prices[key] || prices[key] !== price)) {
+          console.log('\t\t\tUPDATED PRICE!')
+
+          const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
+            } => ${price}\n<a href='${item.url}'>LINK</a>`
+          bot
+            .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
+            .then(() => 'Telegram mensage sent')
+
+          prices[key] = price
+        }
+
+        await page.close()
       }
     }
-
-    await Promise.all(promises)
 
     updateDb(prices)
 
