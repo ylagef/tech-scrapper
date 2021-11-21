@@ -5,7 +5,6 @@ exports.getPricesFromDb = () => {
 
   try {
     prices = JSON.parse(fs.readFileSync('./db/prices.json', 'utf8'))
-    console.log('DB read')
   } catch (err) {
     console.error('Error on DB read')
   }
@@ -16,7 +15,6 @@ exports.getPricesFromDb = () => {
 exports.updateDb = (prices) => {
   try {
     fs.writeFileSync('./db/prices.json', JSON.stringify(prices))
-    console.log('\nDB updated!')
   } catch (err) {
     console.error('Error on DB update', err)
   }

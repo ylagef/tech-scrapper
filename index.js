@@ -30,8 +30,7 @@ bot.addListener('message', (data) => {
 
 async function scrap () {
   try {
-    console.log('\n\nSTART SCRAPPING...')
-    console.log((new Date()).toLocaleTimeString())
+    console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
     const browser = await firefox.launch({ headless: true })
 
@@ -57,14 +56,14 @@ async function scrap () {
           console.log(`\t\t(${vendor.name}) - ${item.article} · ${price}`)
         } catch (err) {
           console.error(err)
-          bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · (err)`)
+          bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
           console.log(`\t\t(${vendor.name}) - ${item.article} · (err)`)
         }
 
         try {
           image = await page.screenshot({ path: `screenshots/${key}.png` })
         } catch (err) {
-          bot.sendMessage(chatId, `${vendor.name}) - ${item.article} · Err on screenshot`)
+          bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot`)
           console.error('Err on screenshot', err)
         }
 
@@ -88,6 +87,8 @@ async function scrap () {
 
     await browser.close()
 
+    console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
+
     setTimeout(() => {
       // Scrap after 1 minute after finishing
       scrap()
@@ -103,5 +104,5 @@ scrap()
 // }, 5 * 60 * 1000) // 5 minutes
 
 setInterval(() => {
-  bot.sendMessage(chatId, 'Still alive! 🤘🏼')
+  bot.sendMessage(chatId, 'Still alive! 🤘🏼 (server)')
 }, 2 * 60 * 60 * 1000) // 2 hours
