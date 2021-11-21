@@ -37,69 +37,86 @@ async function scrap() {
 
     const browser = await firefox.launch({ headless: true })
 
+    const promises = []
     for (const vendor of vendors) {
       console.log(`\n\t${vendor.name}`)
 
       for (const item of vendor.items) {
-        const context = await browser.newContext({
-          javaScriptEnabled: false,
+        promises.push(new Promise((resolve, reject) => {
+          (async () => {
+            try {
+              const context = await browser.newContext({
+                javaScriptEnabled: false
 
+              })
+              context.setDefaultTimeout(5000)
+              const page = await context.newPage()
 
-        })
-        context.setDefaultTimeout(5000)
-        const page = await context.newPage()
+              const key = `${vendor.key}_${item.article}`.replace(' ', '')
 
-        const key = `${vendor.key}_${item.article}`.replace(' ', '')
+              let price = null
+              let image = null
 
-        let price = null
-        let image = null
+              try {
+                await page.goto(item.url, { waitUntil: 'load' })
 
-        try {
-          await page.goto(item.url, { waitUntil: "domcontentloaded" })
+                price = (await vendor.checkPrice({ page }))
+                console.log(`\t\t${item.article} - ${price}`)
+              } catch (err) {
+                console.error(err)
+                console.log(`\t\t${item.article} - (err)`)
+              }
 
-          price = (await vendor.checkPrice({ page }))
-          console.log(`\t\t${item.article} - ${price}`)
-        } catch (err) {
-          console.error(err)
-          console.log(`\t\t${item.article} - NO STOCK`)
+              try {
+                image = await page.screenshot({ path: `screenshots/${key}.png` })
+              } catch (err) {
+                console.error('Err on screenshot', err)
+              }
+
+              if (price && (!prices[key] || prices[key] !== price)) {
+                console.log('\t\t\tUPDATED PRICE!')
+
+                const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
+                  } => ${price}\n<a href='${item.url}'>LINK</a>`
+                bot
+                  .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
+                  .then(() => 'Telegram mensage sent')
+
+                prices[key] = price
+              }
+
+              await page.close()
+              resolve(true)
+            } catch (e) {
+              reject(e)
+            }
+          })()
         }
-
-        try {
-          image = await page.screenshot({ path: `screenshots/${key}.png` })
-        } catch (err) {
-          console.error("Err on screenshot", err)
-        }
-
-
-        if (price && (!prices[key] || prices[key] !== price)) {
-          console.log('\t\t\tUPDATED PRICE!')
-
-          const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
-            } => ${price}\n<a href='${item.url}'>LINK</a>`
-          bot
-            .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
-            .then(() => 'Telegram mensage sent')
-
-          prices[key] = price
-        }
-
-        await page.close()
+        ))
       }
     }
+
+
+    await Promise.all(promises)
 
     updateDb(prices)
 
     await browser.close()
+
+    setTimeout(() => {
+      // Scrap after 1 minute after finishing
+      scrap()
+    }, 1 * 60 * 1000)
   } catch (e) {
     console.error(e)
   }
 }
 
 scrap()
-setInterval(() => {
-  scrap()
-}, 5 * 60 * 1000) // 5 minutes
+// setInterval(() => {
+//   scrap()
+// }, 5 * 60 * 1000) // 5 minutes
 
 setInterval(() => {
-  bot.sendMessage(chatId, 'Still alive!')
+  bot.sendMessage(chatId, 'Still alive! 🤘🏼')
 }, 2 * 60 * 60 * 1000) // 2 hours

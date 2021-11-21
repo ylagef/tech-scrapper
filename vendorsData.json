@@ -147,5 +147,38 @@
         "url": "https://www.wivai.com/pnbl/part/es/search?prefn1=brand&prefn2=productSubfamilies&prefv1=SONY&prefv2=CONSOLAS%20Y%20VIDEOJUEGOS&q=playstation%205&srule=best-matches&start=0"
       }
     ]
+  },
+  "fnac": {
+    "name": "Fnac",
+    "items": [
+      {
+        "article": "PS5",
+        "url": "https://www.fnac.es/TV-OLED-65-Sony-Bravia-XR-65A80J-4K-UHD-HDR-Smart-TV-TV-TV-OLED/a8152261#int=S:DERNIERS%20ART%C3%8DCULOS%20CONSULT%C3%89S|NonApplicable|NonApplicable|8152261|BL1|L1"
+      },
+      {
+        "article": "PS5 Spiderman + Ghost",
+        "url": "https://www.fnac.es/PS5-Spiderman-Miles-Morales-Ultimate-Edition-Ghost-of-Tsushima-Director-s-Cut-Videoconsola-Consola/a8757502"
+      },
+      {
+        "article": "PS5 Ratchet + Spiderman",
+        "url": "https://www.fnac.es/Consola-PS5-Ratchetetclanck-Marvel-s-Spider-Man-Miles-Morales-Dualsense-Videoconsola-Consola/a8619473"
+      },
+      {
+        "article": "PS5 Resident Evil Village",
+        "url": "https://www.fnac.es/Consola-PS5-Resident-Evil-Village-DualSense-Negro-Videoconsola-Consola/a8612319"
+      },
+      {
+        "article": "PS5 Ratchet + Destruction",
+        "url": "https://www.fnac.es/Consola-PS5-Ratchet-et-Clank-Destruction-AllStars-Videoconsola-Consola/a8576038"
+      },
+      {
+        "article": "PS5 Returnal + Destruction",
+        "url": "https://www.fnac.es/Consola-PS5-Returnal-Destruction-Allstars-Videoconsola-Consola/a8513619"
+      },
+      {
+        "article": "PS5 Demons Souls",
+        "url": "https://www.fnac.es/Consola-PS5-825GB-Mando-Dualsense-Demon-s-Souls-Videoconsola-Consola/a8111548"
+      }
+    ]
   }
 }

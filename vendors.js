@@ -10,6 +10,16 @@ exports.vendors = [
   //   }
   // },
   {
+    key: 'fnac',
+    name: vendorsData.fnac.name,
+    items: vendorsData.fnac.items,
+    checkPrice: async ({ page }) => {
+      const stock = (await page.$$('.f-priceBox-price')).length > 0
+      return stock ? (await page.textContent('.f-priceBox-price')).replaceAll(".", "").replace(/\s/g, '') : 'NO STOCK'
+    }
+  },
+  {
+
     key: 'wivai',
     name: vendorsData.wivai.name,
     items: vendorsData.wivai.items,
