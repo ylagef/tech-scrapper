@@ -1,5 +1,6 @@
 {
   "mediamarkt": {
+    "key":"mediamarkt",
     "name": "Mediamarkt",
     "items": [
       {
@@ -17,6 +18,7 @@
     ]
   },
   "elcorteingles": {
+    "key":"elcorteingles",
     "name": "El corte inglés",
     "items": [
       {
@@ -38,6 +40,7 @@
     ]
   },
   "worten": {
+    "key":"worten",
     "name": "Worten",
     "items": [
       {
@@ -55,6 +58,7 @@
     ]
   },
   "pcccomponentes": {
+    "key":"pccomponentes",
     "name": "PcComponentes",
     "items": [
       {
@@ -68,6 +72,7 @@
     ]
   },
   "mielectro": {
+    "key":"mielectro",
     "name": "Mi electro",
     "items": [
       {
@@ -81,6 +86,7 @@
     ]
   },
   "amazon": {
+    "key":"amazon",
     "name": "Amazon",
     "items": [
       {
@@ -126,6 +132,7 @@
     ]
   },
   "game": {
+    "key":"game",
     "name": "Game",
     "items": [
       {
@@ -135,6 +142,7 @@
     ]
   },
   "sonyexperience": {
+    "key":"sonyexperience",
     "name": "Sony experience",
     "items": [
       {
@@ -144,6 +152,7 @@
     ]
   },
   "wivai": {
+    "key":"wivai",
     "name": "Wivai",
     "items": [
       {
@@ -153,8 +162,13 @@
     ]
   },
   "fnac": {
+    "key":"fnac",
     "name": "Fnac",
     "items": [
+      {
+        "article": "Sony 65A80J",
+        "url": "https://www.fnac.es/TV-OLED-65-Sony-Bravia-XR-65A80J-4K-UHD-HDR-Smart-TV-TV-TV-OLED/a8152261#st=65a80j&ct=En+todo+Fnac&t=p"
+      },
       {
         "article": "PS5",
         "url": "https://www.fnac.es/Consola-PlayStation-5-Videoconsola-Consola/a7724798"
