@@ -1,3 +1,5 @@
+process.env.NTBA_FIX_350 = 1
+
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
 const { firefox } = require('playwright')
