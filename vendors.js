@@ -41,6 +41,18 @@ exports.vendors = [
     }
   },
   {
+    key: vendorsData.mediamarktQuery.key,
+    name: vendorsData.mediamarktQuery.name,
+    items: vendorsData.mediamarktQuery.items,
+    checkPrice: async ({ page }) => {
+      const items = (await page.$$('[data-test="mms-search-srp-productlist-item"]')).length
+      const delivery = (await page.$$('[data-test="mms-delivery-online-availability_AVAILABLE"]')).length
+      const inShop = (await page.$$('[data-test="mms-delivery-market-availability_AVAILABLE"]')).length
+
+      return `${items} productos (${delivery} - ${inShop})`
+    }
+  },
+  {
     key: vendorsData.elcorteingles.key,
     name: vendorsData.elcorteingles.name,
     items: vendorsData.elcorteingles.items,

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ylagef/tech-scrapper#readme",
   "dependencies": {
+    "node-color-log": "^7.0.0",
     "node-telegram-bot-api": "^0.53.0"
   },
   "devDependencies": {

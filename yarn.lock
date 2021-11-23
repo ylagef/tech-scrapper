@@ -1302,6 +1302,11 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
+node-color-log@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/node-color-log/-/node-color-log-7.0.0.tgz#09c2dc0176dc852593fd92113b309ece8dd4cd02"
+  integrity sha512-Lxe7GaWxsTNnZmSf2tS9FgCBv9DJdJGTSZZxQ18heCs+QWYIs8Arsh6JGfTk329hKpY+is1Y5hXbAkagBo9Pww==
+
 node-telegram-bot-api@^0.53.0:
   version "0.53.0"
   resolved "https://registry.yarnpkg.com/node-telegram-bot-api/-/node-telegram-bot-api-0.53.0.tgz#130cbba6d47cbda03c87c059612ec3fa3495c715"

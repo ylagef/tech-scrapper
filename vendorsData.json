@@ -14,7 +14,26 @@
       {
         "article": "PS5",
         "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-1487016.html"
+      },
+      {
+        "article": "LG SP9YA",
+        "url": "https://www.mediamarkt.es/es/product/_barra-de-sonido-lg-sp9ya-hi-res-audio-dolby-atmos-y-dts-x-negro-1507216.html"
+      },
+      {
+        "article": "PS5 + Miles",
+        "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-ps5-spider-man-miles-morales-ultimate-edition-sony-pulse-3d-1522683.html"
       }
+    ]
+  },
+  "mediamarktQuery": {
+    "key":"mediamarktQuery",
+    "name": "Mediamarkt query",
+    "items": [
+      {
+        "article": "PS5",
+        "url": "https://www.mediamarkt.es/es/search.html?filter=currentprice%3A300-900&query=consola%20ps5"
+      }
+
     ]
   },
   "elcorteingles": {
@@ -36,6 +55,10 @@
       {
         "article": "PS5",
         "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
+      },
+      {
+        "article": "LG SP9YA",
+        "url": "https://www.elcorteingles.es/electronica/A39836310-barra-de-sonido-lg-sp9ya-520w-512ch-meridian-dolby-atmos-hi-res-wifi/"
       }
     ]
   },
@@ -62,8 +85,12 @@
     "name": "PcComponentes",
     "items": [
       {
-        "article": "LG 65C1",
+        "article": "LG 65C1 1LB",
         "url": "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k"
+      },
+      {
+        "article": "LG 65C1 4LB",
+        "url": "https://www.pccomponentes.com/lg-oled65c14lb-65-oled-ultra-hd-4k-hdr10-pro"
       },
       {
         "article": "PS5",
@@ -82,6 +109,10 @@
       {
         "article": "LG 65C1",
         "url": "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/"
+      },
+      {
+        "article": "LG SP9YA",
+        "url": "https://www.mielectro.es/barra-sonido-lg-sp9ya-7255071/"
       }
     ]
   },
@@ -128,6 +159,10 @@
       {
         "article": "PS5 (+ DualSense Negro + Ratchet)",
         "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09JWXWGJB/ref=sr_1_7?th=1"
+      },
+      {
+        "article": "LG SP9YA",
+        "url": "https://www.amazon.es/Sonido-Inteligente-LG-Potencia-Canales/dp/B093BW5QQL"
       }
     ]
   },
@@ -138,6 +173,10 @@
       {
         "article": "PS5",
         "url": "https://www.game.es/HARDWARE/CONSOLA/PLAYSTATION-5/CONSOLA-PLAYSTATION-5/183224"
+      },
+      {
+        "article": "PS5 + Ratchet",
+        "url": "https://www.game.es/HARDWARE/PACK-CONSOLA/PLAYSTATION-5/PLAYSTATION-5-RATCHET-AND-CLANK-UNA-DIMENSION-APARTE/190928"
       }
     ]
   },

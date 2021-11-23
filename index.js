@@ -1,4 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api')
+const logger = require('node-color-log')
 const { firefox } = require('playwright')
 
 const { getPricesFromDb, updateDb } = require('./db/utils.js')
@@ -6,7 +7,6 @@ const { getPricesFromDb, updateDb } = require('./db/utils.js')
 const vendorsData = require('./vendorsData.json')
 const { vendors } = require('./vendors')
 
-console.log('started!')
 const prices = getPricesFromDb()
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
@@ -15,16 +15,13 @@ const chatId = 133337935
 
 bot.on('polling_error', console.error)
 bot.addListener('message', (data) => {
-  if (data.text === '/prices') {
-    const pricesMessage = Object.entries(prices).sort().map(([key, value]) => `<b>${key.toUpperCase()}</b> · ${value}`).join('\n').replaceAll('_', ' ')
-    bot.sendMessage(chatId, pricesMessage, { parse_mode: 'HTML' })
-  } else if (data.text === '/vendors') {
+  if (data.text === '/vendors') {
     const vendorsMessage = Object.values(vendorsData).map(vendor => {
       let message = `<b>${vendor.name}</b>\n`
       message += vendor.items.map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
       return message
     }).join('\n\n')
-    bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML' })
+    bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
   }
 })
 
@@ -57,11 +54,11 @@ async function scrap () {
           await page.goto(item.url, { waitUntil: 'load' })
 
           price = (await vendor.checkPrice({ page }))
-          console.log(`\t\t${item.article} · ${price}`)
+          console.log(`\t\t%c${item.article} · ${price}`, 'background:red')
         } catch (err) {
           console.error(err)
           bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
-          console.log(`\t\t${item.article} · (err)`)
+          logger.color('black').bgColor('red').log(`\t\t${item.article} · (err)`)
         }
 
         try {
@@ -72,13 +69,13 @@ async function scrap () {
         }
 
         if (price && (!prices[key] || prices[key] !== price)) {
-          console.log('\t\t\tUPDATED PRICE!')
+          logger.color('black').bgColor('green').log('\t\t\tUPDATED!! 👀 \t')
 
           const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
                   } => ${price}\n<a href='${item.url}'>LINK</a>`
           bot
             .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
-            .then(() => 'Telegram mensage sent')
+            .then(() => 'Telegram mensage sent').catch(() => {})
 
           prices[key] = price
         }
@@ -98,20 +95,18 @@ async function scrap () {
     await browser.close()
 
     console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
-
-    setTimeout(() => {
-      // Scrap after 1 minute after finishing
-      scrap()
-    }, 1 * 60 * 1000)
   } catch (e) {
     console.error(e)
+    bot.sendMessage(chatId, 'Err on browser')
   }
+
+  setTimeout(() => {
+    // Scrap after 1 minute after finishing
+    scrap()
+  }, 1 * 60 * 1000)
 }
 
 scrap()
-// setInterval(() => {
-//   scrap()
-// }, 5 * 60 * 1000) // 5 minutes
 
 setInterval(() => {
   bot.sendMessage(chatId, 'Still alive! 🤘🏼 (pc)')
