@@ -16,41 +16,43 @@ const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
 const bot = new TelegramBot(token, { polling: true })
 const chatId = 133337935
 
-bot.on('polling_error', (error) => {
-  console.error(error)
-  bot.sendMessage(chatId, 'Err on polling')
-})
-bot.addListener('message', (data) => {
-  switch (data.text) {
-    case '/vendors':
-    {
-      const vendorsMessage = Object.values(vendorsData).map(vendor => {
-        let message = `<b>${vendor.name}</b>\n`
-        message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
-        return message
-      }).join('\n\n')
-      bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
-      break
+if (process.env.LISTENBOT) {
+  bot.on('polling_error', (error) => {
+    console.error(error)
+    bot.sendMessage(chatId, 'Err on polling')
+  })
+  bot.addListener('message', (data) => {
+    switch (data.text) {
+      case '/vendors':
+      {
+        const vendorsMessage = Object.values(vendorsData).map(vendor => {
+          let message = `<b>${vendor.name}</b>\n`
+          message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
+          return message
+        }).join('\n\n')
+        bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
+        break
+      }
+
+      case '/alive':
+        bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
+        break
+
+      case '/add':
+        break
+      case '/remove':
+        break
+      case '/update':
+        break
+      case '/enable':
+        break
+      case '/disable':
+        break
+      case '/screenshot':
+        break
     }
-
-    case '/alive':
-      bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
-      break
-
-    case '/add':
-      break
-    case '/remove':
-      break
-    case '/update':
-      break
-    case '/enable':
-      break
-    case '/disable':
-      break
-    case '/screenshot':
-      break
-  }
-})
+  })
+}
 
 async function scrap () {
   try {
