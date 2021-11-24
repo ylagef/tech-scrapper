@@ -150,6 +150,8 @@ exports.vendorsObj = [
     items: vendorsData.gamequery.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
+      await page.waitForLoadState('networkidle')
+
       const items = (await page.$$('.search-item')).length
       const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
       // const stock = availabilities.filter(availability => availability.includes('Comprar')).length
