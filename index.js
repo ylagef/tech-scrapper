@@ -8,7 +8,7 @@ const { firefox } = require('playwright')
 const { getPricesFromDb, updateDb } = require('./db/utils.js')
 
 const vendorsData = require('./vendorsData.json')
-const { vendorsObj } = require('./vendors')
+const { vendorsObj } = require('./vendorsObj')
 
 const prices = getPricesFromDb()
 
@@ -58,7 +58,7 @@ async function scrap () {
   try {
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
-    const browser = await firefox.launch({ headless: true })
+    const browser = await firefox.launch({ headless: false })
 
     const vendors = vendorsObj.filter(vendor => process.env.ACTIVEVENDORS.includes(vendor.key))
 

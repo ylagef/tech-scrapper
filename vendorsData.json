@@ -20,7 +20,7 @@
           "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-1487016.html"
         },
         {
-          "active": true,
+          "active": false,
           "article": "LG SP9YA",
           "url": "https://www.mediamarkt.es/es/product/_barra-de-sonido-lg-sp9ya-hi-res-audio-dolby-atmos-y-dts-x-negro-1507216.html"
         },
@@ -71,7 +71,7 @@
           "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "LG SP9YA",
           "url": "https://www.elcorteingles.es/electronica/A39836310-barra-de-sonido-lg-sp9ya-520w-512ch-meridian-dolby-atmos-hi-res-wifi/"
         }
@@ -140,7 +140,7 @@
           "url": "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "LG SP9YA",
           "url": "https://www.mielectro.es/barra-sonido-lg-sp9ya-7255071/"
         }
@@ -203,7 +203,7 @@
           "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09JWXWGJB/ref=sr_1_7?th=1"
         },
         {
-          "active": true,
+          "active": false,
           "article": "LG SP9YA",
           "url": "https://www.amazon.es/Sonido-Inteligente-LG-Potencia-Canales/dp/B093BW5QQL"
         }

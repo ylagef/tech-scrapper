@@ -58,6 +58,9 @@ exports.vendorsObj = [
     name: vendorsData.elcorteingles.name,
     items: vendorsData.elcorteingles.items,
     checkPrice: async ({ page }) => {
+      // await page.waitForTimeout(10000)
+      if (await checkCaptcha(page, '.product_detail-main-container', false)) return 'CAPTCHA' // Check if captcha
+
       const stock = (await page.$$('.price._big')).length > 0
       return stock ? (await page.textContent('.price._big'))?.replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
     }
@@ -67,7 +70,7 @@ exports.vendorsObj = [
     name: vendorsData.pcccomponentes.name,
     items: vendorsData.pcccomponentes.items,
     checkPrice: async ({ page }) => {
-      if (await checkCaptcha(page, '#cf-wrapper')) return 'CAPTCHA' // Check if captcha
+      if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
 
       const hasPrice = (await page.$$('#precio-main')).length > 0
       const price = hasPrice ? (await page.textContent('#precio-main')) : ''
@@ -114,10 +117,10 @@ exports.vendorsObj = [
   }
 ]
 
-const checkCaptcha = async (page, element) => {
-  const captcha = (await page.$$(element)).length > 0
+const checkCaptcha = async (page, element, has) => {
+  const captcha = (await page.$$(element)).length
 
-  if (captcha) {
+  if (has ? captcha > 0 : captcha === 0) {
     logger.bgColor('red').color('black').log('\t\t\tCaptcha detected! ☠️\t')
     return true
   }
