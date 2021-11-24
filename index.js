@@ -89,19 +89,19 @@ async function scrap () {
             price = (await vendor.checkPrice({ context, page }))
             console.log(`\t${item.article} · ${price}`)
           } catch (err) {
-            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err (${err.message})`)
-            logger.color('black').bgColor('red').log(`\t${item.article} · (${err.message})\t`)
+            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err (${err.message.split('=')[0].trim()})`)
+            logger.color('black').bgColor('red').log(`\t${item.article} · (${err.message.split('=')[0].trim()})\t`)
           }
 
           try {
             image = await page.screenshot({ path: `screenshots/${key}.png` })
           } catch (err) {
-            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot (${err.message})`)
-            logger.color('black').bgColor('red').log(`Err on screenshot (${err.message})`)
+            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot (${err.message.split('=')[0].trim()})`)
+            logger.color('black').bgColor('red').log(`Err on screenshot (${err.message.split('=')[0].trim()})`)
           }
 
           if (price && (!prices[key] || prices[key] !== price)) {
-            logger.color('black').bgColor('green').log(`\t\tUPDATED!! (prev ${prices[key] || 'NONE'
+            logger.color('black').bgColor('green').log(`UPDATED!! (prev ${prices[key] || 'NONE'
               }) 👀\t\t`)
 
             const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
@@ -125,8 +125,8 @@ async function scrap () {
 
     console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
   } catch (err) {
-    logger.color('black').bgColor('red').log(err.message)
-    bot.sendMessage(chatId, `Err on browser (${err.message})`)
+    logger.color('black').bgColor('red').log(err.message.split('=')[0].trim())
+    bot.sendMessage(chatId, `Err on browser (${err.message.split('=')[0].trim()})`)
   }
 
   setTimeout(() => {

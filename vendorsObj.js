@@ -150,7 +150,7 @@ exports.vendorsObj = [
     items: vendorsData.gamequery.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('img.img-responsive');
+      await page.waitForSelector('img.img-responsive')
 
       const items = (await page.$$('.item-info')).length
       const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
