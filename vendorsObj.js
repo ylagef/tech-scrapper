@@ -55,7 +55,7 @@ exports.vendorsObj = [
       const delivery = (await page.$$('[data-test="mms-delivery-online-availability_AVAILABLE"]')).length
       const inShop = (await page.$$('[data-test="mms-delivery-market-availability_AVAILABLE"]')).length
 
-      return `${items} productos (${delivery} - ${inShop})`
+      return `${items} productos (${delivery} delivery - ${inShop} in shop)`
     }
   },
   {
