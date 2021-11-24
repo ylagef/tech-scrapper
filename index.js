@@ -11,24 +11,25 @@ const vendorsData = require('./vendorsData.json')
 const { vendorsObj } = require('./vendorsObj')
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
-const bot = new TelegramBot(token, { polling: process.env.LISTENBOT === 1 })
+const bot = new TelegramBot(token, { polling: process.env.LISTENBOT === '1' })
 const chatId = 133337935
 
-if (process.env.LISTENBOT === 1) {
+if (process.env.LISTENBOT === '1') {
   bot.on('polling_error', (error) => {
     console.error(error)
     bot.sendMessage(chatId, 'Err on polling')
   })
-  bot.addListener('message', (data) => {
+  bot.addListener('message', async (data) => {
     switch (data.text) {
       case '/vendors':
       {
-        const vendorsMessage = Object.values(vendorsData).map(vendor => {
-          let message = `<b>${vendor.name}</b>\n`
-          message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${articles[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
-          return message
-        }).join('\n\n')
-        bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
+        // const refreshedArticles = await getArticlesFromDb()
+        // const vendorsMessage = Object.values(vendorsData).map(vendor => {
+        //   let message = `<b>${vendor.name}</b>\n`
+        //   message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${refreshedArticles.find(article => article.key === (`${vendor.name}_${item.article}`).replaceAll(' ', '')).price}`).join('\n')
+        //   return message
+        // }).join('\n\n')
+        // bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
         break
       }
 
@@ -107,10 +108,10 @@ let articles = null
 
           const article = articles.find(article => article.key === key)
           if (price && (!article || article.price !== price)) {
-            logger.color('black').bgColor('green').log(`UPDATED!! (prev ${articles[key] || 'NONE'
+            logger.color('black').bgColor('green').log(`UPDATED!! (prev ${article.price || 'NONE'
                 }) 👀\t\t`)
 
-            const message = `<b>${vendor.name} - ${item.article}</b>\n${articles[key] || 'NONE'
+            const message = `<b>${vendor.name} - ${item.article}</b>\n${article.price || 'NONE'
                 } => ${price}\n<a href='${item.url}'>LINK</a>`
             bot
               .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
