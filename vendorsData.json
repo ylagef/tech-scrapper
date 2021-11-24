@@ -162,6 +162,20 @@
       ]
     }
   },
+  "pccomponentesquery": {
+    "key": "pccomponentesquery",
+    "name": "PcComponentes query",
+    "items": {
+      "133337935": [
+
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.pccomponentes.com/videoconsolas-ps5"
+        }
+      ]
+    }
+  },
   "mielectro": {
     "key": "mielectro",
     "name": "Mi electro",
@@ -262,6 +276,19 @@
           "active": true,
           "article": "PS5 + Ratchet",
           "url": "https://www.game.es/HARDWARE/PACK-CONSOLA/PLAYSTATION-5/PLAYSTATION-5-RATCHET-AND-CLANK-UNA-DIMENSION-APARTE/190928"
+        }
+      ]
+    }
+  },
+  "gamequery": {
+    "key": "gamequery",
+    "name": "Game query",
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.game.es/buscar/consola-ps5"
         }
       ]
     }

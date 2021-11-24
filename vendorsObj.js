@@ -73,9 +73,9 @@ exports.vendorsObj = [
       // await page.waitForTimeout(10000)
       if (await checkCaptcha(page, '.plp_title_h1', false)) return 'CAPTCHA' // Check if captcha
 
-      const items = (await page.$$('products_list-item')).length
+      const items = (await page.$$('.products_list-item')).length
       const prices = await page.$$eval('.price._big', nodes => nodes.map(node => node.innerText))
-      const stock = prices.find(price => price !== '')
+      const stock = prices.filter(price => price !== '').length
       return `${items} productos (${stock} stock)`
     }
   },
@@ -90,6 +90,19 @@ exports.vendorsObj = [
       const price = hasPrice ? (await page.textContent('#precio-main')) : ''
       const stock = (await page.$$('#btnsWishAddBuy > .buy-button')).length > 0 ? '' : '(NO STOCK)'
       return hasPrice ? `${price} ${stock}` : 'NO STOCK'
+    }
+  },
+  {
+    key: vendorsData.pccomponentesquery.key,
+    name: vendorsData.pccomponentesquery.name,
+    items: vendorsData.pccomponentesquery.items,
+    checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
+
+      const items = (await page.$$('article')).length
+      const availabilities = await page.$$eval('.c-product-card__availability', nodes => nodes.map(node => node.innerText))
+      const stock = availabilities.filter(availability => availability.includes("Recíbelo")).length
+      return `${items} productos (${stock} stock)`
     }
   },
   {
@@ -119,6 +132,15 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
       return stock ? (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '') : 'NO STOCK'
+    }
+  },
+  {
+    key: vendorsData.gamequery.key,
+    name: vendorsData.gamequery.name,
+    items: vendorsData.gamequery.items,
+    checkPrice: async ({ page }) => {
+      const items = (await page.$$('.search-item')).length
+      return `${items} productos`
     }
   },
   {
