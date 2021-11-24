@@ -1,15 +1,16 @@
+const logger = require('node-color-log')
 const vendorsData = require('./vendorsData.json')
 
 exports.vendors = [
-  // {
-  //   key: vendorsData.fnac.key,
-  //   name: vendorsData.fnac.name,
-  //   items: vendorsData.fnac.items,
-  //   checkPrice: async ({ page }) => {
-  //     const stock = (await page.$$('.f-priceBox-price')).length > 0
-  //     return stock ? (await page.textContent('.f-priceBox-price')).replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
-  //   }
-  // },
+  {
+    key: vendorsData.fnac.key,
+    name: vendorsData.fnac.name,
+    items: vendorsData.fnac.items,
+    checkPrice: async ({ page }) => {
+      const stock = (await page.$$('.f-priceBox-price')).length > 0
+      return stock ? (await page.textContent('.f-priceBox-price')).replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
+    }
+  },
   {
     key: vendorsData.worten.key,
     name: vendorsData.worten.name,
@@ -66,6 +67,8 @@ exports.vendors = [
     name: vendorsData.pcccomponentes.name,
     items: vendorsData.pcccomponentes.items,
     checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '#home')) return 'CAPTCHA' // Check if captcha
+
       const hasPrice = (await page.$$('#precio-main')).length > 0
       const price = hasPrice ? (await page.textContent('#precio-main')) : ''
       const stock = (await page.$$('#btnsWishAddBuy > .buy-button')).length > 0 ? '' : '(NO STOCK)'
@@ -110,3 +113,13 @@ exports.vendors = [
     }
   }
 ]
+
+const checkCaptcha = async (page, element) => {
+  try {
+    await page.textContent(element) // Check if captcha
+    return false
+  } catch (e) {
+    logger.bgColor('red').color('black').log('\t\t\tCaptcha detected! ☠️')
+    return true
+  }
+}

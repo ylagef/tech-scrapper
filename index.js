@@ -15,15 +15,39 @@ const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
 const bot = new TelegramBot(token, { polling: true })
 const chatId = 133337935
 
-bot.on('polling_error', console.error)
+bot.on('polling_error', (error) => {
+  console.error(error)
+  bot.sendMessage(chatId, 'Err on polling')
+})
 bot.addListener('message', (data) => {
-  if (data.text === '/vendors') {
-    const vendorsMessage = Object.values(vendorsData).map(vendor => {
-      let message = `<b>${vendor.name}</b>\n`
-      message += vendor.items.map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
-      return message
-    }).join('\n\n')
-    bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
+  switch (data.text) {
+    case '/vendors':
+    {
+      const vendorsMessage = Object.values(vendorsData).map(vendor => {
+        let message = `<b>${vendor.name}</b>\n`
+        message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
+        return message
+      }).join('\n\n')
+      bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
+      break
+    }
+
+    case '/alive':
+      bot.sendMessage(chatId, 'Yas!')
+      break
+
+    case '/add':
+      break
+    case '/remove':
+      break
+    case '/update':
+      break
+    case '/enable':
+      break
+    case '/disable':
+      break
+    case '/screenshot':
+      break
   }
 })
 
@@ -37,56 +61,61 @@ async function scrap () {
       console.log(`\n\t${vendor.name}`)
 
       // const promises = []
-      for (const item of vendor.items) {
-        const context = await browser.newContext({
-          javaScriptEnabled: false
+      const items = vendor.items[chatId].filter(item => item.active)
+      if (items.length === 0) {
+        console.log('\t\tNo active items')
+      } else {
+        for (const item of items) {
+          const context = await browser.newContext({
+            javaScriptEnabled: false
+          })
+          context.setDefaultTimeout(5000)
+          // promises.push(new Promise((resolve, reject) => {
+          // (async () => {
+          // try {
+          const page = await context.newPage()
 
-        })
-        // promises.push(new Promise((resolve, reject) => {
-        // (async () => {
-        // try {
-        const page = await context.newPage()
+          const key = `${vendor.key}_${item.article}`.replaceAll(' ', '')
 
-        const key = `${vendor.key}_${item.article}`.replaceAll(' ', '')
+          let price = null
+          let image = null
 
-        let price = null
-        let image = null
+          try {
+            await page.goto(item.url, { waitUntil: 'load' })
 
-        try {
-          await page.goto(item.url, { waitUntil: 'load' })
+            price = (await vendor.checkPrice({ page }))
+            console.log(`\t\t%c${item.article} · ${price}`, 'background:red')
+          } catch (err) {
+            console.error(err)
+            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
+            logger.color('black').bgColor('red').log(`\t\t${item.article} · (err)`)
+          }
 
-          price = (await vendor.checkPrice({ page }))
-          console.log(`\t\t%c${item.article} · ${price}`, 'background:red')
-        } catch (err) {
-          console.error(err)
-          bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
-          logger.color('black').bgColor('red').log(`\t\t${item.article} · (err)`)
+          try {
+            image = await page.screenshot({ path: `screenshots/${key}.png` })
+          } catch (err) {
+            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot`)
+            console.error('Err on screenshot', err)
+          }
+
+          if (price && (!prices[key] || prices[key] !== price)) {
+            logger.color('black').bgColor('green').log('\t\t\tUPDATED!! 👀 \t')
+
+            const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
+              } => ${price}\n<a href='${item.url}'>LINK</a>`
+            bot
+              .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
+              .then(() => 'Telegram mensage sent').catch(() => { })
+
+            prices[key] = price
+          }
+
+          await page.close()
+          // resolve(true)
+          // } catch (e) { reject(e) }
+          // })()
+          // }))
         }
-
-        try {
-          image = await page.screenshot({ path: `screenshots/${key}.png` })
-        } catch (err) {
-          bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot`)
-          console.error('Err on screenshot', err)
-        }
-
-        if (price && (!prices[key] || prices[key] !== price)) {
-          logger.color('black').bgColor('green').log('\t\t\tUPDATED!! 👀 \t')
-
-          const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
-                  } => ${price}\n<a href='${item.url}'>LINK</a>`
-          bot
-            .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
-            .then(() => 'Telegram mensage sent').catch(() => {})
-
-          prices[key] = price
-        }
-
-        await page.close()
-        // resolve(true)
-        // } catch (e) { reject(e) }
-        // })()
-        // }))
       }
 
       // await Promise.all(promises)

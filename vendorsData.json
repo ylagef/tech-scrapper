@@ -1,241 +1,305 @@
 {
   "mediamarkt": {
-    "key":"mediamarkt",
+    "key": "mediamarkt",
     "name": "Mediamarkt",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.mediamarkt.es/es/product/_tv-oled-65-sony-xr65a80jaep-uhd4k-procesador-cognitivo-xr-smart-tv-google-tv-acoustic-surface-negro-1504723.html"
-      },
-      {
-        "article": "LG 65C1",
-        "url": "https://www.mediamarkt.es/es/product/_tv-oled-65-lg-oled65c15la-aeu-uhd-4k-%CE%B19-gen4-webos-6-0-smart-tv-asistentes-de-voz-dolby-atmos-blanco-1503824.html"
-      },
-      {
-        "article": "PS5",
-        "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-1487016.html"
-      },
-      {
-        "article": "LG SP9YA",
-        "url": "https://www.mediamarkt.es/es/product/_barra-de-sonido-lg-sp9ya-hi-res-audio-dolby-atmos-y-dts-x-negro-1507216.html"
-      },
-      {
-        "article": "PS5 + Miles",
-        "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-ps5-spider-man-miles-morales-ultimate-edition-sony-pulse-3d-1522683.html"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "Sony 65A80J",
+          "url": "https://www.mediamarkt.es/es/product/_tv-oled-65-sony-xr65a80jaep-uhd4k-procesador-cognitivo-xr-smart-tv-google-tv-acoustic-surface-negro-1504723.html"
+        },
+        {
+          "active": true,
+          "article": "LG 65C1",
+          "url": "https://www.mediamarkt.es/es/product/_tv-oled-65-lg-oled65c15la-aeu-uhd-4k-%CE%B19-gen4-webos-6-0-smart-tv-asistentes-de-voz-dolby-atmos-blanco-1503824.html"
+        },
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-1487016.html"
+        },
+        {
+          "active": true,
+          "article": "LG SP9YA",
+          "url": "https://www.mediamarkt.es/es/product/_barra-de-sonido-lg-sp9ya-hi-res-audio-dolby-atmos-y-dts-x-negro-1507216.html"
+        },
+        {
+          "active": true,
+          "article": "PS5 + Miles",
+          "url": "https://www.mediamarkt.es/es/product/_consola-sony-ps5-825-gb-4k-hdr-blanco-ps5-spider-man-miles-morales-ultimate-edition-sony-pulse-3d-1522683.html"
+        }
+      ]
+    }
   },
   "mediamarktQuery": {
-    "key":"mediamarktQuery",
+    "key": "mediamarktQuery",
     "name": "Mediamarkt query",
-    "items": [
-      {
-        "article": "PS5",
-        "url": "https://www.mediamarkt.es/es/search.html?filter=currentprice%3A300-900&query=consola%20ps5"
-      }
-
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.mediamarkt.es/es/search.html?filter=currentprice%3A300-900&query=consola%20ps5"
+        }
+      ]
+    }
   },
   "elcorteingles": {
-    "key":"elcorteingles",
+    "key": "elcorteingles",
     "name": "El corte inglés",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.elcorteingles.es/electronica/A39246796-tv-oled-16510-cm-65-sony-xr-65a80j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro/"
-      },
-      {
-        "article": "Sony 65A84J",
-        "url": "https://www.elcorteingles.es/electronica/A39246850-tv-oled-16510-cm-65-sony-xr-65a84j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro-hands-free-voice-search/"
-      },
-      {
-        "article": "LG 65C1",
-        "url": "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/"
-      },
-      {
-        "article": "PS5",
-        "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
-      },
-      {
-        "article": "LG SP9YA",
-        "url": "https://www.elcorteingles.es/electronica/A39836310-barra-de-sonido-lg-sp9ya-520w-512ch-meridian-dolby-atmos-hi-res-wifi/"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "Sony 65A80J",
+          "url": "https://www.elcorteingles.es/electronica/A39246796-tv-oled-16510-cm-65-sony-xr-65a80j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro/"
+        },
+        {
+          "active": true,
+          "article": "Sony 65A84J",
+          "url": "https://www.elcorteingles.es/electronica/A39246850-tv-oled-16510-cm-65-sony-xr-65a84j-bravia-xr--google-tv-4k-hdr-xr-cognitive-processor-xr-triluminos-pro-hands-free-voice-search/"
+        },
+        {
+          "active": true,
+          "article": "LG 65C1",
+          "url": "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/"
+        },
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
+        },
+        {
+          "active": true,
+          "article": "LG SP9YA",
+          "url": "https://www.elcorteingles.es/electronica/A39836310-barra-de-sonido-lg-sp9ya-520w-512ch-meridian-dolby-atmos-hi-res-wifi/"
+        }
+      ]
+    }
   },
   "worten": {
-    "key":"worten",
+    "key": "worten",
     "name": "Worten",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-sony-xr65a80j-oled-65-165-cm-4k-ultra-hd-smart-tv-7390627"
-      },
-      {
-        "article": "LG 65C1",
-        "url": "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-lg-65c15-oled-65-165-cm-4k-ultra-hd-smart-tv-7383171"
-      },
-      {
-        "article": "PS5",
-        "url": "https://www.worten.es/productos/consolas-juegos/playstation/consola/ps5/consola-ps5-825gb-7196053"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "Sony 65A80J",
+          "url": "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-sony-xr65a80j-oled-65-165-cm-4k-ultra-hd-smart-tv-7390627"
+        },
+        {
+          "active": true,
+          "article": "LG 65C1",
+          "url": "https://www.worten.es/productos/tv-video-y-sonido/televisores/grandes/tv-lg-65c15-oled-65-165-cm-4k-ultra-hd-smart-tv-7383171"
+        },
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.worten.es/productos/consolas-juegos/playstation/consola/ps5/consola-ps5-825gb-7196053"
+        }
+      ]
+    }
   },
   "pcccomponentes": {
-    "key":"pccomponentes",
+    "key": "pccomponentes",
     "name": "PcComponentes",
-    "items": [
-      {
-        "article": "LG 65C1 1LB",
-        "url": "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k"
-      },
-      {
-        "article": "LG 65C1 4LB",
-        "url": "https://www.pccomponentes.com/lg-oled65c14lb-65-oled-ultra-hd-4k-hdr10-pro"
-      },
-      {
-        "article": "PS5",
-        "url": "https://www.pccomponentes.com/sony-playstation-5"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": false,
+          "article": "LG 65C1 1LB",
+          "url": "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k"
+        },
+        {
+          "active": false,
+          "article": "LG 65C1 4LB",
+          "url": "https://www.pccomponentes.com/lg-oled65c14lb-65-oled-ultra-hd-4k-hdr10-pro"
+        },
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.pccomponentes.com/sony-playstation-5"
+        }
+      ]
+    }
   },
   "mielectro": {
-    "key":"mielectro",
+    "key": "mielectro",
     "name": "Mi electro",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.mielectro.es/tv-65pulgadas-oled-sony-xr-65a80j-bravia-7044071/"
-      },
-      {
-        "article": "LG 65C1",
-        "url": "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/"
-      },
-      {
-        "article": "LG SP9YA",
-        "url": "https://www.mielectro.es/barra-sonido-lg-sp9ya-7255071/"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "Sony 65A80J",
+          "url": "https://www.mielectro.es/tv-65pulgadas-oled-sony-xr-65a80j-bravia-7044071/"
+        },
+        {
+          "active": true,
+          "article": "LG 65C1",
+          "url": "https://www.mielectro.es/tv-lg-oled65c14lb-6799071/"
+        },
+        {
+          "active": true,
+          "article": "LG SP9YA",
+          "url": "https://www.mielectro.es/barra-sonido-lg-sp9ya-7255071/"
+        }
+      ]
+    }
   },
   "amazon": {
-    "key":"amazon",
+    "key": "amazon",
     "name": "Amazon",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.amazon.es/gp/product/B097YBDGXK/ref=ox_sc_saved_image_1"
-      },
-      {
-        "article": "LG 65C1",
-        "url": "https://www.amazon.es/dp/B08Y3YSMV7/ref=twister_B0944BGRSK"
-      },
-      {
-        "article": "PS5 (Estandar)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B08KKJ37F7/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ DualSense)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B08X1SPNKR/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ DualSense Negro)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09CZ9P2FK/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ DualSense Rojo)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09CZ9JWD9/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ Ratchet)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B099BQFGJL/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ Ratchet + PSN)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B0977DGMX7/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ Spiderman)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B095WS48MB/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "PS5 (+ DualSense Negro + Ratchet)",
-        "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09JWXWGJB/ref=sr_1_7?th=1"
-      },
-      {
-        "article": "LG SP9YA",
-        "url": "https://www.amazon.es/Sonido-Inteligente-LG-Potencia-Canales/dp/B093BW5QQL"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": false,
+          "article": "Sony 65A80J",
+          "url": "https://www.amazon.es/gp/product/B097YBDGXK/ref=ox_sc_saved_image_1"
+        },
+        {
+          "active": false,
+          "article": "LG 65C1",
+          "url": "https://www.amazon.es/dp/B08Y3YSMV7/ref=twister_B0944BGRSK"
+        },
+        {
+          "active": true,
+          "article": "PS5 (Estandar)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B08KKJ37F7/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ DualSense)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B08X1SPNKR/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ DualSense Negro)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09CZ9P2FK/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ DualSense Rojo)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09CZ9JWD9/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ Ratchet)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B099BQFGJL/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ Ratchet + PSN)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B0977DGMX7/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ Spiderman)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B095WS48MB/ref=sr_1_7?th=1"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ DualSense Negro + Ratchet)",
+          "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09JWXWGJB/ref=sr_1_7?th=1"
+        },
+        {
+          "active": false,
+          "article": "LG SP9YA",
+          "url": "https://www.amazon.es/Sonido-Inteligente-LG-Potencia-Canales/dp/B093BW5QQL"
+        }
+      ]
+    }
   },
   "game": {
-    "key":"game",
+    "key": "game",
     "name": "Game",
-    "items": [
-      {
-        "article": "PS5",
-        "url": "https://www.game.es/HARDWARE/CONSOLA/PLAYSTATION-5/CONSOLA-PLAYSTATION-5/183224"
-      },
-      {
-        "article": "PS5 + Ratchet",
-        "url": "https://www.game.es/HARDWARE/PACK-CONSOLA/PLAYSTATION-5/PLAYSTATION-5-RATCHET-AND-CLANK-UNA-DIMENSION-APARTE/190928"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.game.es/HARDWARE/CONSOLA/PLAYSTATION-5/CONSOLA-PLAYSTATION-5/183224"
+        },
+        {
+          "active": true,
+          "article": "PS5 + Ratchet",
+          "url": "https://www.game.es/HARDWARE/PACK-CONSOLA/PLAYSTATION-5/PLAYSTATION-5-RATCHET-AND-CLANK-UNA-DIMENSION-APARTE/190928"
+        }
+      ]
+    }
   },
   "sonyexperience": {
-    "key":"sonyexperience",
+    "key": "sonyexperience",
     "name": "Sony experience",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.sonyexperience.es/television/4140-tv-sony-oled-XR65A80JAEP-4548736125469.html"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "Sony 65A80J",
+          "url": "https://www.sonyexperience.es/television/4140-tv-sony-oled-XR65A80JAEP-4548736125469.html"
+        }
+      ]
+    }
   },
   "wivai": {
-    "key":"wivai",
+    "key": "wivai",
     "name": "Wivai",
-    "items": [
-      {
-        "article": "PS5",
-        "url": "https://www.wivai.com/pnbl/part/es/search?prefn1=brand&prefn2=productSubfamilies&prefv1=SONY&prefv2=CONSOLAS%20Y%20VIDEOJUEGOS&q=playstation%205&srule=best-matches&start=0"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.wivai.com/pnbl/part/es/search?prefn1=brand&prefn2=productSubfamilies&prefv1=SONY&prefv2=CONSOLAS%20Y%20VIDEOJUEGOS&q=playstation%205&srule=best-matches&start=0"
+        }
+      ]
+    }
   },
   "fnac": {
-    "key":"fnac",
+    "key": "fnac",
     "name": "Fnac",
-    "items": [
-      {
-        "article": "Sony 65A80J",
-        "url": "https://www.fnac.es/TV-OLED-65-Sony-Bravia-XR-65A80J-4K-UHD-HDR-Smart-TV-TV-TV-OLED/a8152261#st=65a80j&ct=En+todo+Fnac&t=p"
-      },
-      {
-        "article": "PS5",
-        "url": "https://www.fnac.es/Consola-PlayStation-5-Videoconsola-Consola/a7724798"
-      },
-      {
-        "article": "PS5 Spiderman + Ghost",
-        "url": "https://www.fnac.es/PS5-Spiderman-Miles-Morales-Ultimate-Edition-Ghost-of-Tsushima-Director-s-Cut-Videoconsola-Consola/a8757502"
-      },
-      {
-        "article": "PS5 Ratchet + Spiderman",
-        "url": "https://www.fnac.es/Consola-PS5-Ratchetetclanck-Marvel-s-Spider-Man-Miles-Morales-Dualsense-Videoconsola-Consola/a8619473"
-      },
-      {
-        "article": "PS5 Resident Evil Village",
-        "url": "https://www.fnac.es/Consola-PS5-Resident-Evil-Village-DualSense-Negro-Videoconsola-Consola/a8612319"
-      },
-      {
-        "article": "PS5 Ratchet + Destruction",
-        "url": "https://www.fnac.es/Consola-PS5-Ratchet-et-Clank-Destruction-AllStars-Videoconsola-Consola/a8576038"
-      },
-      {
-        "article": "PS5 Returnal + Destruction",
-        "url": "https://www.fnac.es/Consola-PS5-Returnal-Destruction-Allstars-Videoconsola-Consola/a8513619"
-      },
-      {
-        "article": "PS5 Demons Souls",
-        "url": "https://www.fnac.es/Consola-PS5-825GB-Mando-Dualsense-Demon-s-Souls-Videoconsola-Consola/a8111548"
-      }
-    ]
+    "items": {
+      "133337935": [
+        {
+          "active": false,
+          "article": "Sony 65A80J",
+          "url": "https://www.fnac.es/TV-OLED-65-Sony-Bravia-XR-65A80J-4K-UHD-HDR-Smart-TV-TV-TV-OLED/a8152261#st=65a80j&ct=En+todo+Fnac&t=p"
+        },
+        {
+          "active": false,
+          "article": "PS5",
+          "url": "https://www.fnac.es/Consola-PlayStation-5-Videoconsola-Consola/a7724798"
+        },
+        {
+          "active": false,
+          "article": "PS5 Spiderman + Ghost",
+          "url": "https://www.fnac.es/PS5-Spiderman-Miles-Morales-Ultimate-Edition-Ghost-of-Tsushima-Director-s-Cut-Videoconsola-Consola/a8757502"
+        },
+        {
+          "active": false,
+          "article": "PS5 Ratchet + Spiderman",
+          "url": "https://www.fnac.es/Consola-PS5-Ratchetetclanck-Marvel-s-Spider-Man-Miles-Morales-Dualsense-Videoconsola-Consola/a8619473"
+        },
+        {
+          "active": false,
+          "article": "PS5 Resident Evil Village",
+          "url": "https://www.fnac.es/Consola-PS5-Resident-Evil-Village-DualSense-Negro-Videoconsola-Consola/a8612319"
+        },
+        {
+          "active": false,
+          "article": "PS5 Ratchet + Destruction",
+          "url": "https://www.fnac.es/Consola-PS5-Ratchet-et-Clank-Destruction-AllStars-Videoconsola-Consola/a8576038"
+        },
+        {
+          "active": false,
+          "article": "PS5 Returnal + Destruction",
+          "url": "https://www.fnac.es/Consola-PS5-Returnal-Destruction-Allstars-Videoconsola-Consola/a8513619"
+        },
+        {
+          "active": false,
+          "article": "PS5 Demons Souls",
+          "url": "https://www.fnac.es/Consola-PS5-825GB-Mando-Dualsense-Demon-s-Souls-Videoconsola-Consola/a8111548"
+        }
+      ]
+    }
   }
 }
