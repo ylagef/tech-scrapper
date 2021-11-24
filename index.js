@@ -1,4 +1,5 @@
 process.env.NTBA_FIX_350 = 1 // Disable telegram bot deprecation message
+require('dotenv').config()
 
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
@@ -7,7 +8,7 @@ const { firefox } = require('playwright')
 const { getPricesFromDb, updateDb } = require('./db/utils.js')
 
 const vendorsData = require('./vendorsData.json')
-const { vendors } = require('./vendors')
+const { vendorsObj } = require('./vendors')
 
 const prices = getPricesFromDb()
 
@@ -33,7 +34,7 @@ bot.addListener('message', (data) => {
     }
 
     case '/alive':
-      bot.sendMessage(chatId, 'Yas!')
+      bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
       break
 
     case '/add':
@@ -56,6 +57,8 @@ async function scrap () {
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
     const browser = await firefox.launch({ headless: true })
+
+    const vendors = vendorsObj.filter(vendor => process.env.ACTIVEVENDORS.includes(vendor.key))
 
     for (const vendor of vendors) {
       console.log(`\n\t${vendor.name}`)
@@ -141,5 +144,5 @@ async function scrap () {
 scrap()
 
 setInterval(() => {
-  bot.sendMessage(chatId, 'Still alive! 🤘🏼 (pc)')
+  bot.sendMessage(chatId, `Still alive! 🤘🏼 (${process.env.SERVER || 'NONE'})`)
 }, 2 * 60 * 60 * 1000) // 2 hours

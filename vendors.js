@@ -1,7 +1,7 @@
 const logger = require('node-color-log')
 const vendorsData = require('./vendorsData.json')
 
-exports.vendors = [
+exports.vendorsObj = [
   {
     key: vendorsData.fnac.key,
     name: vendorsData.fnac.name,
