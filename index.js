@@ -13,10 +13,10 @@ const { vendorsObj } = require('./vendors')
 const prices = getPricesFromDb()
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
-const bot = new TelegramBot(token, { polling: true })
+const bot = new TelegramBot(token, { polling: process.env.LISTENBOT === 1 })
 const chatId = 133337935
 
-if (process.env.LISTENBOT) {
+if (process.env.LISTENBOT === 1) {
   bot.on('polling_error', (error) => {
     console.error(error)
     bot.sendMessage(chatId, 'Err on polling')
@@ -24,15 +24,15 @@ if (process.env.LISTENBOT) {
   bot.addListener('message', (data) => {
     switch (data.text) {
       case '/vendors':
-      {
-        const vendorsMessage = Object.values(vendorsData).map(vendor => {
-          let message = `<b>${vendor.name}</b>\n`
-          message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
-          return message
-        }).join('\n\n')
-        bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
-        break
-      }
+        {
+          const vendorsMessage = Object.values(vendorsData).map(vendor => {
+            let message = `<b>${vendor.name}</b>\n`
+            message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
+            return message
+          }).join('\n\n')
+          bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
+          break
+        }
 
       case '/alive':
         bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
@@ -54,7 +54,7 @@ if (process.env.LISTENBOT) {
   })
 }
 
-async function scrap () {
+async function scrap() {
   try {
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
@@ -105,7 +105,7 @@ async function scrap () {
 
           if (price && (!prices[key] || prices[key] !== price)) {
             logger.color('black').bgColor('green').log(`\t\t\tUPDATED!! (prev ${prices[key] || 'NONE'
-              }) 👀\t`)
+              }) 👀\t\t`)
 
             const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
               } => ${price}\n<a href='${item.url}'>LINK</a>`

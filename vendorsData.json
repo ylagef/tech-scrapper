@@ -107,12 +107,12 @@
     "items": {
       "133337935": [
         {
-          "active": false,
+          "active": true,
           "article": "LG 65C1 1LB",
           "url": "https://www.pccomponentes.com/lg-oled65c11lb-65-oled-ultrahd-4k"
         },
         {
-          "active": false,
+          "active": true,
           "article": "LG 65C1 4LB",
           "url": "https://www.pccomponentes.com/lg-oled65c14lb-65-oled-ultra-hd-4k-hdr10-pro"
         },
@@ -153,12 +153,12 @@
     "items": {
       "133337935": [
         {
-          "active": false,
+          "active": true,
           "article": "Sony 65A80J",
           "url": "https://www.amazon.es/gp/product/B097YBDGXK/ref=ox_sc_saved_image_1"
         },
         {
-          "active": false,
+          "active": true,
           "article": "LG 65C1",
           "url": "https://www.amazon.es/dp/B08Y3YSMV7/ref=twister_B0944BGRSK"
         },
@@ -203,7 +203,7 @@
           "url": "https://www.amazon.es/Playstation-Consola-PlayStation-5/dp/B09JWXWGJB/ref=sr_1_7?th=1"
         },
         {
-          "active": false,
+          "active": true,
           "article": "LG SP9YA",
           "url": "https://www.amazon.es/Sonido-Inteligente-LG-Potencia-Canales/dp/B093BW5QQL"
         }
@@ -260,42 +260,42 @@
     "items": {
       "133337935": [
         {
-          "active": false,
+          "active": true,
           "article": "Sony 65A80J",
           "url": "https://www.fnac.es/TV-OLED-65-Sony-Bravia-XR-65A80J-4K-UHD-HDR-Smart-TV-TV-TV-OLED/a8152261#st=65a80j&ct=En+todo+Fnac&t=p"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5",
           "url": "https://www.fnac.es/Consola-PlayStation-5-Videoconsola-Consola/a7724798"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5 Spiderman + Ghost",
           "url": "https://www.fnac.es/PS5-Spiderman-Miles-Morales-Ultimate-Edition-Ghost-of-Tsushima-Director-s-Cut-Videoconsola-Consola/a8757502"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5 Ratchet + Spiderman",
           "url": "https://www.fnac.es/Consola-PS5-Ratchetetclanck-Marvel-s-Spider-Man-Miles-Morales-Dualsense-Videoconsola-Consola/a8619473"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5 Resident Evil Village",
           "url": "https://www.fnac.es/Consola-PS5-Resident-Evil-Village-DualSense-Negro-Videoconsola-Consola/a8612319"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5 Ratchet + Destruction",
           "url": "https://www.fnac.es/Consola-PS5-Ratchet-et-Clank-Destruction-AllStars-Videoconsola-Consola/a8576038"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5 Returnal + Destruction",
           "url": "https://www.fnac.es/Consola-PS5-Returnal-Destruction-Allstars-Videoconsola-Consola/a8513619"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5 Demons Souls",
           "url": "https://www.fnac.es/Consola-PS5-825GB-Mando-Dualsense-Demon-s-Souls-Videoconsola-Consola/a8111548"
         }
