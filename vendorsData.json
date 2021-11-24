@@ -71,9 +71,47 @@
           "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
         },
         {
+          "active": true,
+          "article": "PS5 + Miles",
+          "url": "https://www.elcorteingles.es/videojuegos/A39207606-playstation-5--marvels-spider-man-miles-morales/"
+        },
+        {
+          "active": true,
+          "article": "PS5 + Miles + Allstars",
+          "url": "https://www.elcorteingles.es/videojuegos/A39883980-playstation-5--spider-man-miles-morales--destruction-allstars/"
+        },
+        {
+          "active": true,
+          "article": "PS5 + Ratchet",
+          "url": "https://www.elcorteingles.es/videojuegos/A40083788-playstation-5--ratchet-and-clank-una-dimension-aparte/"
+        },
+        {
+          "active": true,
+          "article": "PS5 + Allstars",
+          "url": "https://www.elcorteingles.es/videojuegos/A40110604-playstation-5--ratchet-and-clank-una-dimension-aparte--destruction-allstars--20-fondos-monedero/"
+        },
+        {
+          "active": true,
+          "article": "PS5 + DualSense",
+          "url": "https://www.elcorteingles.es/videojuegos/A39115651-ps5--dual-sense/"
+        },
+        {
           "active": false,
           "article": "LG SP9YA",
           "url": "https://www.elcorteingles.es/electronica/A39836310-barra-de-sonido-lg-sp9ya-520w-512ch-meridian-dolby-atmos-hi-res-wifi/"
+        }
+      ]
+    }
+  },
+  "elcorteinglesquery": {
+    "key": "elcorteinglesquery",
+    "name": "El corte inglés query",
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.elcorteingles.es/videojuegos/ps5/consolas/"
         }
       ]
     }

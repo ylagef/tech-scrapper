@@ -66,6 +66,20 @@ exports.vendorsObj = [
     }
   },
   {
+    key: vendorsData.elcorteinglesquery.key,
+    name: vendorsData.elcorteinglesquery.name,
+    items: vendorsData.elcorteinglesquery.items,
+    checkPrice: async ({ page }) => {
+      // await page.waitForTimeout(10000)
+      if (await checkCaptcha(page, '.plp_title_h1', false)) return 'CAPTCHA' // Check if captcha
+
+      const items = (await page.$$('products_list-item')).length
+      const prices = await page.$$eval('.price._big', nodes => nodes.map(node => node.innerText))
+      const stock = prices.find(price => price !== '')
+      return `${items} productos (${stock} stock)`
+    }
+  },
+  {
     key: vendorsData.pcccomponentes.key,
     name: vendorsData.pcccomponentes.name,
     items: vendorsData.pcccomponentes.items,
