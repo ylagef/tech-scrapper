@@ -1,4 +1,4 @@
-process.env.NTBA_FIX_350 = 1
+process.env.NTBA_FIX_350 = 1 // Disable telegram bot deprecation message
 
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
@@ -69,7 +69,7 @@ async function scrap () {
           const context = await browser.newContext({
             javaScriptEnabled: false
           })
-          context.setDefaultTimeout(5000)
+          context.setDefaultTimeout(50000)
           // promises.push(new Promise((resolve, reject) => {
           // (async () => {
           // try {
@@ -84,11 +84,11 @@ async function scrap () {
             await page.goto(item.url, { waitUntil: 'load' })
 
             price = (await vendor.checkPrice({ page }))
-            console.log(`\t\t%c${item.article} · ${price}`, 'background:red')
+            console.log(`\t\t${item.article} · ${price}`)
           } catch (err) {
             console.error(err)
             bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
-            logger.color('black').bgColor('red').log(`\t\t${item.article} · (err)`)
+            logger.color('black').bgColor('red').log(`\t\t${item.article} · (err)\t`)
           }
 
           try {
@@ -99,7 +99,8 @@ async function scrap () {
           }
 
           if (price && (!prices[key] || prices[key] !== price)) {
-            logger.color('black').bgColor('green').log('\t\t\tUPDATED!! 👀 \t')
+            logger.color('black').bgColor('green').log(`\t\t\tUPDATED!! (prev ${prices[key] || 'NONE'
+              }) 👀\t`)
 
             const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
               } => ${price}\n<a href='${item.url}'>LINK</a>`

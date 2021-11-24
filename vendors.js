@@ -67,7 +67,7 @@ exports.vendors = [
     name: vendorsData.pcccomponentes.name,
     items: vendorsData.pcccomponentes.items,
     checkPrice: async ({ page }) => {
-      if (await checkCaptcha(page, '#home')) return 'CAPTCHA' // Check if captcha
+      if (await checkCaptcha(page, '#cf-wrapper')) return 'CAPTCHA' // Check if captcha
 
       const hasPrice = (await page.$$('#precio-main')).length > 0
       const price = hasPrice ? (await page.textContent('#precio-main')) : ''
@@ -115,11 +115,12 @@ exports.vendors = [
 ]
 
 const checkCaptcha = async (page, element) => {
-  try {
-    await page.textContent(element) // Check if captcha
-    return false
-  } catch (e) {
-    logger.bgColor('red').color('black').log('\t\t\tCaptcha detected! ☠️')
+  const captcha = (await page.$$(element)).length > 0
+
+  if (captcha) {
+    logger.bgColor('red').color('black').log('\t\t\tCaptcha detected! ☠️\t')
     return true
   }
+
+  return false
 }
