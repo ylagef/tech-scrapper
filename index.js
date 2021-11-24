@@ -54,13 +54,15 @@ if (process.env.LISTENBOT === 1) {
   })
 }
 
+const activeVendors = process.env.ACTIVEVENDORS.split(',')
+console.log(`\n\n${activeVendors.join(' | ')}`)
+
 async function scrap () {
   try {
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
+    const vendors = vendorsObj.filter(vendor => activeVendors.includes(vendor.key))
     const browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
-
-    const vendors = vendorsObj.filter(vendor => process.env.ACTIVEVENDORS.split(',').includes(vendor.key))
 
     for (const vendor of vendors) {
       console.log(`\n${vendor.name} (${vendor.jsEnabled ? 'JS enabled' : 'JS disabled'})`)
