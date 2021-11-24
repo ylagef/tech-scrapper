@@ -24,15 +24,15 @@ if (process.env.LISTENBOT === 1) {
   bot.addListener('message', (data) => {
     switch (data.text) {
       case '/vendors':
-        {
-          const vendorsMessage = Object.values(vendorsData).map(vendor => {
-            let message = `<b>${vendor.name}</b>\n`
-            message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
-            return message
-          }).join('\n\n')
-          bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
-          break
-        }
+      {
+        const vendorsMessage = Object.values(vendorsData).map(vendor => {
+          let message = `<b>${vendor.name}</b>\n`
+          message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
+          return message
+        }).join('\n\n')
+        bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
+        break
+      }
 
       case '/alive':
         bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
@@ -54,30 +54,27 @@ if (process.env.LISTENBOT === 1) {
   })
 }
 
-async function scrap() {
+async function scrap () {
   try {
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
     const browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
 
-    const vendors = vendorsObj.filter(vendor => process.env.ACTIVEVENDORS.includes(vendor.key))
+    const vendors = vendorsObj.filter(vendor => process.env.ACTIVEVENDORS.split(',').includes(vendor.key))
 
     for (const vendor of vendors) {
-      console.log(`\n${vendor.name}`)
+      console.log(`\n${vendor.name} (${vendor.jsEnabled ? 'JS enabled' : 'JS disabled'})`)
 
-      // const promises = []
       const items = vendor.items[chatId].filter(item => item.active)
       if (items.length === 0) {
         console.log('\tNo active items')
       } else {
         for (const item of items) {
           const context = await browser.newContext({
-            javaScriptEnabled: false
+            javaScriptEnabled: vendor.jsEnabled
           })
-          context.setDefaultTimeout(50000)
-          // promises.push(new Promise((resolve, reject) => {
-          // (async () => {
-          // try {
+          context.setDefaultTimeout(10000)
+
           const page = await context.newPage()
 
           const key = `${vendor.key}_${item.article}`.replaceAll(' ', '')
@@ -86,21 +83,19 @@ async function scrap() {
           let image = null
 
           try {
-            await page.goto(item.url, { waitUntil: 'load' })
-
-            price = (await vendor.checkPrice({ page }))
+            await page.goto(item.url, { waitUntil: 'networkidle' })
+            price = (await vendor.checkPrice({ context, page }))
             console.log(`\t${item.article} · ${price}`)
           } catch (err) {
-            console.error(err)
-            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
-            logger.color('black').bgColor('red').log(`\t${item.article} · (err)\t`)
+            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err (${err.message})`)
+            logger.color('black').bgColor('red').log(`\t${item.article} · (${err.message})\t`)
           }
 
           try {
             image = await page.screenshot({ path: `screenshots/${key}.png` })
           } catch (err) {
-            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot`)
-            console.error('Err on screenshot', err)
+            bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot (${err.message})`)
+            logger.color('black').bgColor('red').log(`Err on screenshot (${err.message})`)
           }
 
           if (price && (!prices[key] || prices[key] !== price)) {
@@ -111,20 +106,15 @@ async function scrap() {
               } => ${price}\n<a href='${item.url}'>LINK</a>`
             bot
               .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
-              .then(() => 'Telegram mensage sent').catch(() => { })
+              .then(() => 'Telegram mensage sent')
 
             prices[key] = price
           }
 
           await page.close()
-          // resolve(true)
-          // } catch (e) { reject(e) }
-          // })()
-          // }))
+          await context.close()
         }
       }
-
-      // await Promise.all(promises)
     }
 
     updateDb(prices)
@@ -132,9 +122,9 @@ async function scrap() {
     await browser.close()
 
     console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
-  } catch (e) {
-    console.error(e)
-    bot.sendMessage(chatId, 'Err on browser')
+  } catch (err) {
+    logger.color('black').bgColor('red').log(err.message)
+    bot.sendMessage(chatId, `Err on browser (${err.message})`)
   }
 
   setTimeout(() => {

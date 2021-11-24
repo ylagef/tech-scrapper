@@ -106,5 +106,5 @@ dist
 screenshots/*
 
 nohup.out
-prices.json
+db/prices.json
 .DS_Store

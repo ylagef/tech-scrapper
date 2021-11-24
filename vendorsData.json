@@ -66,32 +66,32 @@
           "url": "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "PS5",
           "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "PS5 + Miles",
           "url": "https://www.elcorteingles.es/videojuegos/A39207606-playstation-5--marvels-spider-man-miles-morales/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "PS5 + Miles + Allstars",
           "url": "https://www.elcorteingles.es/videojuegos/A39883980-playstation-5--spider-man-miles-morales--destruction-allstars/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "PS5 + Ratchet",
           "url": "https://www.elcorteingles.es/videojuegos/A40083788-playstation-5--ratchet-and-clank-una-dimension-aparte/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "PS5 + Allstars",
           "url": "https://www.elcorteingles.es/videojuegos/A40110604-playstation-5--ratchet-and-clank-una-dimension-aparte--destruction-allstars--20-fondos-monedero/"
         },
         {
-          "active": true,
+          "active": false,
           "article": "PS5 + DualSense",
           "url": "https://www.elcorteingles.es/videojuegos/A39115651-ps5--dual-sense/"
         },
@@ -111,7 +111,7 @@
         {
           "active": true,
           "article": "PS5",
-          "url": "https://www.elcorteingles.es/videojuegos/ps5/consolas/"
+          "url": "https://www.elcorteingles.es/videojuegos/ps5/consolas/type_description::Consolas/?sorting=stockDesc"
         }
       ]
     }
@@ -258,6 +258,11 @@
           "active": false,
           "article": "LG SP9YA",
           "url": "https://www.amazon.es/Sonido-Inteligente-LG-Potencia-Canales/dp/B093BW5QQL"
+        },
+        {
+          "active": true,
+          "article": "PS5 (+ DualSense + Pulse 3D)",
+          "url": "https://www.amazon.es/dp/B09LRJBYHG"
         }
       ]
     }
