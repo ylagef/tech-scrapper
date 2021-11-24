@@ -63,12 +63,12 @@ async function scrap () {
     const vendors = vendorsObj.filter(vendor => process.env.ACTIVEVENDORS.includes(vendor.key))
 
     for (const vendor of vendors) {
-      console.log(`\n\t${vendor.name}`)
+      console.log(`\n${vendor.name}`)
 
       // const promises = []
       const items = vendor.items[chatId].filter(item => item.active)
       if (items.length === 0) {
-        console.log('\t\tNo active items')
+        console.log('\tNo active items')
       } else {
         for (const item of items) {
           const context = await browser.newContext({
@@ -89,11 +89,11 @@ async function scrap () {
             await page.goto(item.url, { waitUntil: 'load' })
 
             price = (await vendor.checkPrice({ page }))
-            console.log(`\t\t${item.article} · ${price}`)
+            console.log(`\t${item.article} · ${price}`)
           } catch (err) {
             console.error(err)
             bot.sendMessage(chatId, `${vendor.name} - ${item.article} · (err)`)
-            logger.color('black').bgColor('red').log(`\t\t${item.article} · (err)\t`)
+            logger.color('black').bgColor('red').log(`\t${item.article} · (err)\t`)
           }
 
           try {
@@ -104,7 +104,7 @@ async function scrap () {
           }
 
           if (price && (!prices[key] || prices[key] !== price)) {
-            logger.color('black').bgColor('green').log(`\t\t\tUPDATED!! (prev ${prices[key] || 'NONE'
+            logger.color('black').bgColor('green').log(`\t\tUPDATED!! (prev ${prices[key] || 'NONE'
               }) 👀\t\t`)
 
             const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
