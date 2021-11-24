@@ -83,7 +83,7 @@ async function scrap () {
           let image = null
 
           try {
-            await page.goto(item.url, { waitUntil: 'networkidle' })
+            await page.goto(item.url, { waitUntil: 'load' })
             price = (await vendor.checkPrice({ context, page }))
             console.log(`\t${item.article} · ${price}`)
           } catch (err) {
