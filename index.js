@@ -5,12 +5,10 @@ const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
 const { firefox } = require('playwright')
 
-const { getPricesFromDb, updateDb } = require('./db/utils.js')
+const { initializeDb, getArticlesFromDb, updateCells, addRow } = require('./db/utils.js')
 
 const vendorsData = require('./vendorsData.json')
 const { vendorsObj } = require('./vendorsObj')
-
-const prices = getPricesFromDb()
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
 const bot = new TelegramBot(token, { polling: process.env.LISTENBOT === 1 })
@@ -27,7 +25,7 @@ if (process.env.LISTENBOT === 1) {
       {
         const vendorsMessage = Object.values(vendorsData).map(vendor => {
           let message = `<b>${vendor.name}</b>\n`
-          message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${prices[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
+          message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${articles[`${vendor.key}_${item.article}`.replaceAll(' ', '')]}`).join('\n')
           return message
         }).join('\n\n')
         bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
@@ -57,7 +55,14 @@ if (process.env.LISTENBOT === 1) {
 const activeVendors = process.env.ACTIVEVENDORS.split(',')
 console.log(`\n\n${activeVendors.join(' | ')}`)
 
-async function scrap () {
+let articles = null
+  ; (async function scrap () {
+  if (!articles) {
+    await initializeDb()
+  }
+
+  articles = await getArticlesFromDb()
+
   try {
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
@@ -79,7 +84,7 @@ async function scrap () {
 
           const page = await context.newPage()
 
-          const key = `${vendor.key}_${item.article}`.replaceAll(' ', '')
+          const key = (`${vendor.name}_${item.article}`).replaceAll(' ', '')
 
           let price = null
           let image = null
@@ -100,17 +105,33 @@ async function scrap () {
             logger.color('black').bgColor('red').log(`Err on screenshot (${err.message.split('=')[0].trim()})`)
           }
 
-          if (price && (!prices[key] || prices[key] !== price)) {
-            logger.color('black').bgColor('green').log(`UPDATED!! (prev ${prices[key] || 'NONE'
-              }) 👀\t\t`)
+          const article = articles.find(article => article.key === key)
+          if (price && (!article || article.price !== price)) {
+            logger.color('black').bgColor('green').log(`UPDATED!! (prev ${articles[key] || 'NONE'
+                }) 👀\t\t`)
 
-            const message = `<b>${vendor.name} - ${item.article}</b>\n${prices[key] || 'NONE'
-              } => ${price}\n<a href='${item.url}'>LINK</a>`
+            const message = `<b>${vendor.name} - ${item.article}</b>\n${articles[key] || 'NONE'
+                } => ${price}\n<a href='${item.url}'>LINK</a>`
             bot
               .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
               .then(() => 'Telegram mensage sent')
 
-            prices[key] = price
+            if (article) {
+              article.price = price
+              article.date = (new Date()).getTime()
+              await updateCells(article)
+            } else {
+              const obj = {
+                date: (new Date()).getTime(),
+                key,
+                vendor: vendor.name,
+                article: item.article,
+                price
+              }
+
+              const cells = await addRow(obj)
+              articles.push({ ...obj, cells })
+            }
           }
 
           await page.close()
@@ -119,7 +140,7 @@ async function scrap () {
       }
     }
 
-    updateDb(prices)
+    // await updateDb(articles)
 
     await browser.close()
 
@@ -133,9 +154,7 @@ async function scrap () {
     // Scrap after 1 minute after finishing
     scrap()
   }, 1 * 60 * 1000)
-}
-
-scrap()
+})()
 
 setInterval(() => {
   bot.sendMessage(chatId, `Still alive! 🤘🏼 (${process.env.SERVER || 'NONE'})`)
