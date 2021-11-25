@@ -3,6 +3,31 @@ const vendorsData = require('./vendorsData.json')
 
 exports.vendorsObj = [
   {
+    key: 'carrefour',
+    name: 'Carrefour',
+    items: vendorsData.carrefour.items,
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      // if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
+
+      const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
+      return stock ? ((await page.textContent('.buybox__price--current'))?.replaceAll('.', '').replaceAll(' ', '')) : 'NO STOCK'
+    }
+  },
+  {
+    key: 'carrefourquery',
+    name: 'Carrefour query',
+    items: vendorsData.carrefourquery.items,
+    jsEnabled: true,
+    checkPrice: async ({ page }) => {
+      await page.waitForSelector('.ebx-result-figure__img')
+      const items = (await page.$$('article.ebx-result.ebx-result--normal')).length
+      const stock = (await page.$$('.ebx-result-add2cart__full-button.ebx-result-add2cart__button')).length
+
+      return `${items} products (${stock} stock)`
+    }
+  },
+  {
     key: 'amazon',
     name: 'Amazon',
     items: vendorsData.amazon.items,

@@ -60,7 +60,7 @@
           "url": "https://www.elcorteingles.es/electronica/A39342911-tv-oled-1639-cm-65-lg-oled65c16la-smart-tv-hdr-dolby-vision-4k-inteligencia-artificial/"
         },
         {
-          "active": false,
+          "active": true,
           "article": "PS5",
           "url": "https://www.elcorteingles.es/videojuegos/A37046604-consola-playstation-5/"
         },
@@ -362,6 +362,33 @@
           "active": true,
           "article": "PS5",
           "url": "https://www.xtralife.com/seleccion/ps5-consolas/2576"
+        }
+      ]
+    }
+  },
+  "carrefour": {
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5 + Miles + Alls + DS Negro",
+          "url": "https://www.carrefour.es/playstation-5-825gb-pack-juegos-spiderman-y-destruction-all-stars-2-dualsense-negro/VLOT-15318718/p"
+        },
+        {
+          "active": true,
+          "article": "PS5 + Miles + Alls + DS",
+          "url": "https://www.carrefour.es/playstation-5-825gb-pack-juegos-spiderman-y-destruction-all-stars-2-dualsense/VLOT-15139525/p"
+        }
+      ]
+    }
+  },
+  "carrefourquery": {
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.carrefour.es/?q=Consola+ps5&filter=category_ids_2%3Acat6420004&filter=brand%3Asony"
         }
       ]
     }
