@@ -10,7 +10,6 @@ const { firefox } = require('playwright')
 
 const { initializeDb, getArticlesFromDb, updateCells, addRow, updateLastScrap, getLastScrap } = require('./db/utils.js')
 
-// const vendorsData = require('./vendorsData.json')
 const { vendorsObj } = require('./vendorsObj')
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
@@ -103,50 +102,6 @@ if (process.env.LISTENBOT === '1') {
       }
     }
   })
-
-  // bot.addListener('message', async (data) => {
-  //   switch (data.text) {
-  //     case '/vendors':
-  //     {
-  //       // const refreshedArticles = await getArticlesFromDb()
-  //       // const vendorsMessage = Object.values(vendorsData).map(vendor => {
-  //       //   let message = `<b>${vendor.name}</b>\n`
-  //       //   message += vendor.items[chatId].map(item => `<a href="${item.url}">${item.article}</a> · ${refreshedArticles.find(article => article.key === (`${vendor.name}_${item.article}`).replaceAll(' ', '')).price}`).join('\n')
-  //       //   return message
-  //       // }).join('\n\n')
-  //       // bot.sendMessage(chatId, vendorsMessage, { parse_mode: 'HTML', disable_web_page_preview: true })
-  //       break
-  //     }
-
-  //     case '/alive':
-  //       bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
-  //       break
-
-  //     case '/lastscrap':
-  //       ;(async () => {
-  //         try {
-  //           const last = await getLastScrap()
-  //           bot.sendMessage(chatId, `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`, { parse_mode: 'HTML' })
-  //         } catch (err) {
-  //           bot.sendMessage(chatId, 'Error on get last scrap')
-  //         }
-  //       })()
-  //       break
-
-  //     case '/add':
-  //       break
-  //     case '/remove':
-  //       break
-  //     case '/update':
-  //       break
-  //     case '/enable':
-  //       break
-  //     case '/disable':
-  //       break
-  //     case '/screenshot':
-  //       break
-  //   }
-  // })
 }
 
 const activeVendors = process.env.ACTIVEVENDORS.split(',')
@@ -220,8 +175,8 @@ let browser = null
 
             const message = `<b>${vendor.name} - ${item.name}</b>\n${article?.price || 'NONE'
                  } => ${price}\n<a href='${item.url}'>LINK</a>`
-            // await bot
-            //   .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })  //TODO uncomment
+            await bot
+              .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
 
             const date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
             if (article) {

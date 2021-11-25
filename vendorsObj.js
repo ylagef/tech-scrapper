@@ -1,11 +1,9 @@
 const logger = require('node-color-log')
-const vendorsData = require('./vendorsData.json')
 
 exports.vendorsObj = [
   {
     key: 'carrefour',
     name: 'Carrefour',
-    // items: vendorsData.carrefour.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       // if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
@@ -17,7 +15,6 @@ exports.vendorsObj = [
   {
     key: 'carrefourquery',
     name: 'Carrefour query',
-    // items: vendorsData.carrefourquery.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
       await page.waitForSelector('.ebx-result-figure__img')
@@ -30,7 +27,6 @@ exports.vendorsObj = [
   {
     key: 'amazon',
     name: 'Amazon',
-    // items: vendorsData.amazon.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
@@ -42,7 +38,6 @@ exports.vendorsObj = [
   {
     key: 'ardistelquery',
     name: 'Ardistel query',
-    // items: vendorsData.ardistelquery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('.product-image-wrapper')).length
@@ -53,7 +48,6 @@ exports.vendorsObj = [
   {
     key: 'xtralife',
     name: 'Xtralife',
-    // items: vendorsData.xtralife.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('.view-smallGridElement')).length
@@ -65,7 +59,6 @@ exports.vendorsObj = [
   {
     key: 'fnac',
     name: 'Fnac',
-    // items: vendorsData.fnac.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.f-priceBox-price')).length > 0
@@ -75,7 +68,6 @@ exports.vendorsObj = [
   {
     key: 'worten',
     name: 'Worten',
-    // items: vendorsData.worten.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.iss-product-availability')).length > 0
@@ -86,7 +78,6 @@ exports.vendorsObj = [
 
     key: 'wivai',
     name: 'Wivai',
-    // items: vendorsData.wivai.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('.product-tile')).length
@@ -96,7 +87,6 @@ exports.vendorsObj = [
   {
     key: 'mediamarkt',
     name: 'Mediamarkt',
-    // items: vendorsData.mediamarkt.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const price = (await page.textContent('[font-family="price"]'))?.split('.')[0] + '€'
@@ -108,7 +98,6 @@ exports.vendorsObj = [
   {
     key: 'mediamarktQuery',
     name: 'Mediamarkt query',
-    // items: vendorsData.mediamarktQuery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('[data-test="mms-search-srp-productlist-item"]')).length
@@ -121,7 +110,6 @@ exports.vendorsObj = [
   {
     key: 'elcorteingles',
     name: 'El corte inglés',
-    // items: vendorsData.elcorteingles.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.product_detail-main-container', false)) return 'CAPTCHA' // Check if captcha
@@ -133,7 +121,6 @@ exports.vendorsObj = [
   {
     key: 'elcorteinglesquery',
     name: 'El corte inglés query',
-    // items: vendorsData.elcorteinglesquery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.plp_title_h1', false)) return 'CAPTCHA' // Check if captcha
@@ -147,7 +134,6 @@ exports.vendorsObj = [
   {
     key: 'pccomponentes',
     name: 'PcComponentes',
-    // items: vendorsData.pccomponentes.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
@@ -161,7 +147,6 @@ exports.vendorsObj = [
   {
     key: 'pccomponentesquery',
     name: 'PcComponentes query',
-    // items: vendorsData.pccomponentesquery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
@@ -175,7 +160,6 @@ exports.vendorsObj = [
   {
     key: 'mielectro',
     name: 'Mielectro',
-    // items: vendorsData.mielectro.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
@@ -186,7 +170,6 @@ exports.vendorsObj = [
   {
     key: 'game',
     name: 'Game',
-    // items: vendorsData.game.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
@@ -196,7 +179,6 @@ exports.vendorsObj = [
   {
     key: 'gamequery',
     name: 'Game query',
-    // items: vendorsData.gamequery.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
       await page.waitForSelector('img.img-responsive')
@@ -210,7 +192,6 @@ exports.vendorsObj = [
   {
     key: 'sonyexperience',
     name: 'Sonyexperience',
-    // items: vendorsData.sonyexperience.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       return (await page.textContent('.current-price > span'))?.replace('.', '').replace(/\s/g, '')
