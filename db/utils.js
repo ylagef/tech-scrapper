@@ -50,7 +50,6 @@ exports.addRow = async ({ key, date, vendor, name, price, active, url }) => {
 exports.updateCells = async (article) => {
   try {
     const sheet = doc.sheetsByTitle.products
-    console.log(article.cells)
     await sheet.loadCells(article.cells)
 
     const dateCell = sheet.getCellByA1(article.cells.split(':')[0])

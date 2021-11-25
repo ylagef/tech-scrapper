@@ -85,17 +85,15 @@ if (process.env.LISTENBOT === '1') {
 
           bot.onReplyToMessage(chatId, urlMessage.message_id, async (msg) => {
             const url = msg.text
-            const vendorName = vendorsObj.find(vendorObj =>
-              vendorObj.key === vendor
-            )?.name
 
             newItem.url = url
-            newItem.vendor = vendorName
+            newItem.vendor = vendor
             newItem.key = md5(`${vendor}${name}${url}`)
             newItem.date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
 
-            console.log(newItem)
             await addRow(newItem)
+
+            logger.bgColor('green').color('black').log(` ${name} was added! 💪🏼 `)
             await bot.sendMessage(chatId, `${name} was added!`)
           })
         })
@@ -179,7 +177,7 @@ let browser = null
       const items = articles.filter(article =>
         article.vendor === vendor.key
       ).filter(item =>
-        item.active
+        item.active === 'TRUE'
       )
 
       if (items.length === 0) {
