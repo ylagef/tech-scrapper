@@ -59,3 +59,32 @@ exports.updateCells = async (article) => {
     console.error('Error on add row', err)
   }
 }
+
+exports.updateLastScrap = async () => {
+  try {
+    const sheet = doc.sheetsByTitle.stats
+    await sheet.loadCells('A2:B3')
+
+    const cellA1 = process.env.SERVER === 'PC' ? 'B2' : 'B3'
+    const dateCell = sheet.getCellByA1(cellA1)
+
+    dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+    await sheet.saveCells([dateCell])
+  } catch (err) {
+    console.error('Error on update last scrap', err)
+  }
+}
+
+exports.getLastScrap = async () => {
+  try {
+    const sheet = doc.sheetsByTitle.stats
+    await sheet.loadCells('A2:B3')
+
+    const pc = sheet.getCellByA1('B2').value || 'NONE'
+    const clouding = sheet.getCellByA1('B3').value || 'NONE'
+
+    return { pc, clouding }
+  } catch (err) {
+    console.error('Error on update last scrap', err)
+  }
+}
