@@ -30,7 +30,7 @@ exports.vendorsObj = [
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('.product-tile')).length
-      return `${items} productos`
+      return `${items} products`
     }
   },
   {
@@ -55,7 +55,7 @@ exports.vendorsObj = [
       const delivery = (await page.$$('[data-test="mms-delivery-online-availability_AVAILABLE"]')).length
       const inShop = (await page.$$('[data-test="mms-delivery-market-availability_AVAILABLE"]')).length
 
-      return `${items} productos (${delivery} delivery - ${inShop} in shop)`
+      return `${items} products (${delivery} delivery - ${inShop} in shop)`
     }
   },
   {
@@ -81,7 +81,7 @@ exports.vendorsObj = [
       const items = (await page.$$('.products_list-item')).length
       const prices = await page.$$eval('.price._big', nodes => nodes.map(node => node.innerText))
       const stock = prices.filter(price => price !== '').length
-      return `${items} productos (${stock} stock)`
+      return `${items} products (${stock} stock)`
     }
   },
   {
@@ -109,7 +109,7 @@ exports.vendorsObj = [
       const items = (await page.$$('article')).length
       const availabilities = await page.$$eval('.c-product-card__availability', nodes => nodes.map(node => node.innerText))
       const stock = availabilities.filter(availability => availability.includes('Recíbelo')).length
-      return `${items} productos (${stock} stock)`
+      return `${items} products (${stock} stock)`
     }
   },
   {
@@ -155,7 +155,7 @@ exports.vendorsObj = [
       const items = (await page.$$('.item-info')).length
       const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
 
-      return `${items} productos (${stock} stock)`
+      return `${items} products (${stock} stock)`
     }
   },
   {
