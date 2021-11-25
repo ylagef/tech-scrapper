@@ -3,6 +3,41 @@ const vendorsData = require('./vendorsData.json')
 
 exports.vendorsObj = [
   {
+    key: 'amazon',
+    name: 'Amazon',
+    items: vendorsData.amazon.items,
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
+      await page.$$eval('[data-action="sp-cc"]', nodes => nodes.forEach(node => { node.style.display = 'none' }))
+      const stock = (await page.$$('.a-price.a-text-price.a-size-medium')).length > 0
+      return stock ? ((await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll('.', '').split('€')[0] + '€') : 'NO STOCK'
+    }
+  },
+  {
+    key: 'ardistelquery',
+    name: 'Ardistel query',
+    items: vendorsData.ardistelquery.items,
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      const items = (await page.$$('.product-image-wrapper')).length
+      const stock = (await page.$$('.product-image-wrapper  .fas.fa-shopping-cart.fa-fw')).length
+      return `${items} products (${stock} stock)`
+    }
+  },
+  {
+    key: 'xtralife',
+    name: 'Xtralife',
+    items: vendorsData.xtralife.items,
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      const items = (await page.$$('.view-smallGridElement')).length
+      const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
+      const stock = buttons.filter(button => button.includes('Añadir a cesta')).length
+      return `${items} products (${stock} stock)`
+    }
+  },
+  {
     key: 'fnac',
     name: 'Fnac',
     items: vendorsData.fnac.items,
@@ -122,18 +157,7 @@ exports.vendorsObj = [
       return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
     }
   },
-  {
-    key: 'amazon',
-    name: 'Amazon',
-    items: vendorsData.amazon.items,
-    jsEnabled: false,
-    checkPrice: async ({ page }) => {
-      // [data-action="sp-cc"]
-      await page.$$eval('[data-action="sp-cc"]', nodes => nodes.forEach(node => { node.style.display = 'none' }))
-      const stock = (await page.$$('.a-price.a-text-price.a-size-medium')).length > 0
-      return stock ? ((await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll('.', '').split('€')[0] + '€') : 'NO STOCK'
-    }
-  },
+
   {
     key: 'game',
     name: 'Game',

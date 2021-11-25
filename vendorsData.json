@@ -343,5 +343,27 @@
         }
       ]
     }
+  },
+  "ardistelquery": {
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.ardistel.com/buscar.asp?search=CONSOLA+PS5"
+        }
+      ]
+    }
+  },
+  "xtralife": {
+    "items": {
+      "133337935": [
+        {
+          "active": true,
+          "article": "PS5",
+          "url": "https://www.xtralife.com/seleccion/ps5-consolas/2576"
+        }
+      ]
+    }
   }
 }

@@ -114,6 +114,7 @@ let browser = null
           }
 
           try {
+            image = await page.screenshot({ path: `screenshots/${key}_full.png`, fullPage: true })
             image = await page.screenshot({ path: `screenshots/${key}.png` })
           } catch (err) {
             bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot (${err.message.split('=')[0].trim()})`)
@@ -122,10 +123,10 @@ let browser = null
 
           const article = articles.find(article => article.key === key)
           if (price && (!article || article.price !== price)) {
-            logger.color('black').bgColor('green').log(`UPDATED!! (prev ${article.price || 'NONE'
-                }) 👀\t\t`)
+            logger.color('black').bgColor('green').log(` UPDATED!! (prev ${article?.price || 'NONE'
+                }) 👀 `)
 
-            const message = `<b>${vendor.name} - ${item.article}</b>\n${article.price || 'NONE'
+            const message = `<b>${vendor.name} - ${item.article}</b>\n${article?.price || 'NONE'
                 } => ${price}\n<a href='${item.url}'>LINK</a>`
             bot
               .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
