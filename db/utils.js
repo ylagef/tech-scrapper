@@ -21,8 +21,10 @@ exports.getArticlesFromDb = async () => {
         date: row._rawData[0],
         key: row._rawData[1],
         vendor: row._rawData[2],
-        article: row._rawData[3],
+        name: row._rawData[3],
         price: row._rawData[4],
+        active: row._rawData[5],
+        url: row._rawData[6],
         cells: row.a1Range.split('!')[1]
       })
     })
@@ -35,29 +37,30 @@ exports.getArticlesFromDb = async () => {
   return articles
 }
 
-exports.addRow = async ({ key, date, vendor, article, price }) => {
+exports.addRow = async ({ key, date, vendor, name, price, active, url }) => {
   try {
     const sheet = doc.sheetsByTitle.products
-    const row = await sheet.addRow([date, key, vendor, article, price])
+    const row = await sheet.addRow([date, key, vendor, name, price, active, url])
     return row.a1Range.split('!')[1]
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on add row', err)
+    logger.color('black').bgColor('red').log('Error on add row', err.message)
   }
 }
 
 exports.updateCells = async (article) => {
   try {
     const sheet = doc.sheetsByTitle.products
+    console.log(article.cells)
     await sheet.loadCells(article.cells)
 
     const dateCell = sheet.getCellByA1(article.cells.split(':')[0])
-    const priceCell = sheet.getCellByA1(article.cells.split(':')[1])
+    const priceCell = sheet.getCellByA1('E' + article.cells.split(':')[1].slice(1))
 
     dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
     priceCell.value = article.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on add row', err)
+    logger.color('black').bgColor('red').log('Error on add row', err.message)
   }
 }
 
@@ -72,7 +75,7 @@ exports.updateLastScrap = async () => {
     dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
     await sheet.saveCells([dateCell])
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on update last scrap', err)
+    logger.color('black').bgColor('red').log('Error on update last scrap', err.message)
   }
 }
 
@@ -86,6 +89,6 @@ exports.getLastScrap = async () => {
 
     return { pc, clouding }
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on update last scrap', err)
+    logger.color('black').bgColor('red').log('Error on update last scrap', err.message)
   }
 }
