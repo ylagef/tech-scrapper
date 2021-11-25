@@ -1,7 +1,5 @@
 {
   "mediamarkt": {
-    "key": "mediamarkt",
-    "name": "Mediamarkt",
     "items": {
       "133337935": [
         {
@@ -33,8 +31,6 @@
     }
   },
   "mediamarktQuery": {
-    "key": "mediamarktQuery",
-    "name": "Mediamarkt query",
     "items": {
       "133337935": [
         {
@@ -46,8 +42,6 @@
     }
   },
   "elcorteingles": {
-    "key": "elcorteingles",
-    "name": "El corte inglés",
     "items": {
       "133337935": [
         {
@@ -104,8 +98,6 @@
     }
   },
   "elcorteinglesquery": {
-    "key": "elcorteinglesquery",
-    "name": "El corte inglés query",
     "items": {
       "133337935": [
         {
@@ -117,8 +109,6 @@
     }
   },
   "worten": {
-    "key": "worten",
-    "name": "Worten",
     "items": {
       "133337935": [
         {
@@ -139,9 +129,7 @@
       ]
     }
   },
-  "pcccomponentes": {
-    "key": "pccomponentes",
-    "name": "PcComponentes",
+  "pccomponentes": {
     "items": {
       "133337935": [
         {
@@ -163,8 +151,6 @@
     }
   },
   "pccomponentesquery": {
-    "key": "pccomponentesquery",
-    "name": "PcComponentes query",
     "items": {
       "133337935": [
 
@@ -177,8 +163,6 @@
     }
   },
   "mielectro": {
-    "key": "mielectro",
-    "name": "Mi electro",
     "items": {
       "133337935": [
         {
@@ -200,8 +184,6 @@
     }
   },
   "amazon": {
-    "key": "amazon",
-    "name": "Amazon",
     "items": {
       "133337935": [
         {
@@ -268,8 +250,6 @@
     }
   },
   "game": {
-    "key": "game",
-    "name": "Game",
     "items": {
       "133337935": [
         {
@@ -286,8 +266,6 @@
     }
   },
   "gamequery": {
-    "key": "gamequery",
-    "name": "Game query",
     "items": {
       "133337935": [
         {
@@ -299,8 +277,6 @@
     }
   },
   "sonyexperience": {
-    "key": "sonyexperience",
-    "name": "Sony experience",
     "items": {
       "133337935": [
         {
@@ -312,8 +288,6 @@
     }
   },
   "wivai": {
-    "key": "wivai",
-    "name": "Wivai",
     "items": {
       "133337935": [
         {
@@ -325,8 +299,6 @@
     }
   },
   "fnac": {
-    "key": "fnac",
-    "name": "Fnac",
     "items": {
       "133337935": [
         {

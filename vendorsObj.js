@@ -3,8 +3,8 @@ const vendorsData = require('./vendorsData.json')
 
 exports.vendorsObj = [
   {
-    key: vendorsData.fnac.key,
-    name: vendorsData.fnac.name,
+    key: 'fnac',
+    name: 'Fnac',
     items: vendorsData.fnac.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -13,8 +13,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.worten.key,
-    name: vendorsData.worten.name,
+    key: 'worten',
+    name: 'Worten',
     items: vendorsData.worten.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -24,8 +24,8 @@ exports.vendorsObj = [
   },
   {
 
-    key: vendorsData.wivai.key,
-    name: vendorsData.wivai.name,
+    key: 'wivai',
+    name: 'Wivai',
     items: vendorsData.wivai.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -34,8 +34,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.mediamarkt.key,
-    name: vendorsData.mediamarkt.name,
+    key: 'mediamarkt',
+    name: 'Mediamarkt',
     items: vendorsData.mediamarkt.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -46,8 +46,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.mediamarktQuery.key,
-    name: vendorsData.mediamarktQuery.name,
+    key: 'mediamarktQuery',
+    name: 'Mediamarkt query',
     items: vendorsData.mediamarktQuery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -59,8 +59,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.elcorteingles.key,
-    name: vendorsData.elcorteingles.name,
+    key: 'elcorteingles',
+    name: 'El corte inglés',
     items: vendorsData.elcorteingles.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -71,8 +71,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.elcorteinglesquery.key,
-    name: vendorsData.elcorteinglesquery.name,
+    key: 'elcorteinglesquery',
+    name: 'El corte inglés query',
     items: vendorsData.elcorteinglesquery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -85,9 +85,9 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.pcccomponentes.key,
-    name: vendorsData.pcccomponentes.name,
-    items: vendorsData.pcccomponentes.items,
+    key: 'pcccomponentes',
+    name: 'PcComponentes',
+    items: vendorsData.pccomponentes.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
@@ -99,8 +99,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.pccomponentesquery.key,
-    name: vendorsData.pccomponentesquery.name,
+    key: 'pccomponentesquery',
+    name: 'PcComponentes query',
     items: vendorsData.pccomponentesquery.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -113,8 +113,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.mielectro.key,
-    name: vendorsData.mielectro.name,
+    key: 'mielectro',
+    name: 'Mielectro',
     items: vendorsData.mielectro.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -123,8 +123,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.amazon.key,
-    name: vendorsData.amazon.name,
+    key: 'amazon',
+    name: 'Amazon',
     items: vendorsData.amazon.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -135,8 +135,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.game.key,
-    name: vendorsData.game.name,
+    key: 'game',
+    name: 'Game',
     items: vendorsData.game.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
@@ -145,8 +145,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.gamequery.key,
-    name: vendorsData.gamequery.name,
+    key: 'gamequery',
+    name: 'Game query',
     items: vendorsData.gamequery.items,
     jsEnabled: true,
     checkPrice: async ({ page }) => {
@@ -159,8 +159,8 @@ exports.vendorsObj = [
     }
   },
   {
-    key: vendorsData.sonyexperience.key,
-    name: vendorsData.sonyexperience.name,
+    key: 'sonyexperience',
+    name: 'Sonyexperience',
     items: vendorsData.sonyexperience.items,
     jsEnabled: false,
     checkPrice: async ({ page }) => {
