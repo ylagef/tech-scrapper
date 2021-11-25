@@ -37,7 +37,7 @@ if (process.env.LISTENBOT === '1') {
         bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
         break
 
-      case '/lastScrap':
+      case '/lastscrap':
         ;(async () => {
           try {
             const last = await getLastScrap()
