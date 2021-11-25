@@ -110,7 +110,7 @@ let browser = null
             console.log(`\t${item.article} · ${price}`)
           } catch (err) {
             bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err (${err.message.split('=')[0].trim()})`)
-            logger.color('black').bgColor('red').log(`\t${item.article} · (${err.message.split('=')[0].trim()})\t`)
+            logger.color('black').bgColor('red').log(`${item.article} · (${err.message.split('=')[0].trim()}) `)
           }
 
           try {
@@ -118,7 +118,7 @@ let browser = null
             image = await page.screenshot({ path: `screenshots/${key}.png` })
           } catch (err) {
             bot.sendMessage(chatId, `${vendor.name} - ${item.article} · Err on screenshot (${err.message.split('=')[0].trim()})`)
-            logger.color('black').bgColor('red').log(`Err on screenshot (${err.message.split('=')[0].trim()})`)
+            logger.color('black').bgColor('red').log(` Err on screenshot (${err.message.split('=')[0].trim()}) `)
           }
 
           const article = articles.find(article => article.key === key)
@@ -132,13 +132,14 @@ let browser = null
               .sendPhoto(chatId, image, { parse_mode: 'HTML', caption: message })
               .then(() => 'Telegram mensage sent')
 
+            const date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
             if (article) {
               article.price = price
-              article.date = (new Date()).getTime()
+              article.date = date
               await updateCells(article)
             } else {
               const obj = {
-                date: (new Date()).getTime(),
+                date,
                 key,
                 vendor: vendor.name,
                 article: item.article,
@@ -164,7 +165,7 @@ let browser = null
 
     console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
   } catch (err) {
-    logger.color('black').bgColor('red').log(err.message.split('=')[0].trim())
+    logger.color('black').bgColor('red').log(` ${err.message.split('=')[0].trim()} `)
     bot.sendMessage(chatId, `Err on browser (${err.message.split('=')[0].trim()})`)
   }
 
