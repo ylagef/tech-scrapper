@@ -52,7 +52,7 @@ exports.updateCells = async (article) => {
     const dateCell = sheet.getCellByA1(article.cells.split(':')[0])
     const priceCell = sheet.getCellByA1(article.cells.split(':')[1])
 
-    dateCell.value = (new Date()).getTime()
+    dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
     priceCell.value = article.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {

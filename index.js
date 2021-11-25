@@ -39,8 +39,12 @@ if (process.env.LISTENBOT === '1') {
 
       case '/lastScrap':
         ;(async () => {
-          const last = await getLastScrap()
-          bot.sendMessage(chatId, `PC · ${last.pc}\nClouding · ${last.clouding}`, { parse_mode: 'HTML' })
+          try {
+            const last = await getLastScrap()
+            bot.sendMessage(chatId, `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`, { parse_mode: 'HTML' })
+          } catch (err) {
+            bot.sendMessage(chatId, 'Error on get last scrap')
+          }
         })()
         break
 
@@ -128,9 +132,9 @@ let browser = null
               .then(() => 'Telegram mensage sent')
 
             if (article) {
+              await updateCells(article)
               article.price = price
               article.date = (new Date()).getTime()
-              await updateCells(article)
             } else {
               const obj = {
                 date: (new Date()).getTime(),
