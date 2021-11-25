@@ -57,8 +57,10 @@ const activeVendors = process.env.ACTIVEVENDORS.split(',')
 console.log(`\n\n${activeVendors.join(' | ')}`)
 
 let articles = null
-  ; (async function scrap () {
+let browser = null
+; (async function scrap () {
   if (!articles) {
+    browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
     await initializeDb()
   }
 
@@ -68,7 +70,6 @@ let articles = null
     console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
 
     const vendors = vendorsObj.filter(vendor => activeVendors.includes(vendor.key))
-    const browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
 
     for (const vendor of vendors) {
       console.log(`\n${vendor.name} (${vendor.jsEnabled ? 'JS enabled' : 'JS disabled'})`)
@@ -143,7 +144,7 @@ let articles = null
 
     // await updateDb(articles)
 
-    await browser.close()
+    // await browser.close()
 
     console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
   } catch (err) {
@@ -152,9 +153,9 @@ let articles = null
   }
 
   setTimeout(() => {
-    // Scrap after 1 minute after finishing
+    // Scrap after 30s after finishing
     scrap()
-  }, 1 * 60 * 1000)
+  }, 30 * 1000)
 })()
 
 setInterval(() => {

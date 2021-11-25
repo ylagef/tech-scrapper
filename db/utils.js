@@ -9,7 +9,7 @@ exports.initializeDb = async () => {
 }
 
 exports.getArticlesFromDb = async () => {
-  console.log('Read DB...')
+  console.log('\nRead DB...')
   const articles = []
 
   try {
