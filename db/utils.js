@@ -1,3 +1,4 @@
+const logger = require('node-color-log')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const creds = require('../client_secret.json')
 
@@ -9,7 +10,7 @@ exports.initializeDb = async () => {
 }
 
 exports.getArticlesFromDb = async () => {
-  console.log('\nRead DB...')
+  logger.dim().log('\nRead DB...')
   const articles = []
 
   try {
@@ -26,9 +27,9 @@ exports.getArticlesFromDb = async () => {
       })
     })
 
-    console.log('Read DB ok')
+    logger.dim().log('Read DB ok')
   } catch (err) {
-    console.error('Error on DB read')
+    logger.color('black').bgColor('red').log('Error on DB read')
   }
 
   return articles
@@ -40,7 +41,7 @@ exports.addRow = async ({ key, date, vendor, article, price }) => {
     const row = await sheet.addRow([date, key, vendor, article, price])
     return row.a1Range.split('!')[1]
   } catch (err) {
-    console.error('Error on add row', err)
+    logger.color('black').bgColor('red').log('Error on add row', err)
   }
 }
 
@@ -56,7 +57,7 @@ exports.updateCells = async (article) => {
     priceCell.value = article.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
-    console.error('Error on add row', err)
+    logger.color('black').bgColor('red').log('Error on add row', err)
   }
 }
 
@@ -71,7 +72,7 @@ exports.updateLastScrap = async () => {
     dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
     await sheet.saveCells([dateCell])
   } catch (err) {
-    console.error('Error on update last scrap', err)
+    logger.color('black').bgColor('red').log('Error on update last scrap', err)
   }
 }
 
@@ -85,6 +86,6 @@ exports.getLastScrap = async () => {
 
     return { pc, clouding }
   } catch (err) {
-    console.error('Error on update last scrap', err)
+    logger.color('black').bgColor('red').log('Error on update last scrap', err)
   }
 }
