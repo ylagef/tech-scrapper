@@ -65,11 +65,14 @@ if (process.env.LISTENBOT === '1') {
 }
 
 const activeVendors = process.env.ACTIVEVENDORS.split(',')
-console.log(`\n\n${activeVendors.join(' | ')}`)
+console.log(`\n\n${activeVendors.join(' | ')}\n\n- - - - -`)
 
 let articles = null
 let browser = null
   ; (async function scrap () {
+  const startDate = new Date()
+  console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
+
   if (!browser) {
     browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
   }
@@ -77,10 +80,8 @@ let browser = null
     await initializeDb()
   }
 
-  articles = await getArticlesFromDb()
-
   try {
-    console.log(`\n\nSTART SCRAPPING... (${(new Date()).toLocaleTimeString()})`)
+    articles = await getArticlesFromDb()
 
     const vendors = vendorsObj.filter(vendor => activeVendors.includes(vendor.key))
 
@@ -163,7 +164,7 @@ let browser = null
 
     await updateLastScrap()
 
-    console.log(`\n\nSCRAP FINISHED (${(new Date()).toLocaleTimeString()})`)
+    console.log(`\n\n🏁 SCRAP FINISHED (${(new Date()).toLocaleTimeString()}) - ${(new Date((new Date()).getTime() - startDate.getTime())).getSeconds()}s\n\n- - - - - - -`)
   } catch (err) {
     logger.color('black').bgColor('red').log(` ${err.message.split('=')[0].trim()} `)
     bot.sendMessage(chatId, `Err on browser (${err.message.split('=')[0].trim()})`)
