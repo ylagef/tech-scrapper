@@ -132,9 +132,9 @@ let browser = null
               .then(() => 'Telegram mensage sent')
 
             if (article) {
-              await updateCells(article)
               article.price = price
               article.date = (new Date()).getTime()
+              await updateCells(article)
             } else {
               const obj = {
                 date: (new Date()).getTime(),
