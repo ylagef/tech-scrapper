@@ -6,7 +6,7 @@ const md5 = require('md5-nodejs')
 const logger = require('node-color-log')
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
-const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey } = require('./db/utils.js')
+const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, allVendors, getVendorsFromDB } = require('./db/utils.js')
 const { bot } = require('./telegram/bot')
 
 let items = null
@@ -17,6 +17,15 @@ logger.dim().log(`\n\n${activeVendors.join(' | ')}`)
 logger.log('\n\n- - - - -')
 
 const scrapInitialization = async () => {
+  if (!items) {
+    await initializeDb(bot)
+  }
+
+  logger.dim().log(allVendors)
+  if(!allVendors){
+    await getVendorsFromDB()
+  }
+
   if (!browser || !browser.isConnected()) {
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
@@ -26,9 +35,6 @@ const scrapInitialization = async () => {
       logger.bgColor('red').color('black').log('\n ⚠️  Browser disconected ')
       await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
     })
-  }
-  if (!items) {
-    await initializeDb(bot)
   }
 }
 
