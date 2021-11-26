@@ -2,6 +2,18 @@ const logger = require('node-color-log')
 
 exports.vendorsObj = [
   {
+    key: 'fnacquery',
+    name: 'Fnac query',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      await page.waitForSelector('.Article-itemVisualImg')
+      const items = (await page.$$('article.Article-itemGroup')).length
+      const stock = (await page.$$('article.Article-itemGroup  .js-ProductBuy-add')).length
+
+      return `${items} products (${stock} stock)`
+    }
+  },
+  {
     key: 'carrefour',
     name: 'Carrefour',
     jsEnabled: false,
