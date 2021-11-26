@@ -35,7 +35,7 @@ exports.getVendorsFromDB = async (bot) => {
     const activeVendors = vendors.filter(vendor => SERVERID === 'PC' ? vendor.pc === 'TRUE' : vendor.clouding === 'TRUE')
 
     logger.dim().log('Get vendors ok')
-    return [allVendors, activeVendors]
+    return { allVendors, activeVendors }
   } catch (err) {
     logger.color('black').bgColor('red').log('Error on DB read', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`, { parse_mode: 'HTML' })

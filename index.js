@@ -11,7 +11,7 @@ const { bot } = require('./telegram/bot')
 
 let items = null
 let browser = null
-let allVendors = null
+// let allVendors = null
 let activeVendors = null
 
 const scrapInitialization = async () => {
@@ -19,13 +19,12 @@ const scrapInitialization = async () => {
     await initializeDb(bot)
   }
 
-  if (!allVendors || !activeVendors) {
-    [allVendors, activeVendors] = await getVendorsFromDB()
-    logger.dim().log(`\n\n${activeVendors.map(vendor => vendor.key).join(' | ')}`)
-    logger.log('\n\n- - - - -')
-  }
+  activeVendors = (await getVendorsFromDB()).activeVendors
 
   if (!browser || !browser.isConnected()) {
+    logger.dim().log(`\n\n${activeVendors.map(vendor => vendor.key).join(' | ')}`)
+    logger.log('\n\n- - - - -')
+
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
     logger.dim().log('\nBrowser launched')
@@ -35,6 +34,8 @@ const scrapInitialization = async () => {
       await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
     })
   }
+
+  items = await getItemsFromDb(bot)
 }
 
 const checkItem = async ({ item, vendor }) => {
@@ -102,8 +103,6 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
 
     await scrapInitialization()
-
-    items = await getItemsFromDb(bot)
 
     const vendorsObjs = vendorsObj.filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
 
