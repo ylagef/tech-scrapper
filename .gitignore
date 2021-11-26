@@ -108,3 +108,6 @@ screenshots/*
 nohup.out
 db/prices.json
 .DS_Store
+vendors/vendorsData.json
+
+client_secret.json
