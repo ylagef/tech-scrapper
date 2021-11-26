@@ -73,16 +73,19 @@ exports.updateCells = async (bot, article) => {
   }
 }
 
-exports.updateLastScrap = async (bot) => {
+exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
   try {
     const sheet = doc.sheetsByTitle.stats
-    await sheet.loadCells('A2:B3')
+    await sheet.loadCells('A2:C3')
 
-    const cellA1 = SERVERID === 'PC' ? 'B2' : 'B3'
-    const dateCell = sheet.getCellByA1(cellA1)
+    const dateA1 = SERVERID === 'PC' ? 'B2' : 'B3'
+    const ellapsedA1 = SERVERID === 'PC' ? 'C2' : 'C3'
+    const dateCell = sheet.getCellByA1(dateA1)
+    const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
-    dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-    await sheet.saveCells([dateCell])
+    dateCell.value = `${(endDate).toDateString()} ${(endDate).toLocaleTimeString()}`
+    ellapsedCell.value = `${totalSeconds}s`
+    await sheet.saveCells([dateCell, ellapsedCell])
   } catch (err) {
     logger.color('black').bgColor('red').log('Error on update last scrap', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`, { parse_mode: 'HTML' })
@@ -92,10 +95,10 @@ exports.updateLastScrap = async (bot) => {
 exports.getLastScrap = async (bot) => {
   try {
     const sheet = doc.sheetsByTitle.stats
-    await sheet.loadCells('A2:B3')
+    await sheet.loadCells('A2:C3')
 
-    const pc = sheet.getCellByA1('B2').value || 'NONE'
-    const clouding = sheet.getCellByA1('B3').value || 'NONE'
+    const pc = `${sheet.getCellByA1('B2').value || 'NONE'} (${sheet.getCellByA1('C2').value || 'NONE'})`
+    const clouding = `${sheet.getCellByA1('B3').value || 'NONE'} (${sheet.getCellByA1('C3').value || 'NONE'})`
 
     return { pc, clouding }
   } catch (err) {

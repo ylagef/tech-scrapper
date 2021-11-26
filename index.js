@@ -20,10 +20,10 @@ const scrapInitialization = async () => {
   if (!browser || !browser.isConnected()) {
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
-    logger.dim().log('Browser launched')
+    logger.dim().log('\nBrowser launched')
 
     browser.on('disconnected', async () => {
-      logger.bgColor('red').color('black').log(' ⚠️  Browser disconected ')
+      logger.bgColor('red').color('black').log('\n ⚠️  Browser disconected ')
       await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
     })
   }
@@ -133,16 +133,18 @@ const handleUpdated = async ({ vendor, item, article, price, image, key }) => {
       }
     }
 
-    await updateLastScrap(bot)
+    const endDate = new Date()
+    const totalSeconds = (new Date(endDate.getTime() - startDate.getTime())).getSeconds()
+    console.log(`\n\n🏁 SCRAP FINISHED (${endDate.toLocaleTimeString()}) - ${totalSeconds}s\n\n- - - - - - -`)
 
-    console.log(`\n\n🏁 SCRAP FINISHED (${(new Date()).toLocaleTimeString()}) - ${(new Date((new Date()).getTime() - startDate.getTime())).getSeconds()}s\n\n- - - - - - -`)
+    await updateLastScrap({ bot, endDate, totalSeconds })
   } catch (err) {
     logger.color('black').bgColor('red').log(` ${err.message.split('=')[0].trim()} `)
     await bot.sendMessage(CHATID, `Err on browser (${err.message.split('=')[0].trim()})`)
   }
 
   setTimeout(() => {
-    // Scrap after 30s after finishing
+    // Scrap again after 30s
     scrap()
-  }, 30 * 1000)
+  }, 30 * 1000) // 30s
 })()
