@@ -1,8 +1,8 @@
-const { CHATID, LISTENBOT, ALLVENDORS, BOTTOKEN } = process.env
+const { CHATID, LISTENBOT, BOTTOKEN } = process.env
 
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
-const { addRow, getLastScrap } = require('../db/utils.js')
+const { addRow, getLastScrap, getVendorsFromDB } = require('../db/utils.js')
 const md5 = require('md5-nodejs')
 const { vendorsObj } = require('../vendors/vendorsObj')
 
@@ -84,7 +84,8 @@ if (LISTENBOT === '1') {
     try {
       logger.bgColor('cyan').color('black').log(' New requested... ')
 
-      const vendors = ALLVENDORS.split(',').sort().map(vendor =>
+      const activeVendors = (await getVendorsFromDB()).activeVendors
+      const vendors = activeVendors.map(vendor => vendor.key).sort().map(vendor =>
         ({
           text: vendorsObj.find(vendorObj =>
             vendorObj.key === vendor

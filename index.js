@@ -104,19 +104,19 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     await scrapInitialization()
 
-    const vendorsObjs = vendorsObj.filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
+    const vendors = vendorsObj.filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
 
-    for (const vendor of vendorsObjs) {
+    for (const vendor of vendors) {
       logger.bold().log(`\n${vendor.name}`).joint().dim().log(` ${vendor.jsEnabled ? '(JS enabled)' : ''}`)
 
       const activeItems = items.filter(item =>
         item.vendor === vendor.key
       ).filter(item =>
-        item.active === 'TRUE'
+        item.active
       )
 
       if (activeItems.length === 0) {
-        console.log('\tNo active items')
+        logger.dim().log('\tNo active items')
       } else {
         for (const item of activeItems) {
           await checkItem({ item, vendor })

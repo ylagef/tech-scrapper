@@ -56,7 +56,7 @@ exports.getItemsFromDb = async (bot) => {
         vendor: row._rawData[2],
         name: row._rawData[3],
         price: row._rawData[4],
-        active: row._rawData[5],
+        active: row._rawData[5] === 'TRUE',
         url: row._rawData[6],
         cells: row.a1Range.split('!')[1]
       })
