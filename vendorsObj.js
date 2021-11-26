@@ -2,16 +2,6 @@ const logger = require('node-color-log')
 
 exports.vendorsObj = [
   {
-    key: 'wortenquery',
-    name: 'Worten query',
-    jsEnabled: true,
-    checkPrice: async ({ page }) => {
-      await page.waitForSelector('figure > img')
-      const items = (await page.$$('.w-product__wrapper')).length
-      return `${items} products`
-    }
-  },
-  {
     key: 'carrefour',
     name: 'Carrefour',
     jsEnabled: false,
@@ -56,8 +46,10 @@ exports.vendorsObj = [
   {
     key: 'xtralife',
     name: 'Xtralife',
-    jsEnabled: false,
+    jsEnabled: true,
     checkPrice: async ({ page }) => {
+      await page.waitForSelector('a > img')
+
       const items = (await page.$$('.view-smallGridElement')).length
       const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
       const stock = buttons.filter(button => button.includes('Añadir a cesta')).length
@@ -80,6 +72,16 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.iss-product-availability')).length > 0
       return stock ? await page.textContent('.iss-product-current-price') : 'NO STOCK'
+    }
+  },
+  {
+    key: 'wortenquery',
+    name: 'Worten query',
+    jsEnabled: true,
+    checkPrice: async ({ page }) => {
+      await page.waitForSelector('figure > img')
+      const items = (await page.$$('.w-product__wrapper')).length
+      return `${items} products`
     }
   },
   {
