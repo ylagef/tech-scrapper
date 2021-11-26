@@ -83,7 +83,7 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     const dateCell = sheet.getCellByA1(dateA1)
     const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
-    dateCell.value = `${(endDate).toDateString()} ${(endDate).toLocaleTimeString()}`
+    dateCell.value = `${(endDate).toLocaleTimeString()}`
     ellapsedCell.value = `${totalSeconds}s`
     await sheet.saveCells([dateCell, ellapsedCell])
   } catch (err) {
