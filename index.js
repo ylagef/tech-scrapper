@@ -6,10 +6,10 @@ const md5 = require('md5-nodejs')
 const logger = require('node-color-log')
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
-const { initializeDb, getArticlesFromDb, updateCells, addRow, updateLastScrap } = require('./db/utils.js')
+const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey } = require('./db/utils.js')
 const { bot } = require('./telegram/bot')
 
-let articles = null
+let items = null
 let browser = null
 
 const activeVendors = ACTIVEVENDORS.split(',')
@@ -27,8 +27,15 @@ const scrapInitialization = async () => {
       await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
     })
   }
-  if (!articles) {
+  if (!items) {
     await initializeDb(bot)
+  }
+}
+
+const checkItem = async ({ item, vendor }) => {
+  if (!item.key) {
+    logger.color('black').bgColor('green').log(` NEW ITEM FOUND ${item.name} `)
+    await updateKey({ bot, item, vendor })
   }
 }
 
@@ -41,6 +48,7 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
     await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`)
     logger.color('black').bgColor('red').log(`${item.name} · (${err.message.split('=')[0].trim()}) `)
   }
+  return price
 }
 
 const handleScreenshot = async ({ page, vendor, item, image }) => {
@@ -51,21 +59,23 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
     await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
     logger.color('black').bgColor('red').log(` Err on screenshot (${err.message.split('=')[0].trim()}) `)
   }
+
+  return image
 }
 
-const handleUpdated = async ({ vendor, item, article, price, image, key }) => {
-  logger.color('black').bgColor('green').log(` UPDATED!! (prev ${article?.price || 'NONE'
+const handleUpdated = async ({ vendor, item, price, image, key }) => {
+  logger.color('black').bgColor('green').log(` UPDATED!! (prev ${item?.price || 'NONE'
     }) 👀 `)
 
-  const message = `<b>${vendor.name} - ${item.name}</b>\n${article?.price || 'NONE'
+  const message = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'
     } => ${price}\n<a href='${item.url}'>LINK</a>`
   await bot.sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
 
   const date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-  if (article) {
-    article.price = price
-    article.date = date
-    await updateCells(bot, article)
+  if (item) {
+    item.price = price
+    item.date = date
+    await updatePrice(bot, item)
   } else {
     const obj = {
       date,
@@ -73,12 +83,11 @@ const handleUpdated = async ({ vendor, item, article, price, image, key }) => {
       vendor: vendor.name,
       name: item.name,
       price,
-      active: article.active,
-      url: article.url
+      active: item.active,
+      url: item.url
     }
 
-    const cells = await addRow(bot, obj)
-    articles.push({ ...obj, cells })
+    await addRow(bot, obj)
   }
 }
 
@@ -89,23 +98,25 @@ const handleUpdated = async ({ vendor, item, article, price, image, key }) => {
 
     await scrapInitialization()
 
-    articles = await getArticlesFromDb(bot)
+    items = await getItemsFromDb(bot)
 
     const vendors = vendorsObj.filter(vendor => activeVendors.includes(vendor.key))
 
     for (const vendor of vendors) {
       logger.bold().log(`\n${vendor.name}`).joint().dim().log(` ${vendor.jsEnabled ? '(JS enabled)' : ''}`)
 
-      const items = articles.filter(article =>
-        article.vendor === vendor.key
+      const activeItems = items.filter(item =>
+        item.vendor === vendor.key
       ).filter(item =>
         item.active === 'TRUE'
       )
 
-      if (items.length === 0) {
+      if (activeItems.length === 0) {
         console.log('\tNo active items')
       } else {
-        for (const item of items) {
+        for (const item of activeItems) {
+          await checkItem({ item, vendor })
+
           const context = await browser.newContext({
             javaScriptEnabled: vendor.jsEnabled
           })
@@ -114,17 +125,16 @@ const handleUpdated = async ({ vendor, item, article, price, image, key }) => {
           const page = await context.newPage()
 
           const key = md5(`${vendor.key}${item.name}${item.url}`)
-          const article = articles.find(article => article.key === key)
 
-          const price = null
-          const image = null
+          let price = null
+          let image = null
 
-          await handleNavigation({ page, vendor, item, context, price })
+          price = await handleNavigation({ page, vendor, item, context, price })
 
-          await handleScreenshot({ page, vendor, item, image })
+          image = await handleScreenshot({ page, vendor, item, image })
 
-          if (price && (!article || article.price !== price)) {
-            await handleUpdated({ vendor, item, article, price, image, key })
+          if (price && (!item || item.price !== price)) {
+            await handleUpdated({ vendor, item, price, image, key })
           }
 
           await page.close()

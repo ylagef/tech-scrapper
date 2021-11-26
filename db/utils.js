@@ -3,6 +3,7 @@ const { SERVERID, CHATID } = process.env
 const logger = require('node-color-log')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const creds = require('../client_secret.json')
+const md5 = require('md5-nodejs')
 
 const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
 
@@ -16,15 +17,15 @@ exports.initializeDb = async (bot) => {
   }
 }
 
-exports.getArticlesFromDb = async (bot) => {
+exports.getItemsFromDb = async (bot) => {
   logger.dim().log('\nReading DB...')
-  const articles = []
+  const items = []
 
   try {
     const sheet = doc.sheetsByTitle.products
     const rows = await sheet.getRows()
     rows.forEach(row => {
-      articles.push({
+      items.push({
         date: row._rawData[0],
         key: row._rawData[1],
         vendor: row._rawData[2],
@@ -42,7 +43,7 @@ exports.getArticlesFromDb = async (bot) => {
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`, { parse_mode: 'HTML' })
   }
 
-  return articles
+  return items
 }
 
 exports.addRow = async (bot, { key, date, vendor, name, price, active, url }) => {
@@ -56,17 +57,34 @@ exports.addRow = async (bot, { key, date, vendor, name, price, active, url }) =>
   }
 }
 
-exports.updateCells = async (bot, article) => {
+exports.updatePrice = async (bot, item) => {
   try {
     const sheet = doc.sheetsByTitle.products
-    await sheet.loadCells(article.cells)
+    await sheet.loadCells(item.cells)
 
-    const dateCell = sheet.getCellByA1(article.cells.split(':')[0])
-    const priceCell = sheet.getCellByA1('E' + article.cells.split(':')[1].slice(1))
+    const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
+    const priceCell = sheet.getCellByA1('E' + item.cells.split(':')[1].slice(1))
 
     dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-    priceCell.value = article.price
+    priceCell.value = item.price
     await sheet.saveCells([dateCell, priceCell])
+  } catch (err) {
+    logger.color('black').bgColor('red').log('Error on update cells', err.message)
+    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`, { parse_mode: 'HTML' })
+  }
+}
+
+exports.updateKey = async ({ bot, item, vendor }) => {
+  try {
+    const sheet = doc.sheetsByTitle.products
+    await sheet.loadCells(item.cells)
+
+    const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
+    const keyCell = sheet.getCellByA1('B' + item.cells.split(':')[1].slice(1))
+
+    dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+    keyCell.value = md5(`${vendor.key}${item.name}${item.url}`)
+    await sheet.saveCells([dateCell, keyCell])
   } catch (err) {
     logger.color('black').bgColor('red').log('Error on update cells', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`, { parse_mode: 'HTML' })

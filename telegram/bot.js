@@ -23,14 +23,14 @@ if (LISTENBOT === '1') {
         const newItem = { active: true }
 
         const vendor = action.split('_')[1]
-        const nameMessage = await bot.sendMessage(CHATID, 'Article name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the article' } })
+        const nameMessage = await bot.sendMessage(CHATID, 'Item name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the item' } })
         console.log(`MESSAGE ID ${nameMessage.message_id}`)
 
         bot.onReplyToMessage(CHATID, nameMessage.message_id, async (msg) => {
           const name = msg.text
           newItem.name = name
-
-          const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the article' } })
+          console.log(`!! NAME ${name}`)
+          const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the item' } })
 
           bot.onReplyToMessage(CHATID, urlMessage.message_id, async (msg) => {
             const url = msg.text
