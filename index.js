@@ -9,30 +9,85 @@ const { vendorsObj } = require('./vendors/vendorsObj')
 const { initializeDb, getArticlesFromDb, updateCells, addRow, updateLastScrap } = require('./db/utils.js')
 const { bot } = require('./telegram/bot')
 
+let articles = null
+let browser = null
+
 const activeVendors = ACTIVEVENDORS.split(',')
 logger.dim().log(`\n\n${activeVendors.join(' | ')}`)
 logger.log('\n\n- - - - -')
 
-let articles = null
-let browser = null
+const scrapInitialization = async () => {
+  if (!browser || !browser.isConnected()) {
+    browser = await firefox.launch({ headless: HEADLESS !== 1 })
+    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
+    logger.dim().log('Browser launched')
+
+    browser.on('disconnected', async () => {
+      logger.bgColor('red').color('black').log(' ⚠️  Browser disconected ')
+      await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
+    })
+  }
+  if (!articles) {
+    await initializeDb(bot)
+  }
+}
+
+const handleNavigation = async ({ page, vendor, item, context, price }) => {
+  try {
+    await page.goto(item.url, { waitUntil: 'load' })
+    price = (await vendor.checkPrice({ context, page }))
+    console.log(`\t${item.name} · ${price}`)
+  } catch (err) {
+    await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`)
+    logger.color('black').bgColor('red').log(`${item.name} · (${err.message.split('=')[0].trim()}) `)
+  }
+}
+
+const handleScreenshot = async ({ page, vendor, item, image }) => {
+  try {
+    await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}_full.png`, fullPage: true })
+    image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
+  } catch (err) {
+    await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
+    logger.color('black').bgColor('red').log(` Err on screenshot (${err.message.split('=')[0].trim()}) `)
+  }
+}
+
+const handleUpdated = async ({ vendor, item, article, price, image, key }) => {
+  logger.color('black').bgColor('green').log(` UPDATED!! (prev ${article?.price || 'NONE'
+    }) 👀 `)
+
+  const message = `<b>${vendor.name} - ${item.name}</b>\n${article?.price || 'NONE'
+    } => ${price}\n<a href='${item.url}'>LINK</a>`
+  await bot.sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
+
+  const date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+  if (article) {
+    article.price = price
+    article.date = date
+    await updateCells(bot, article)
+  } else {
+    const obj = {
+      date,
+      key,
+      vendor: vendor.name,
+      name: item.name,
+      price,
+      active: article.active,
+      url: article.url
+    }
+
+    const cells = await addRow(bot, obj)
+    articles.push({ ...obj, cells })
+  }
+}
+
   ; (async function scrap () {
   try {
     const startDate = new Date()
     console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
 
-    if (!browser || !browser.isConnected()) {
-      browser = await firefox.launch({ headless: HEADLESS !== 1 })
-      await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
-      logger.dim().log('Browser launched')
-
-      browser.on('disconnected', async () => {
-        logger.bgColor('red').color('black').log(' ⚠️  Browser disconected ')
-        await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
-      })
-    }
-    if (!articles) {
-      await initializeDb(bot)
-    }
+    await scrapInitialization()
 
     articles = await getArticlesFromDb(bot)
 
@@ -61,54 +116,15 @@ let browser = null
           const key = md5(`${vendor.key}${item.name}${item.url}`)
           const article = articles.find(article => article.key === key)
 
-          let price = null
-          let image = null
+          const price = null
+          const image = null
 
-          try {
-            await page.goto(item.url, { waitUntil: 'load' })
-            price = (await vendor.checkPrice({ context, page }))
-            console.log(`\t${item.name} · ${price}`)
-          } catch (err) {
-            await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`)
-            logger.color('black').bgColor('red').log(`${item.name} · (${err.message.split('=')[0].trim()}) `)
-          }
+          await handleNavigation({ page, vendor, item, context, price })
 
-          try {
-            await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}_full.png`, fullPage: true })
-            image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
-          } catch (err) {
-            await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
-            logger.color('black').bgColor('red').log(` Err on screenshot (${err.message.split('=')[0].trim()}) `)
-          }
+          await handleScreenshot({ page, vendor, item, image })
 
           if (price && (!article || article.price !== price)) {
-            logger.color('black').bgColor('green').log(` UPDATED!! (prev ${article?.price || 'NONE'
-                 }) 👀 `)
-
-            const message = `<b>${vendor.name} - ${item.name}</b>\n${article?.price || 'NONE'
-                 } => ${price}\n<a href='${item.url}'>LINK</a>`
-            await bot
-              .sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
-
-            const date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-            if (article) {
-              article.price = price
-              article.date = date
-              await updateCells(bot, article)
-            } else {
-              const obj = {
-                date,
-                key,
-                vendor: vendor.name,
-                name: item.name,
-                price,
-                active: article.active,
-                url: article.url
-              }
-
-              const cells = await addRow(bot, obj)
-              articles.push({ ...obj, cells })
-            }
+            await handleUpdated({ vendor, item, article, price, image, key })
           }
 
           await page.close()
