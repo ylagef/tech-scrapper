@@ -6,9 +6,6 @@ const md5 = require('md5-nodejs')
 
 const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
 
-exports.allVendors = null
-exports.activeVendors =null
-
 exports.initializeDb = async (bot) => {
   try {
     await doc.useServiceAccountAuth({ client_email: CLIENTEMAIL, private_key: PRIVATEKEY })
@@ -28,21 +25,21 @@ exports.getVendorsFromDB = async (bot) => {
     const rows = await sheet.getRows()
     rows.forEach(row => {
       vendors.push({
-        vendor: row._rawData[0],
+        key: row._rawData[0],
         pc: row._rawData[1],
-        clouding: row._rawData[2],
+        clouding: row._rawData[2]
       })
     })
 
+    const allVendors = vendors
+    const activeVendors = vendors.filter(vendor => SERVERID === 'PC' ? vendor.pc === 'TRUE' : vendor.clouding === 'TRUE')
+
     logger.dim().log('Get vendors ok')
+    return [allVendors, activeVendors]
   } catch (err) {
     logger.color('black').bgColor('red').log('Error on DB read', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`, { parse_mode: 'HTML' })
   }
-
-  this.allVendors = vendors
-  this.activeVendors = vendors.filter(vendor => SERVERID === 'PC' ? vendor.pc : vendor.clouding)
-  console.log(this.allVendors,this.activeVendors)
 }
 
 exports.getItemsFromDb = async (bot) => {

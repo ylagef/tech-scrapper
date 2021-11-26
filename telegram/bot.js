@@ -9,6 +9,43 @@ const { vendorsObj } = require('../vendors/vendorsObj')
 const bot = new TelegramBot(BOTTOKEN, { polling: LISTENBOT === '1' })
 exports.bot = bot
 
+const listenForUrl = ({ urlMessageId, newItem, vendor, name }) => {
+  logger.bgColor('cyan').color('black').log(`Listening for url ${urlMessageId}`)
+
+  bot.onReplyToMessage(CHATID, urlMessageId, async (msg) => {
+    const url = msg.text
+
+    newItem.url = url
+    newItem.vendor = vendor
+    newItem.key = md5(`${vendor}${name}${url}`)
+    newItem.date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+
+    await addRow(bot, newItem)
+
+    logger.bgColor('green').color('black').log(` ${name} was added! 💪🏼 `)
+    await bot.sendMessage(CHATID, `${name} was added!`)
+  })
+}
+
+const listenForName = ({ nameMessageId, newItem, vendor }) => {
+  logger.bgColor('cyan').color('black').log(` Listening for name ${nameMessageId} `)
+
+  let id = null
+  id = bot.onReplyToMessage(CHATID, nameMessageId, async (msg) => { // TODO here!
+    bot.removeReplyListener(id) // Clear listener
+
+    logger.bgColor('cyan').color('black').log(' ?? ')
+    const name = msg.text
+    newItem.name = name
+    logger.bgColor('cyan').color('black').log(` NAME ${name} `)
+    const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the item' } })
+
+    listenForUrl({ urlMessageId: urlMessage.message_id, newItem, vendor, name })
+  })
+
+  logger.bgColor('cyan').color('black').log(` Listener id ${id} `)
+}
+
 if (LISTENBOT === '1') {
   bot.on('polling_error', async (error) => {
     logger.bgColor('red').color('black').log(error)
@@ -23,29 +60,10 @@ if (LISTENBOT === '1') {
         const newItem = { active: true }
 
         const vendor = action.split('_')[1]
+        logger.bgColor('cyan').color('black').log(` Selected ${vendor} `)
         const nameMessage = await bot.sendMessage(CHATID, 'Item name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the item' } })
-        console.log(`MESSAGE ID ${nameMessage.message_id}`)
 
-        bot.onReplyToMessage(CHATID, nameMessage.message_id, async (msg) => {
-          const name = msg.text
-          newItem.name = name
-          console.log(`!! NAME ${name}`)
-          const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the item' } })
-
-          bot.onReplyToMessage(CHATID, urlMessage.message_id, async (msg) => {
-            const url = msg.text
-
-            newItem.url = url
-            newItem.vendor = vendor
-            newItem.key = md5(`${vendor}${name}${url}`)
-            newItem.date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-
-            await addRow(bot, newItem)
-
-            logger.bgColor('green').color('black').log(` ${name} was added! 💪🏼 `)
-            await bot.sendMessage(CHATID, `${name} was added!`)
-          })
-        })
+        listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
       } catch (err) {
         logger.bgColor('red').color('black').log('Error on add new', err.message)
         await bot.sendMessage(CHATID, 'Error on add new')
@@ -64,6 +82,8 @@ if (LISTENBOT === '1') {
   })
   bot.onText(/\/new/, async () => {
     try {
+      logger.bgColor('cyan').color('black').log(' New requested... ')
+
       const vendors = ALLVENDORS.split(',').sort().map(vendor =>
         ({
           text: vendorsObj.find(vendorObj =>

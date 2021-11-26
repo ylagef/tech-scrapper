@@ -1,29 +1,28 @@
 require('dotenv').config()
-const { CHATID, ACTIVEVENDORS, HEADLESS, SERVERID } = process.env
+const { CHATID, HEADLESS, SERVERID } = process.env
 
 const md5 = require('md5-nodejs')
 
 const logger = require('node-color-log')
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
-const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, allVendors, getVendorsFromDB } = require('./db/utils.js')
+const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/utils.js')
 const { bot } = require('./telegram/bot')
 
 let items = null
 let browser = null
-
-const activeVendors = ACTIVEVENDORS.split(',')
-logger.dim().log(`\n\n${activeVendors.join(' | ')}`)
-logger.log('\n\n- - - - -')
+let allVendors = null
+let activeVendors = null
 
 const scrapInitialization = async () => {
   if (!items) {
     await initializeDb(bot)
   }
 
-  logger.dim().log(allVendors)
-  if(!allVendors){
-    await getVendorsFromDB()
+  if (!allVendors || !activeVendors) {
+    [allVendors, activeVendors] = await getVendorsFromDB()
+    logger.dim().log(`\n\n${activeVendors.map(vendor => vendor.key).join(' | ')}`)
+    logger.log('\n\n- - - - -')
   }
 
   if (!browser || !browser.isConnected()) {
@@ -106,9 +105,9 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     items = await getItemsFromDb(bot)
 
-    const vendors = vendorsObj.filter(vendor => activeVendors.includes(vendor.key))
+    const vendorsObjs = vendorsObj.filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
 
-    for (const vendor of vendors) {
+    for (const vendor of vendorsObjs) {
       logger.bold().log(`\n${vendor.name}`).joint().dim().log(` ${vendor.jsEnabled ? '(JS enabled)' : ''}`)
 
       const activeItems = items.filter(item =>
