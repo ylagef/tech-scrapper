@@ -2,18 +2,6 @@ const logger = require('node-color-log')
 
 exports.vendorsObj = [
   {
-    key: 'fnacquery',
-    name: 'Fnac query',
-    jsEnabled: false,
-    checkPrice: async ({ page }) => {
-      await page.waitForSelector('.Article-itemVisualImg')
-      const items = (await page.$$('article.Article-itemGroup')).length
-      const stock = (await page.$$('article.Article-itemGroup  .js-ProductBuy-add')).length
-
-      return `${items} products (${stock} stock)`
-    }
-  },
-  {
     key: 'carrefour',
     name: 'Carrefour',
     jsEnabled: false,
@@ -73,8 +61,21 @@ exports.vendorsObj = [
     name: 'Fnac',
     jsEnabled: false,
     checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '.f-productVisuals__mainMedia.js-ProductVisuals-imagePreview', false)) return 'CAPTCHA' // Check if captcha
       const stock = (await page.$$('.f-priceBox-price')).length > 0
       return stock ? (await page.textContent('.f-priceBox-price')).replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
+    }
+  },
+  {
+    key: 'fnacquery',
+    name: 'Fnac query',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '.Article-itemVisualImg', false)) return 'CAPTCHA' // Check if captcha
+      const items = (await page.$$('article.Article-itemGroup')).length
+      const stock = (await page.$$('article.Article-itemGroup  .js-ProductBuy-add')).length
+
+      return `${items} products (${stock} stock)`
     }
   },
   {
@@ -225,7 +226,7 @@ const checkCaptcha = async (page, element, has) => {
   const captcha = (await page.$$(element)).length
 
   if (has ? captcha > 0 : captcha === 0) {
-    logger.bgColor('red').color('black').log('\t\t\tCaptcha detected! ☠️\t')
+    logger.bgColor('red').color('black').log(' Captcha detected! ☠️ ')
     return true
   }
 
