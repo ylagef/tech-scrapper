@@ -1,15 +1,14 @@
-const { SERVERID, CHATID } = process.env
+const { SERVERID, CHATID, PRIVATEKEY, CLIENTEMAIL } = process.env
 
 const logger = require('node-color-log')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
-const creds = require('../client_secret.json')
 const md5 = require('md5-nodejs')
 
 const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
 
 exports.initializeDb = async (bot) => {
   try {
-    await doc.useServiceAccountAuth(creds)
+    await doc.useServiceAccountAuth({ client_email: CLIENTEMAIL, private_key: PRIVATEKEY })
     await doc.loadInfo()
   } catch (err) {
     logger.color('black').bgColor('red').log('Error on initialize db', err.message)
