@@ -18,13 +18,48 @@ const chatId = 133337935
 
 if (process.env.LISTENBOT === '1') {
   bot.on('polling_error', async (error) => {
-    console.error(error)
-    await bot.sendMessage(chatId, 'Err on polling')
+    logger.bgColor('red').color('black').log(error)
+    await bot.sendMessage(chatId, `Err on polling ${error.message}`)
   })
 
-  bot.onText(/\/alive/, async () => {
-    await bot.sendMessage(chatId, `Yas! (${process.env.SERVER || 'NONE'})`)
+  bot.on('callback_query', async (callbackQuery) => {
+    const action = callbackQuery.data
+    // const msg = callbackQuery.message
+    if (action.startsWith('new_')) {
+      try {
+        const newItem = { active: true }
+
+        const vendor = action.split('_')[1]
+        const nameMessage = await bot.sendMessage(chatId, 'Article name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the article' } })
+        console.log(`MESSAGE ID ${nameMessage.message_id}`)
+
+        bot.onReplyToMessage(chatId, nameMessage.message_id, async (msg) => {
+          const name = msg.text
+          newItem.name = name
+
+          const urlMessage = await bot.sendMessage(chatId, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the article' } })
+
+          bot.onReplyToMessage(chatId, urlMessage.message_id, async (msg) => {
+            const url = msg.text
+
+            newItem.url = url
+            newItem.vendor = vendor
+            newItem.key = md5(`${vendor}${name}${url}`)
+            newItem.date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+
+            await addRow(newItem)
+
+            logger.bgColor('green').color('black').log(` ${name} was added! 💪🏼 `)
+            await bot.sendMessage(chatId, `${name} was added!`)
+          })
+        })
+      } catch (err) {
+        logger.bgColor('red').color('black').log('Error on add new', err.message)
+        await bot.sendMessage(chatId, 'Error on add new')
+      }
+    }
   })
+
   bot.onText(/\/lastscrap/, async () => {
     try {
       const last = await getLastScrap()
@@ -65,43 +100,6 @@ if (process.env.LISTENBOT === '1') {
       await bot.sendMessage(chatId, 'Error on add new (select vendor)')
     }
   })
-  bot.on('callback_query', async (callbackQuery) => {
-    const action = callbackQuery.data
-    // const msg = callbackQuery.message
-    if (action.startsWith('new_')) {
-      try {
-        const newItem = { active: true }
-
-        const vendor = action.split('_')[1]
-        const nameMessage = await bot.sendMessage(chatId, 'Article name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the article' } })
-        console.log(`MESSAGE ID ${nameMessage.message_id}`)
-
-        bot.onReplyToMessage(chatId, nameMessage.message_id, async (msg) => {
-          const name = msg.text
-          newItem.name = name
-
-          const urlMessage = await bot.sendMessage(chatId, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the article' } })
-
-          bot.onReplyToMessage(chatId, urlMessage.message_id, async (msg) => {
-            const url = msg.text
-
-            newItem.url = url
-            newItem.vendor = vendor
-            newItem.key = md5(`${vendor}${name}${url}`)
-            newItem.date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-
-            await addRow(newItem)
-
-            logger.bgColor('green').color('black').log(` ${name} was added! 💪🏼 `)
-            await bot.sendMessage(chatId, `${name} was added!`)
-          })
-        })
-      } catch (err) {
-        logger.bgColor('red').color('black').log('Error on add new', err.message)
-        await bot.sendMessage(chatId, 'Error on add new')
-      }
-    }
-  })
 }
 
 const activeVendors = process.env.ACTIVEVENDORS.split(',')
@@ -114,8 +112,15 @@ let browser = null
   const startDate = new Date()
   console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
 
-  if (!browser) {
+  if (!browser || !browser.isConnected()) {
     browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
+    await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
+    logger.dim().log('Browser launched')
+
+    browser.on('disconnected', async () => {
+      logger.bgColor('red').color('black').log(' ⚠️  Browser disconected ')
+      await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
+    })
   }
   if (!articles) {
     await initializeDb()
@@ -220,5 +225,5 @@ let browser = null
 })()
 
 setInterval(async () => {
-  await bot.sendMessage(chatId, `Still alive! 🤘🏼 (${process.env.SERVER || 'NONE'})`)
+  await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Still alive! 🤘🏼 `, { parse_mode: 'HTML' })
 }, 2 * 60 * 60 * 1000) // 2 hours
