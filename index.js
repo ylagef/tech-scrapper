@@ -1,20 +1,16 @@
-const md5 = require('md5-nodejs')
-
 process.env.NTBA_FIX_350 = 1 // Disable telegram bot deprecation message
-require('dotenv').config()
 
+require('dotenv').config()
+const md5 = require('md5-nodejs')
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
-
 const { firefox } = require('playwright')
-
-const { initializeDb, getArticlesFromDb, updateCells, addRow, updateLastScrap, getLastScrap } = require('./db/utils.js')
-
 const { vendorsObj } = require('./vendorsObj')
+const { initializeDb, getArticlesFromDb, updateCells, addRow, updateLastScrap, getLastScrap } = require('./db/utils.js')
 
 const token = '2116509217:AAHb4ahdyClWddAzENE5WY4qR6Fkp9qlDjk'
 const bot = new TelegramBot(token, { polling: process.env.LISTENBOT === '1' })
-const chatId = 133337935
+const chatId = process.env.CHATID
 
 if (process.env.LISTENBOT === '1') {
   bot.on('polling_error', async (error) => {
