@@ -223,7 +223,3 @@ let browser = null
     scrap()
   }, 30 * 1000)
 })()
-
-setInterval(async () => {
-  await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Still alive! 🤘🏼 `, { parse_mode: 'HTML' })
-}, 2 * 60 * 60 * 1000) // 2 hours
