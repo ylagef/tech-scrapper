@@ -2,12 +2,20 @@ const logger = require('node-color-log')
 
 exports.vendorsObj = [
   {
+    key: 'wortenquery',
+    name: 'Worten query',
+    jsEnabled: true,
+    checkPrice: async ({ page }) => {
+      await page.waitForSelector('figure > img')
+      const items = (await page.$$('.w-product__wrapper')).length
+      return `${items} products`
+    }
+  },
+  {
     key: 'carrefour',
     name: 'Carrefour',
     jsEnabled: false,
     checkPrice: async ({ page }) => {
-      // if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
-
       const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
       return stock ? ((await page.textContent('.buybox__price--current'))?.replaceAll('.', '').replaceAll(' ', '')) : 'NO STOCK'
     }

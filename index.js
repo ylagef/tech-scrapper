@@ -167,8 +167,8 @@ let browser = null
           }
 
           try {
-            await page.screenshot({ path: `screenshots/${key}_full.png`, fullPage: true })
-            image = await page.screenshot({ path: `screenshots/${key}.png` })
+            await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}_full.png`, fullPage: true })
+            image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
           } catch (err) {
             await bot.sendMessage(chatId, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
             logger.color('black').bgColor('red').log(` Err on screenshot (${err.message.split('=')[0].trim()}) `)
