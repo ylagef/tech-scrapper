@@ -109,24 +109,24 @@ logger.log('\n\n- - - - -')
 let articles = null
 let browser = null
   ; (async function scrap () {
-  const startDate = new Date()
-  console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
-
-  if (!browser || !browser.isConnected()) {
-    browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
-    await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
-    logger.dim().log('Browser launched')
-
-    browser.on('disconnected', async () => {
-      logger.bgColor('red').color('black').log(' ⚠️  Browser disconected ')
-      await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
-    })
-  }
-  if (!articles) {
-    await initializeDb()
-  }
-
   try {
+    const startDate = new Date()
+    console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
+
+    if (!browser || !browser.isConnected()) {
+      browser = await firefox.launch({ headless: process.env.HEADLESS !== 1 })
+      await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
+      logger.dim().log('Browser launched')
+
+      browser.on('disconnected', async () => {
+        logger.bgColor('red').color('black').log(' ⚠️  Browser disconected ')
+        await bot.sendMessage(chatId, `<b>(${process.env.SERVER || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
+      })
+    }
+    if (!articles) {
+      await initializeDb()
+    }
+
     articles = await getArticlesFromDb()
 
     const vendors = vendorsObj.filter(vendor => activeVendors.includes(vendor.key))
