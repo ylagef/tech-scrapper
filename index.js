@@ -165,8 +165,12 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   }, 30 * 1000) // 30s
 })()
 
-process.on('uncaughtException', async (err) => {
-  logger.color('black').bgColor('red').log(`CRITICAL error (${err.message}) `)
-  await bot.sendMessage(CHATID, `CRITICAL error (${err.message})`)
-  process.exit(1)
+;['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM'].forEach((eventType) => {
+  process.on(eventType, async (ev) => {
+    process.stdin.resume()
+
+    await bot.sendMessage(CHATID, ` ! EXIT (${ev})`)
+    logger.color('black').bgColor('red').log(` ! EXIT (${ev}) `)
+    process.exit(99)
+  })
 })
