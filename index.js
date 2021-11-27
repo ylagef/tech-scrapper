@@ -165,7 +165,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   }, 30 * 1000) // 30s
 })()
 
-;['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM'].forEach((eventType) => {
+;['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM', 'SIGKILL'].forEach((eventType) => {
   process.on(eventType, async (ev) => {
     process.stdin.resume()
 
