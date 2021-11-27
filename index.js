@@ -106,7 +106,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     await scrapInitialization()
 
-    const vendors = vendorsObj.filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
+    const vendors = vendorsObj.sort((a, b) => a.key < b.key ? -1 : (a.key > b.key ? 1 : 0)).filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
 
     for (const vendor of vendors) {
       logger.bold().log(`\n${vendor.name}`).joint().dim().log(` ${vendor.jsEnabled ? '(JS enabled)' : ''}`)

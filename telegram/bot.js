@@ -77,7 +77,7 @@ exports.initializeBotListeners = async () => {
       const message = vendors.map(vendor => {
         let vendorMessage = `<b>${vendorsObj.find(vendorObj => vendorObj.key === vendor.key).name}</b>\n`
         vendorMessage += items
-          .sort((a, b) => a.vendor > b.vendor)
+          .sort((a, b) => a.key < b.key ? -1 : (a.vendor > b.vendor ? 1 : 0))
           .filter(item => item.vendor === vendor.key)
           .map(item =>
             `         ${item.name} · <a href="${item.url}">${item.price}</a>`

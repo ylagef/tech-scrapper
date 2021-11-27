@@ -34,6 +34,17 @@ exports.vendorsObj = [
     }
   },
   {
+    key: 'ardistel',
+    name: 'Ardistel',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      const price = ((await page.textContent("[style='font-size:28px;color:#EC7306;']"))?.replaceAll(' ', ''))
+      const stock = (await page.$$('#sistock')).length > 0 ? '' : '(NO STOCK)'
+
+      return `${price} ${stock}`
+    }
+  },
+  {
     key: 'ardistelquery',
     name: 'Ardistel query',
     jsEnabled: false,
