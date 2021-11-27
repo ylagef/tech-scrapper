@@ -13,6 +13,9 @@ exports.bot = bot
 exports.initializeBotListeners = async () => {
   logger.dim().log('\nInitializing bot listeners...')
 
+  const allVendors = await (await getVendorsFromDB()).allVendors
+  console.log(allVendors, allVendors)
+
   const listenForUrl = ({ urlMessageId, newItem, vendor, name }) => {
     logger.bgColor('cyan').color('black').log(`Listening for url ${urlMessageId}`)
 
