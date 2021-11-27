@@ -75,6 +75,16 @@ exports.initializeBotListeners = async () => {
       }
     })
 
+    bot.onText(/\/restart/, async () => {
+      try {
+        logger.bgColor('cyan').color('black').log(' Asked for restart ')
+
+        process.exit()
+      } catch (err) {
+        logger.bgColor('red').color('black').log('Error on restart', err.message)
+        await bot.sendMessage(CHATID, 'Error on restart')
+      }
+    })
     bot.onText(/\/lastscrap/, async () => {
       try {
         logger.bgColor('cyan').color('black').log(' Asked for last scrap ')

@@ -1,11 +1,12 @@
 {
   "name": "tech-scrapper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Tech scrapper",
   "main": "index.js",
   "scripts": {
-    "start": "forever start -a -o ./forever/out.log -e ./forever/err.log --minUptime 5000 --spinSleepTime 5000 index.js",
+    "start": "forever start ./forever/config.json",
     "stop": "forever stopall",
+    "forever-logs": "forever logs index.js -f",
 
     "logs": "tail -f forever/out.log",
     "errors": "tail -f forever/err.log",

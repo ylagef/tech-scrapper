@@ -1,0 +1,6 @@
+{
+    "append": true,
+    "script": "index.js",
+    "outFile": "./forever/out.log",
+    "errFile": "./forever/err.log"
+}
