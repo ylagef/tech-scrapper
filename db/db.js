@@ -18,7 +18,7 @@ exports.initializeDb = async (bot) => {
 }
 
 exports.getVendorsFromDB = async (bot) => {
-  logger.dim().log('\nGetting vendors ...')
+  logger.dim().log('\nGetting vendors...')
   const vendors = []
 
   try {

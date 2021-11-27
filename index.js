@@ -7,7 +7,7 @@ const logger = require('node-color-log')
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
 const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
-const { bot } = require('./telegram/bot')
+const { bot, initializeBotListeners } = require('./telegram/bot')
 const { getTimeString } = require('./utils')
 
 let items = null
@@ -18,6 +18,7 @@ let activeVendors = null
 const scrapInitialization = async () => {
   if (!items) {
     await initializeDb(bot)
+    await initializeBotListeners()
   }
 
   activeVendors = (await getVendorsFromDB()).activeVendors
@@ -60,7 +61,7 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
 
 const handleScreenshot = async ({ page, vendor, item, image }) => {
   try {
-    await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}_full.png`, fullPage: true })
+    await page.screenshot({ path: `screenshots/full/${vendor.name}_${item.name}_full.png`, fullPage: true })
     image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
   } catch (err) {
     await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
@@ -163,3 +164,9 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     scrap()
   }, 30 * 1000) // 30s
 })()
+
+process.on('uncaughtException', async (err) => {
+  logger.color('black').bgColor('red').log(`CRITICAL error (${err.message}) `)
+  await bot.sendMessage(CHATID, `CRITICAL error (${err.message})`)
+  process.exit(1)
+})
