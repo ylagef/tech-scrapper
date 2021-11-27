@@ -6,8 +6,9 @@ const md5 = require('md5-nodejs')
 const logger = require('node-color-log')
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
-const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/utils.js')
+const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
 const { bot } = require('./telegram/bot')
+const { getTimeString } = require('./utils')
 
 let items = null
 let browser = null
@@ -77,8 +78,8 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     } => ${price}\n<a href='${item.url}'>LINK</a>`
   await bot.sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
 
-  const date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
-  if (item) {
+  const date = `${(new Date()).toDateString()} ${getTimeString()}`
+  if (item && price !== 'CAPTCHA') {
     item.price = price
     item.date = date
     await updatePrice(bot, item)
@@ -100,7 +101,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   ; (async function scrap () {
   try {
     const startDate = new Date()
-    console.log(`\n🔎 START SCRAPPING... (${startDate.toLocaleTimeString()})`)
+    console.log(`\n🔎 START SCRAPPING... (${getTimeString(startDate)})`)
 
     await scrapInitialization()
 
@@ -149,7 +150,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     const endDate = new Date()
     const totalSeconds = (new Date(endDate.getTime() - startDate.getTime())).getSeconds()
-    console.log(`\n\n🏁 SCRAP FINISHED (${endDate.toLocaleTimeString()}) - ${totalSeconds}s\n\n- - - - - - -`)
+    console.log(`\n\n🏁 SCRAP FINISHED (${getTimeString(endDate)}) - ${totalSeconds}s\n\n- - - - - - -`)
 
     await updateLastScrap({ bot, endDate, totalSeconds })
   } catch (err) {

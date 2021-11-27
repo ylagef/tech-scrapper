@@ -3,6 +3,7 @@ const { SERVERID, CHATID, PRIVATEKEY, CLIENTEMAIL } = process.env
 const logger = require('node-color-log')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const md5 = require('md5-nodejs')
+const { getTimeString } = require('../utils')
 
 const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
 
@@ -37,8 +38,8 @@ exports.getVendorsFromDB = async (bot) => {
     logger.dim().log('Get vendors ok')
     return { allVendors, activeVendors }
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on DB read', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`, { parse_mode: 'HTML' })
+    logger.color('black').bgColor('red').log('Error on get vendors', err.message)
+    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on get vendors (${err.message})`, { parse_mode: 'HTML' })
   }
 }
 
@@ -90,7 +91,7 @@ exports.updatePrice = async (bot, item) => {
     const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
     const priceCell = sheet.getCellByA1('E' + item.cells.split(':')[1].slice(1))
 
-    dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+    dateCell.value = `${(new Date()).toDateString()} ${getTimeString()}`
     priceCell.value = item.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
@@ -107,7 +108,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
     const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
     const keyCell = sheet.getCellByA1('B' + item.cells.split(':')[1].slice(1))
 
-    dateCell.value = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+    dateCell.value = `${(new Date()).toDateString()} ${getTimeString()}`
     keyCell.value = md5(`${vendor.key}${item.name}${item.url}`)
     await sheet.saveCells([dateCell, keyCell])
   } catch (err) {
@@ -126,7 +127,7 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     const dateCell = sheet.getCellByA1(dateA1)
     const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
-    dateCell.value = `${(endDate).toLocaleTimeString()}`
+    dateCell.value = `${getTimeString(endDate)}`
     ellapsedCell.value = `${totalSeconds}s`
     await sheet.saveCells([dateCell, ellapsedCell])
   } catch (err) {

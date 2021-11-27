@@ -2,9 +2,10 @@ const { CHATID, LISTENBOT, BOTTOKEN } = process.env
 
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
-const { addRow, getLastScrap, getVendorsFromDB } = require('../db/utils.js')
+const { addRow, getLastScrap, getVendorsFromDB } = require('../db/db.js')
 const md5 = require('md5-nodejs')
 const { vendorsObj } = require('../vendors/vendorsObj')
+const { getTimeString } = require('../utils.js')
 
 const bot = new TelegramBot(BOTTOKEN, { polling: LISTENBOT === '1' })
 exports.bot = bot
@@ -18,7 +19,7 @@ const listenForUrl = ({ urlMessageId, newItem, vendor, name }) => {
     newItem.url = url
     newItem.vendor = vendor
     newItem.key = md5(`${vendor}${name}${url}`)
-    newItem.date = `${(new Date()).toDateString()} ${(new Date()).toLocaleTimeString()}`
+    newItem.date = `${(new Date()).toDateString()} ${getTimeString()}`
 
     await addRow(bot, newItem)
 
