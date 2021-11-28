@@ -155,7 +155,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     }
 
     const endDate = new Date()
-    const totalSeconds = (new Date(endDate.getTime() - startDate.getTime())).getSeconds()
+    const totalSeconds = Math.ceil((endDate - startDate) / 1000)
     logs.log(`\n\n🏁 SCRAP FINISHED (${getTimeString(endDate)}) - ${totalSeconds}s\n\n- - - - - - -`)
 
     await updateLastScrap({ bot, endDate, totalSeconds })
