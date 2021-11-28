@@ -2,12 +2,12 @@ const { CHATID, LISTENBOT, BOTTOKEN } = process.env
 
 const TelegramBot = require('node-telegram-bot-api')
 const logger = require('node-color-log')
-const { addRow, getLastScrap, getVendorsFromDB, getItemsFromDb } = require('../db/db.js')
+const { addRow, getLastScrap, getVendorsFromDB, getItemsFromDb, updateVendor } = require('../db/db.js')
 const md5 = require('md5-nodejs')
 const { vendorsObj } = require('../vendors/vendorsObj')
 const { getTimeString } = require('../utils.js')
 
-const bot = new TelegramBot(BOTTOKEN, { polling: LISTENBOT === '1' })
+const bot = new TelegramBot(BOTTOKEN, { polling: LISTENBOT === '1', request: { family: 4 } })
 exports.bot = bot
 
 exports.initializeBotListeners = async () => {
@@ -92,10 +92,52 @@ exports.initializeBotListeners = async () => {
     }
   }
 
+  const handleUpdateVendor = async ({ action }) => {
+    try {
+      const selectedVendor = action.split('_')[2]
+
+      logger.bgColor('cyan').color('black').log(` Selected ${selectedVendor} `)
+
+      const keyboard = [
+        [{ text: 'Enable', callback_data: `update_vendor_enable_${selectedVendor}` }],
+        [{ text: 'Disable', callback_data: `update_vendor_disable_${selectedVendor}` }]
+      ]
+      const opts = {
+        reply_markup: {
+          inline_keyboard: keyboard
+        }
+      }
+
+      await bot.sendMessage(CHATID, `What do you want to do with ${selectedVendor}?`, opts)
+    } catch (err) {
+      logger.bgColor('red').color('black').log('Error on add new', err.message)
+      await bot.sendMessage(CHATID, 'Error on add new')
+    }
+  }
+
+  const handleUpdateVendorEnableDisable = async ({ action }) => {
+    try {
+      const state = action.split('_')[2]
+      const vendor = action.split('_')[3]
+
+      logger.bgColor('cyan').color('black').log(` Selected ${state} `)
+
+      await updateVendor({ bot, state, vendor })
+      await bot.sendMessage(CHATID, `${vendor} is now ${state}d`)
+    } catch (err) {
+      logger.bgColor('red').color('black').log('Error on add new', err.message)
+      await bot.sendMessage(CHATID, 'Error on add new')
+    }
+  }
+
   if (LISTENBOT === '1') {
     bot.on('polling_error', async (error) => {
-      logger.bgColor('red').color('black').log(error)
+      logger.bgColor('red').color('black').log(`Err on polling ${error.message}`)
       await bot.sendMessage(CHATID, `Err on polling ${error.message}`)
+    })
+    bot.on('webhook_error', async (error) => {
+      logger.bgColor('red').color('black').log(`Err on webhook ${error.message}`)
+      await bot.sendMessage(CHATID, `Err on webhook ${error.message}`)
     })
 
     bot.on('callback_query', async (callbackQuery) => {
@@ -105,6 +147,10 @@ exports.initializeBotListeners = async () => {
         await handleNew({ action })
       } else if (action.startsWith('prices_')) {
         await handlePrices({ action })
+      } else if (action.startsWith('update_vendor_enable') || action.startsWith('update_vendor_disable')) {
+        await handleUpdateVendorEnableDisable({ action })
+      } else if (action.startsWith('update_vendor')) {
+        await handleUpdateVendor({ action })
       }
     })
 
@@ -152,6 +198,24 @@ exports.initializeBotListeners = async () => {
         logger.bgColor('cyan').color('black').log(' Prices requested... ')
 
         const keyboard = await getVendorsKeyboard({ key: 'prices', allOption: true })
+
+        const opts = {
+          reply_markup: {
+            inline_keyboard: keyboard
+          }
+        }
+
+        await bot.sendMessage(CHATID, 'Select the vendor', opts)
+      } catch (err) {
+        logger.bgColor('red').color('black').log('Error on prices (select vendor)', err.message)
+        await bot.sendMessage(CHATID, 'Error on prices (select vendor)')
+      }
+    })
+    bot.onText(/\/updatevendor/, async () => {
+      try {
+        logger.bgColor('cyan').color('black').log(' Prices requested... ')
+
+        const keyboard = await getVendorsKeyboard({ key: 'update_vendor' })
 
         const opts = {
           reply_markup: {

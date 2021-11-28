@@ -169,8 +169,8 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   process.on(eventType, async (ev) => {
     process.stdin.resume()
 
-    await bot.sendMessage(CHATID, ` ! EXIT (${ev})`)
-    logger.color('black').bgColor('red').log(` ! EXIT (${ev}) `)
+    await bot.sendMessage(CHATID, ` CRITICAL (${ev})`)
+    logger.color('black').bgColor('red').log(` CRITICAL (${ev}) `)
     process.exit(99)
   })
 })

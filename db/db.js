@@ -150,3 +150,25 @@ exports.getLastScrap = async (bot) => {
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on get last scrap (${err.message})`, { parse_mode: 'HTML' })
   }
 }
+
+exports.updateVendor = async ({ bot, state, vendor }) => {
+  try {
+    const sheet = doc.sheetsByTitle.vendors
+    const rows = await sheet.getRows()
+
+    const cellsA1 = rows.find(row => row._rawData[0] === vendor).a1Range
+    await sheet.loadCells(cellsA1.split('!')[1])
+
+    console.log(cellsA1)
+    const cellA1 = (SERVERID === 'PC' ? 'B' : 'C') + cellsA1.split('!')[1].split(':')[0].slice(1)
+    console.log(cellA1)
+    const cell = sheet.getCellByA1(cellA1)
+    console.log(cell.value)
+
+    cell.value = state === 'enable'
+    await sheet.saveCells([cell])
+  } catch (err) {
+    logger.color('black').bgColor('red').log('Error on update last scrap', err.message)
+    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`, { parse_mode: 'HTML' })
+  }
+}
