@@ -1,20 +1,20 @@
 const { CHATID, LISTENBOT, BOTTOKEN } = process.env
 
 const TelegramBot = require('node-telegram-bot-api')
-const logger = require('node-color-log')
 const { addRow, getLastScrap, getVendorsFromDB, getItemsFromDb, updateVendor } = require('../db/db.js')
 const md5 = require('md5-nodejs')
 const { vendorsObj } = require('../vendors/vendorsObj')
 const { getTimeString } = require('../utils.js')
+const { logs } = require('../log/logs.js')
 
 const bot = new TelegramBot(BOTTOKEN, { polling: LISTENBOT === '1', request: { family: 4 } })
 exports.bot = bot
 
 exports.initializeBotListeners = async () => {
-  logger.dim().log('\nInitializing bot listeners...')
+  logs.dim('\nInitializing bot listeners...')
 
   const listenForUrl = ({ urlMessageId, newItem, vendor, name }) => {
-    logger.bgColor('cyan').color('black').log(`Listening for url ${urlMessageId}`)
+    logs.info(`Listening for url ${urlMessageId}`)
 
     bot.onReplyToMessage(CHATID, urlMessageId, async (msg) => {
       const url = msg.text
@@ -26,28 +26,28 @@ exports.initializeBotListeners = async () => {
 
       await addRow(bot, newItem)
 
-      logger.bgColor('green').color('black').log(` ${name} was added! 💪🏼 `)
+      logs.success(` ${name} was added! 💪🏼 `)
       await bot.sendMessage(CHATID, `${name} was added!`)
     })
   }
 
   const listenForName = ({ nameMessageId, newItem, vendor }) => {
-    logger.bgColor('cyan').color('black').log(` Listening for name ${nameMessageId} `)
+    logs.info(` Listening for name ${nameMessageId} `)
 
     let id = null
     id = bot.onReplyToMessage(CHATID, nameMessageId, async (msg) => { // TODO here!
       bot.removeReplyListener(id) // Clear listener
 
-      logger.bgColor('cyan').color('black').log(' ?? ')
+      logs.info(' ?? ')
       const name = msg.text
       newItem.name = name
-      logger.bgColor('cyan').color('black').log(` NAME ${name} `)
+      logs.info(` NAME ${name} `)
       const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the item' } })
 
       listenForUrl({ urlMessageId: urlMessage.message_id, newItem, vendor, name })
     })
 
-    logger.bgColor('cyan').color('black').log(` Listener id ${id} `)
+    logs.info(` Listener id ${id} `)
   }
 
   const handleNew = async ({ action }) => {
@@ -55,12 +55,12 @@ exports.initializeBotListeners = async () => {
       const newItem = { active: true }
 
       const vendor = action.split('_')[1]
-      logger.bgColor('cyan').color('black').log(` Selected ${vendor} `)
+      logs.info(` Selected ${vendor} `)
       const nameMessage = await bot.sendMessage(CHATID, 'Item name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the item' } })
 
       listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
     } catch (err) {
-      logger.bgColor('red').color('black').log('Error on add new', err.message)
+      logs.error('Error on add new', err.message)
       await bot.sendMessage(CHATID, 'Error on add new')
     }
   }
@@ -69,7 +69,7 @@ exports.initializeBotListeners = async () => {
     try {
       const selectedVendor = action.split('_')[1]
 
-      logger.bgColor('cyan').color('black').log(` Selected ${selectedVendor} `)
+      logs.info(` Selected ${selectedVendor} `)
 
       const items = await getItemsFromDb(bot)
       const vendors = (await getVendorsFromDB(bot)).allVendors.filter(vendor => selectedVendor !== 'all' ? vendor.key === selectedVendor : true)
@@ -87,7 +87,7 @@ exports.initializeBotListeners = async () => {
 
       await bot.sendMessage(CHATID, message, { parse_mode: 'HTML', disable_web_page_preview: true })
     } catch (err) {
-      logger.bgColor('red').color('black').log('Error on add new', err.message)
+      logs.error('Error on add new', err.message)
       await bot.sendMessage(CHATID, 'Error on add new')
     }
   }
@@ -96,7 +96,7 @@ exports.initializeBotListeners = async () => {
     try {
       const selectedVendor = action.split('_')[2]
 
-      logger.bgColor('cyan').color('black').log(` Selected ${selectedVendor} `)
+      logs.info(` Selected ${selectedVendor} `)
 
       const keyboard = [
         [{ text: 'Enable', callback_data: `update_vendor_enable_${selectedVendor}` }],
@@ -110,7 +110,7 @@ exports.initializeBotListeners = async () => {
 
       await bot.sendMessage(CHATID, `What do you want to do with ${selectedVendor}?`, opts)
     } catch (err) {
-      logger.bgColor('red').color('black').log('Error on add new', err.message)
+      logs.error('Error on add new', err.message)
       await bot.sendMessage(CHATID, 'Error on add new')
     }
   }
@@ -120,23 +120,23 @@ exports.initializeBotListeners = async () => {
       const state = action.split('_')[2]
       const vendor = action.split('_')[3]
 
-      logger.bgColor('cyan').color('black').log(` Selected ${state} `)
+      logs.info(` Selected ${state} `)
 
       await updateVendor({ bot, state, vendor })
       await bot.sendMessage(CHATID, `${vendor} is now ${state}d`)
     } catch (err) {
-      logger.bgColor('red').color('black').log('Error on add new', err.message)
+      logs.error('Error on add new', err.message)
       await bot.sendMessage(CHATID, 'Error on add new')
     }
   }
 
   if (LISTENBOT === '1') {
     bot.on('polling_error', async (error) => {
-      logger.bgColor('red').color('black').log(`Err on polling ${error.message}`)
+      logs.error(`Err on polling ${error.message}`)
       await bot.sendMessage(CHATID, `Err on polling ${error.message}`)
     })
     bot.on('webhook_error', async (error) => {
-      logger.bgColor('red').color('black').log(`Err on webhook ${error.message}`)
+      logs.error(`Err on webhook ${error.message}`)
       await bot.sendMessage(CHATID, `Err on webhook ${error.message}`)
     })
 
@@ -156,28 +156,28 @@ exports.initializeBotListeners = async () => {
 
     bot.onText(/\/restart/, async () => {
       try {
-        logger.bgColor('cyan').color('black').log(' Asked for restart ')
+        logs.info(' Asked for restart ')
 
         process.exit()
       } catch (err) {
-        logger.bgColor('red').color('black').log('Error on restart', err.message)
+        logs.error('Error on restart', err.message)
         await bot.sendMessage(CHATID, 'Error on restart')
       }
     })
     bot.onText(/\/lastscrap/, async () => {
       try {
-        logger.bgColor('cyan').color('black').log(' Asked for last scrap ')
+        logs.info(' Asked for last scrap ')
 
         const last = await getLastScrap(bot)
         await bot.sendMessage(CHATID, `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`, { parse_mode: 'HTML' })
       } catch (err) {
-        logger.bgColor('red').color('black').log('Error on get last scrap', err.message)
+        logs.error('Error on get last scrap', err.message)
         await bot.sendMessage(CHATID, 'Error on get last scrap')
       }
     })
     bot.onText(/\/new/, async () => {
       try {
-        logger.bgColor('cyan').color('black').log(' New requested... ')
+        logs.info(' New requested... ')
 
         const keyboard = await getVendorsKeyboard({ key: 'new', filterActive: true })
 
@@ -189,13 +189,13 @@ exports.initializeBotListeners = async () => {
 
         await bot.sendMessage(CHATID, 'Select the vendor', opts)
       } catch (err) {
-        logger.bgColor('red').color('black').log('Error on add new (select vendor)', err.message)
+        logs.error('Error on add new (select vendor)', err.message)
         await bot.sendMessage(CHATID, 'Error on add new (select vendor)')
       }
     })
     bot.onText(/\/prices/, async () => {
       try {
-        logger.bgColor('cyan').color('black').log(' Prices requested... ')
+        logs.info(' Prices requested... ')
 
         const keyboard = await getVendorsKeyboard({ key: 'prices', allOption: true })
 
@@ -207,13 +207,13 @@ exports.initializeBotListeners = async () => {
 
         await bot.sendMessage(CHATID, 'Select the vendor', opts)
       } catch (err) {
-        logger.bgColor('red').color('black').log('Error on prices (select vendor)', err.message)
+        logs.error('Error on prices (select vendor)', err.message)
         await bot.sendMessage(CHATID, 'Error on prices (select vendor)')
       }
     })
     bot.onText(/\/updatevendor/, async () => {
       try {
-        logger.bgColor('cyan').color('black').log(' Prices requested... ')
+        logs.info(' Prices requested... ')
 
         const keyboard = await getVendorsKeyboard({ key: 'update_vendor' })
 
@@ -225,7 +225,7 @@ exports.initializeBotListeners = async () => {
 
         await bot.sendMessage(CHATID, 'Select the vendor', opts)
       } catch (err) {
-        logger.bgColor('red').color('black').log('Error on prices (select vendor)', err.message)
+        logs.error('Error on prices (select vendor)', err.message)
         await bot.sendMessage(CHATID, 'Error on prices (select vendor)')
       }
     })
@@ -260,7 +260,7 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
       }])
     }
   } catch (err) {
-    logger.bgColor('red').color('black').log('Error on get vendors keyboard', err.message)
+    logs.error('Error on get vendors keyboard', err.message)
   }
 
   return keyboard

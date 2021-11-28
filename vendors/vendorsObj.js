@@ -1,4 +1,4 @@
-const logger = require('node-color-log')
+const { logs } = require('../log/logs')
 
 exports.vendorsObj = [
   {
@@ -237,7 +237,7 @@ const checkCaptcha = async (page, element, has) => {
   const captcha = (await page.$$(element)).length
 
   if (has ? captcha > 0 : captcha === 0) {
-    logger.bgColor('red').color('black').log(' Captcha detected! ☠️ ')
+    logs.error(' Captcha detected! ☠️ ')
     return true
   }
 

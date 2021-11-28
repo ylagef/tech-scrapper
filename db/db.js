@@ -1,9 +1,9 @@
 const { SERVERID, CHATID, PRIVATEKEY, CLIENTEMAIL } = process.env
 
-const logger = require('node-color-log')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const md5 = require('md5-nodejs')
 const { getTimeString } = require('../utils')
+const { logs } = require('../log/logs')
 
 const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
 
@@ -12,13 +12,13 @@ exports.initializeDb = async (bot) => {
     await doc.useServiceAccountAuth({ client_email: CLIENTEMAIL, private_key: PRIVATEKEY })
     await doc.loadInfo()
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on initialize db', err.message)
+    logs.error('Error on initialize db', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on initialize db (${err.message})`, { parse_mode: 'HTML' })
   }
 }
 
 exports.getVendorsFromDB = async (bot) => {
-  logger.dim().log('\nGetting vendors...')
+  logs.dim('\nGetting vendors...')
   const vendors = []
 
   try {
@@ -35,16 +35,16 @@ exports.getVendorsFromDB = async (bot) => {
     const allVendors = vendors
     const activeVendors = vendors.filter(vendor => SERVERID === 'PC' ? vendor.pc === 'TRUE' : vendor.clouding === 'TRUE')
 
-    logger.dim().log('Get vendors ok')
+    logs.dim('Get vendors ok')
     return { allVendors, activeVendors }
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on get vendors', err.message)
+    logs.error('Error on get vendors', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on get vendors (${err.message})`, { parse_mode: 'HTML' })
   }
 }
 
 exports.getItemsFromDb = async (bot) => {
-  logger.dim().log('\nReading DB...')
+  logs.dim('\nReading DB...')
   const items = []
 
   try {
@@ -63,9 +63,9 @@ exports.getItemsFromDb = async (bot) => {
       })
     })
 
-    logger.dim().log('Read DB ok')
+    logs.dim('Read DB ok')
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on DB read', err.message)
+    logs.error('Error on DB read', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`, { parse_mode: 'HTML' })
   }
 
@@ -78,7 +78,7 @@ exports.addRow = async (bot, { key, date, vendor, name, price, active, url }) =>
     const row = await sheet.addRow([date, key, vendor, name, price, active, url])
     return row.a1Range.split('!')[1]
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on add row', err.message)
+    logs.error('Error on add row', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on add row (${err.message})`, { parse_mode: 'HTML' })
   }
 }
@@ -95,7 +95,7 @@ exports.updatePrice = async (bot, item) => {
     priceCell.value = item.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on update cells', err.message)
+    logs.error('Error on update cells', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`, { parse_mode: 'HTML' })
   }
 }
@@ -112,7 +112,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
     keyCell.value = md5(`${vendor.key}${item.name}${item.url}`)
     await sheet.saveCells([dateCell, keyCell])
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on update cells', err.message)
+    logs.error('Error on update cells', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`, { parse_mode: 'HTML' })
   }
 }
@@ -131,7 +131,7 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     ellapsedCell.value = `${totalSeconds}s`
     await sheet.saveCells([dateCell, ellapsedCell])
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on update last scrap', err.message)
+    logs.error('Error on update last scrap', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`, { parse_mode: 'HTML' })
   }
 }
@@ -146,7 +146,7 @@ exports.getLastScrap = async (bot) => {
 
     return { pc, clouding }
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on get last scrap', err.message)
+    logs.error('Error on get last scrap', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on get last scrap (${err.message})`, { parse_mode: 'HTML' })
   }
 }
@@ -168,7 +168,7 @@ exports.updateVendor = async ({ bot, state, vendor }) => {
     cell.value = state === 'enable'
     await sheet.saveCells([cell])
   } catch (err) {
-    logger.color('black').bgColor('red').log('Error on update last scrap', err.message)
+    logs.error('Error on update last scrap', err.message)
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`, { parse_mode: 'HTML' })
   }
 }

@@ -8,7 +8,7 @@ const { vendorsObj } = require('./vendors/vendorsObj')
 const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
 const { bot, initializeBotListeners } = require('./telegram/bot')
 const { getTimeString } = require('./utils')
-const { logs } = require('./log/log')
+const { logs } = require('./log/logs')
 
 let items = null
 let browser = null
