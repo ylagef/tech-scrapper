@@ -3,12 +3,12 @@ const { CHATID, HEADLESS, SERVERID } = process.env
 
 const md5 = require('md5-nodejs')
 
-const logger = require('node-color-log')
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
 const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
 const { bot, initializeBotListeners } = require('./telegram/bot')
 const { getTimeString } = require('./utils')
+const { logs } = require('./log/log')
 
 let items = null
 let browser = null
@@ -24,15 +24,15 @@ const scrapInitialization = async () => {
   activeVendors = (await getVendorsFromDB()).activeVendors
 
   if (!browser || !browser.isConnected()) {
-    logger.dim().log(`\n\n${activeVendors.map(vendor => vendor.key).join(' | ')}`)
-    logger.log('\n\n- - - - -')
+    logs.dim(`\n\n${activeVendors.map(vendor => vendor.key).join(' | ')}`)
+    logs.log('\n\n- - - - -')
 
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
     await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
-    logger.dim().log('\nBrowser launched')
+    logs.dim('\nBrowser launched')
 
     browser.on('disconnected', async () => {
-      logger.bgColor('red').color('black').log('\n ⚠️  Browser disconected ')
+      logs.error('\n ⚠️  Browser disconected ')
       await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
     })
   }
@@ -42,7 +42,7 @@ const scrapInitialization = async () => {
 
 const checkItem = async ({ item, vendor }) => {
   if (!item.key) {
-    logger.color('black').bgColor('green').log(` NEW ITEM FOUND ${item.name} `)
+    logs.success(`NEW ITEM FOUND ${item.name}`)
     await updateKey({ bot, item, vendor })
   }
 }
@@ -51,10 +51,10 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
   try {
     await page.goto(item.url, { waitUntil: 'load' })
     price = (await vendor.checkPrice({ context, page }))
-    console.log(`\t${item.name} · ${price}`)
+    logs.log(`\t${item.name} · ${price}`)
   } catch (err) {
     await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`)
-    logger.color('black').bgColor('red').log(`${item.name} · (${err.message.split('=')[0].trim()}) `)
+    logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
   }
   return price
 }
@@ -65,15 +65,15 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
     image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
   } catch (err) {
     await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
-    logger.color('black').bgColor('red').log(` Err on screenshot (${err.message.split('=')[0].trim()}) `)
+    logs.error(`Err on screenshot (${err.message.split('=')[0].trim()})`)
   }
 
   return image
 }
 
 const handleUpdated = async ({ vendor, item, price, image, key }) => {
-  logger.color('black').bgColor('green').log(` UPDATED!! (prev ${item?.price || 'NONE'
-    }) 👀 `)
+  logs.success(`UPDATED!! (prev ${item?.price || 'NONE'
+    }) 👀`)
 
   const message = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'
     } => ${price}\n<a href='${item.url}'>LINK</a>`
@@ -102,14 +102,14 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   ; (async function scrap () {
   try {
     const startDate = new Date()
-    console.log(`\n🔎 START SCRAPPING... (${getTimeString(startDate)})`)
+    logs.log(`\n🔎 START SCRAPPING... (${getTimeString(startDate)})`)
 
     await scrapInitialization()
 
     const vendors = vendorsObj.sort((a, b) => a.key < b.key ? -1 : (a.key > b.key ? 1 : 0)).filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
 
     for (const vendor of vendors) {
-      logger.bold().log(`\n${vendor.name}`).joint().dim().log(` ${vendor.jsEnabled ? '(JS enabled)' : ''}`)
+      logs.bold(`\n${vendor.name}`).joint().dim().log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
 
       const activeItems = items.filter(item =>
         item.vendor === vendor.key
@@ -118,7 +118,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
       )
 
       if (activeItems.length === 0) {
-        logger.dim().log('\tNo active items')
+        logs.dim('\tNo active items')
       } else {
         for (const item of activeItems) {
           await checkItem({ item, vendor })
@@ -151,11 +151,11 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     const endDate = new Date()
     const totalSeconds = (new Date(endDate.getTime() - startDate.getTime())).getSeconds()
-    console.log(`\n\n🏁 SCRAP FINISHED (${getTimeString(endDate)}) - ${totalSeconds}s\n\n- - - - - - -`)
+    logs.log(`\n\n🏁 SCRAP FINISHED (${getTimeString(endDate)}) - ${totalSeconds}s\n\n- - - - - - -`)
 
     await updateLastScrap({ bot, endDate, totalSeconds })
   } catch (err) {
-    logger.color('black').bgColor('red').log(` ${err.message.split('=')[0].trim()} `)
+    logs.error(`${err.message.split('=')[0].trim()}`)
     await bot.sendMessage(CHATID, `Err on browser (${err.message.split('=')[0].trim()})`)
   }
 
@@ -169,8 +169,8 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   process.on(eventType, async (ev) => {
     process.stdin.resume()
 
-    await bot.sendMessage(CHATID, ` CRITICAL (${ev})`)
-    logger.color('black').bgColor('red').log(` CRITICAL (${ev}) `)
+    await bot.sendMessage(CHATID, `CRITICAL (${ev})`)
+    logs.error(`CRITICAL (${ev})`)
     process.exit(99)
   })
 })
