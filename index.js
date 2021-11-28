@@ -12,7 +12,6 @@ const { logs } = require('./log/logs')
 
 let items = null
 let browser = null
-// let allVendors = null
 let activeVendors = null
 
 const scrapInitialization = async () => {
@@ -28,12 +27,20 @@ const scrapInitialization = async () => {
     logs.log('\n\n- - - - -')
 
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser launched`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Browser launched`,
+       { parse_mode: 'HTML' }
+    )
     logs.dim('\nBrowser launched')
 
     browser.on('disconnected', async () => {
       logs.error('\n ⚠️  Browser disconected')
-      await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`, { parse_mode: 'HTML' })
+      await bot.sendMessage(
+        CHATID,
+         `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`,
+         { parse_mode: 'HTML' }
+      )
     })
   }
 
@@ -53,18 +60,28 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
     price = (await vendor.checkPrice({ context, page }))
     logs.log(`\t${item.name} · ${price}`)
   } catch (err) {
-    await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`)
+    await bot.sendMessage(
+      CHATID,
+      `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`
+    )
     logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
   }
+
   return price
 }
 
 const handleScreenshot = async ({ page, vendor, item, image }) => {
   try {
-    await page.screenshot({ path: `screenshots/full/${vendor.name}_${item.name}_full.png`, fullPage: true })
+    await page.screenshot({
+      path: `screenshots/full/${vendor.name}_${item.name}_full.png`,
+      fullPage: true
+    })
     image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
   } catch (err) {
-    await bot.sendMessage(CHATID, `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`)
+    await bot.sendMessage(
+      CHATID,
+      `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`
+    )
     logs.error(`Err on screenshot (${err.message.split('=')[0].trim()})`)
   }
 
@@ -75,8 +92,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   logs.success(`UPDATED!! (${item?.price || 'NONE'
     } => ${price}) 👀`)
 
-  const message = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'
-    } => ${price}\n<a href='${item.url}'>LINK</a>`
+  const message = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'} => ${price}\n<a href='${item.url}'>LINK</a>`
   await bot.sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
 
   if (item && price !== 'CAPTCHA') {
@@ -93,7 +109,9 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     await scrapInitialization()
 
-    const vendors = vendorsObj.sort((a, b) => a.key < b.key ? -1 : (a.key > b.key ? 1 : 0)).filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
+    const vendors = vendorsObj
+      .sort((a, b) => a.key < b.key ? -1 : (a.key > b.key ? 1 : 0))
+      .filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
 
     for (const vendor of vendors) {
       logs.bold(`\n${vendor.name}`).joint().dim().log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
@@ -143,7 +161,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     await updateLastScrap({ bot, endDate, totalSeconds })
   } catch (err) {
     logs.error(`${err.message.split('=')[0].trim()}`)
-    await bot.sendMessage(CHATID, `Err on browser (${err.message.split('=')[0].trim()})`)
+    await bot.sendMessage(CHATID, `Err on scrap (${err.message.split('=')[0].trim()})`)
   }
 
   setTimeout(() => {

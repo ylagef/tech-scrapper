@@ -33,13 +33,18 @@ exports.getVendorsFromDB = async (bot) => {
     })
 
     const allVendors = vendors
-    const activeVendors = vendors.filter(vendor => SERVERID === 'PC' ? vendor.pc === 'TRUE' : vendor.clouding === 'TRUE')
+    const activeVendors = vendors
+      .filter(vendor => SERVERID === 'PC' ? vendor.pc === 'TRUE' : vendor.clouding === 'TRUE')
 
     logs.dim('Get vendors ok')
     return { allVendors, activeVendors }
   } catch (err) {
     logs.error('Error on get vendors', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on get vendors (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on get vendors (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -66,7 +71,11 @@ exports.getItemsFromDb = async (bot) => {
     logs.dim('Read DB ok')
   } catch (err) {
     logs.error('Error on DB read', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
   }
 
   return items
@@ -79,7 +88,11 @@ exports.addRow = async (bot, { key, date, vendor, name, price, active, url }) =>
     return row.a1Range.split('!')[1]
   } catch (err) {
     logs.error('Error on add row', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on add row (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on add row (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -96,7 +109,11 @@ exports.updatePrice = async (bot, item) => {
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
     logs.error('Error on update cells', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -113,7 +130,11 @@ exports.updateKey = async ({ bot, item, vendor }) => {
     await sheet.saveCells([dateCell, keyCell])
   } catch (err) {
     logs.error('Error on update cells', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+      `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`,
+      { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -132,7 +153,11 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     await sheet.saveCells([dateCell, ellapsedCell])
   } catch (err) {
     logs.error('Error on update last scrap', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -147,7 +172,11 @@ exports.getLastScrap = async (bot) => {
     return { pc, clouding }
   } catch (err) {
     logs.error('Error on get last scrap', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on get last scrap (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+      `<b>(${SERVERID || 'NONE'})</b> · Error on get last scrap (${err.message})`,
+      { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -159,16 +188,17 @@ exports.updateVendor = async ({ bot, state, vendor }) => {
     const cellsA1 = rows.find(row => row._rawData[0] === vendor).a1Range
     await sheet.loadCells(cellsA1.split('!')[1])
 
-    console.log(cellsA1)
     const cellA1 = (SERVERID === 'PC' ? 'B' : 'C') + cellsA1.split('!')[1].split(':')[0].slice(1)
-    console.log(cellA1)
     const cell = sheet.getCellByA1(cellA1)
-    console.log(cell.value)
 
     cell.value = state === 'enable'
     await sheet.saveCells([cell])
   } catch (err) {
     logs.error('Error on update last scrap', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
   }
 }

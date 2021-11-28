@@ -34,10 +34,7 @@ exports.initializeBotListeners = async () => {
   const listenForName = ({ nameMessageId, newItem, vendor }) => {
     logs.info(`Listening for name ${nameMessageId}`)
 
-    let id = null
-    id = bot.onReplyToMessage(CHATID, nameMessageId, async (msg) => { // TODO here!
-      bot.removeReplyListener(id) // Clear listener
-
+    bot.onReplyToMessage(CHATID, nameMessageId, async (msg) => { // TODO here!
       const name = msg.text
       newItem.name = name
       logs.info(`NAME ${name}`)
@@ -45,8 +42,6 @@ exports.initializeBotListeners = async () => {
 
       listenForUrl({ urlMessageId: urlMessage.message_id, newItem, vendor, name })
     })
-
-    logs.info(`Listener id ${id}`)
   }
 
   const handleNew = async ({ action }) => {
@@ -55,7 +50,17 @@ exports.initializeBotListeners = async () => {
 
       const vendor = action.split('_')[1]
       logs.info(`Selected ${vendor}`)
-      const nameMessage = await bot.sendMessage(CHATID, 'Item name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the item' } })
+      const nameMessage = await bot.sendMessage(
+        CHATID,
+        'Item name?',
+        {
+          reply_markup:
+           {
+             force_reply: true,
+             input_field_placeholder: 'Name of the item'
+           }
+        }
+      )
 
       listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
     } catch (err) {
@@ -71,16 +76,17 @@ exports.initializeBotListeners = async () => {
       logs.info(`Selected ${selectedVendor}`)
 
       const items = await getItemsFromDb(bot)
-      const vendors = (await getVendorsFromDB(bot)).allVendors.filter(vendor => selectedVendor !== 'all' ? vendor.key === selectedVendor : true)
+      const vendors = (await getVendorsFromDB(bot))
+        .allVendors
+        .filter(vendor => selectedVendor !== 'all' ? vendor.key === selectedVendor : true)
 
       const message = vendors.map(vendor => {
         let vendorMessage = `<b>${vendorsObj.find(vendorObj => vendorObj.key === vendor.key).name}</b>\n`
         vendorMessage += items
           .sort((a, b) => a.key < b.key ? -1 : (a.vendor > b.vendor ? 1 : 0))
           .filter(item => item.vendor === vendor.key)
-          .map(item =>
-            `         ${item.name} · <a href="${item.url}">${item.price}</a>`
-          ).join('\n')
+          .map(item => `         ${item.name} · <a href="${item.url}">${item.price}</a>`)
+          .join('\n')
         return vendorMessage
       }).join('\n\n')
 
@@ -179,13 +185,11 @@ exports.initializeBotListeners = async () => {
 
     bot.onText(/\/new/, async () => {
       try {
-        logs.info('New requested...')
-
-        const keyboard = await getVendorsKeyboard({ key: 'new', filterActive: true })
+        logs.info('New requested')
 
         const opts = {
           reply_markup: {
-            inline_keyboard: keyboard
+            inline_keyboard: await getVendorsKeyboard({ key: 'new', filterActive: true })
           }
         }
 
@@ -198,13 +202,11 @@ exports.initializeBotListeners = async () => {
 
     bot.onText(/\/prices/, async () => {
       try {
-        logs.info('Prices requested...')
-
-        const keyboard = await getVendorsKeyboard({ key: 'prices', allOption: true })
+        logs.info('Prices requested')
 
         const opts = {
           reply_markup: {
-            inline_keyboard: keyboard
+            inline_keyboard: await getVendorsKeyboard({ key: 'prices', allOption: true })
           }
         }
 
@@ -217,13 +219,11 @@ exports.initializeBotListeners = async () => {
 
     bot.onText(/\/updatevendor/, async () => {
       try {
-        logs.info('Prices requested...')
-
-        const keyboard = await getVendorsKeyboard({ key: 'update_vendor' })
+        logs.info('Prices requested')
 
         const opts = {
           reply_markup: {
-            inline_keyboard: keyboard
+            inline_keyboard: await getVendorsKeyboard({ key: 'update_vendor' })
           }
         }
 
@@ -241,14 +241,19 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
 
   try {
     const vendors = (await getVendorsFromDB(bot))[filterActive ? 'activeVendors' : 'allVendors']
-    const vendorKeys = vendors.map(vendor => vendor.key).sort().map(vendor =>
-      ({
-        text: vendorsObj.find(vendorObj =>
-          vendorObj.key === vendor
-        )?.name,
-        callback_data: `${key}_${vendor}`
-      })
-    )
+    const vendorKeys = vendors
+      .map(vendor => vendor.key)
+      .sort()
+      .map(vendor =>
+        ({
+          text: vendorsObj
+            .find(vendorObj =>
+              vendorObj.key === vendor
+            )
+            ?.name,
+          callback_data: `${key}_${vendor}`
+        })
+      )
 
     for (let i = 0; i < vendorKeys.length; i++) {
       const index = Math.floor(i / 2)
