@@ -24,10 +24,10 @@ exports.initializeBotListeners = async () => {
       newItem.key = md5(`${vendor}${name}${url}`)
       newItem.date = `${(new Date()).toDateString()} ${getTimeString()}`
 
-      await addRow(bot, newItem)
+      await addRow(newItem)
 
       logs.success(`${name} was added! 💪🏼`)
-      await bot.sendMessage(CHATID, `${name} was added!`)
+      await this.message({ msg: `${name} was added!` })
     })
   }
 
@@ -38,7 +38,17 @@ exports.initializeBotListeners = async () => {
       const name = msg.text
       newItem.name = name
       logs.info(`NAME ${name}`)
-      const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the item' } })
+      const urlMessage = await this.message({
+        msg: `${name}'s url?`,
+        opts: {
+          reply_markup:
+          {
+            force_reply: true,
+            input_field_placeholder: 'Url of the item'
+          }
+
+        }
+      })
 
       listenForUrl({ urlMessageId: urlMessage.message_id, newItem, vendor, name })
     })
@@ -50,22 +60,21 @@ exports.initializeBotListeners = async () => {
 
       const vendor = action.split('_')[1]
       logs.info(`Selected ${vendor}`)
-      const nameMessage = await bot.sendMessage(
-        CHATID,
-        'Item name?',
-        {
+      const nameMessage = await this.message({
+        msg: 'Item name?',
+        opts: {
           reply_markup:
-           {
-             force_reply: true,
-             input_field_placeholder: 'Name of the item'
-           }
+          {
+            force_reply: true,
+            input_field_placeholder: 'Name of the item'
+          }
         }
-      )
+      })
 
       listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
     } catch (err) {
       logs.error('Error on add new', err.message)
-      await bot.sendMessage(CHATID, 'Error on add new')
+      await this.message({ msg: 'Error on add new' })
     }
   }
 
@@ -75,8 +84,8 @@ exports.initializeBotListeners = async () => {
 
       logs.info(`Selected ${selectedVendor}`)
 
-      const items = await getItemsFromDb(bot)
-      const vendors = (await getVendorsFromDB(bot))
+      const items = await getItemsFromDb()
+      const vendors = (await getVendorsFromDB())
         .allVendors
         .filter(vendor => selectedVendor !== 'all' ? vendor.key === selectedVendor : true)
 
@@ -90,10 +99,10 @@ exports.initializeBotListeners = async () => {
         return vendorMessage
       }).join('\n\n')
 
-      await bot.sendMessage(CHATID, message, { parse_mode: 'HTML', disable_web_page_preview: true })
+      await this.message({ msg: message, html: true, disablePreview: true })
     } catch (err) {
       logs.error('Error on add new', err.message)
-      await bot.sendMessage(CHATID, 'Error on add new')
+      await this.message({ msg: 'Error on add new' })
     }
   }
 
@@ -113,10 +122,10 @@ exports.initializeBotListeners = async () => {
         }
       }
 
-      await bot.sendMessage(CHATID, `What do you want to do with ${selectedVendor}?`, opts)
+      await this.message({ msg: `What do you want to do with ${selectedVendor}?`, opts })
     } catch (err) {
       logs.error('Error on add new', err.message)
-      await bot.sendMessage(CHATID, 'Error on add new')
+      await this.message({ msg: 'Error on add new' })
     }
   }
 
@@ -128,22 +137,22 @@ exports.initializeBotListeners = async () => {
       logs.info(`Selected ${state}`)
 
       await updateVendor({ bot, state, vendor })
-      await bot.sendMessage(CHATID, `${vendor} is now ${state}d`)
+      await this.message({ msg: `${vendor} is now ${state}d` })
     } catch (err) {
       logs.error('Error on add new', err.message)
-      await bot.sendMessage(CHATID, 'Error on add new')
+      await this.message({ msg: 'Error on add new' })
     }
   }
 
   if (LISTENBOT === '1') {
     bot.on('polling_error', async (error) => {
       logs.error(`Err on polling ${error.message}`)
-      await bot.sendMessage(CHATID, `Err on polling ${error.message}`)
+      await this.message({ msg: `Err on polling ${error.message}` })
     })
 
     bot.on('webhook_error', async (error) => {
       logs.error(`Err on webhook ${error.message}`)
-      await bot.sendMessage(CHATID, `Err on webhook ${error.message}`)
+      await this.message({ msg: `Err on webhook ${error.message}` })
     })
 
     bot.on('callback_query', async (callbackQuery) => {
@@ -167,7 +176,7 @@ exports.initializeBotListeners = async () => {
         process.exit()
       } catch (err) {
         logs.error('Error on restart', err.message)
-        await bot.sendMessage(CHATID, 'Error on restart')
+        await this.message({ msg: 'Error on restart' })
       }
     })
 
@@ -175,11 +184,14 @@ exports.initializeBotListeners = async () => {
       try {
         logs.info('Asked for last scrap')
 
-        const last = await getLastScrap(bot)
-        await bot.sendMessage(CHATID, `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`, { parse_mode: 'HTML' })
+        const last = await getLastScrap()
+        await this.message({
+          msg: `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`,
+          html: true
+        })
       } catch (err) {
         logs.error('Error on get last scrap', err.message)
-        await bot.sendMessage(CHATID, 'Error on get last scrap')
+        await this.message({ msg: 'Error on get last scrap' })
       }
     })
 
@@ -193,10 +205,10 @@ exports.initializeBotListeners = async () => {
           }
         }
 
-        await bot.sendMessage(CHATID, 'Select the vendor', opts)
+        await this.message({ msg: 'Select the vendor', opts })
       } catch (err) {
         logs.error('Error on add new (select vendor)', err.message)
-        await bot.sendMessage(CHATID, 'Error on add new (select vendor)')
+        await this.message({ msg: 'Error on add new (select vendor)' })
       }
     })
 
@@ -210,10 +222,10 @@ exports.initializeBotListeners = async () => {
           }
         }
 
-        await bot.sendMessage(CHATID, 'Select the vendor', opts)
+        await this.message({ msg: 'Select the vendor', opts })
       } catch (err) {
         logs.error('Error on prices (select vendor)', err.message)
-        await bot.sendMessage(CHATID, 'Error on prices (select vendor)')
+        await this.message({ msg: 'Error on prices (select vendor)' })
       }
     })
 
@@ -227,10 +239,10 @@ exports.initializeBotListeners = async () => {
           }
         }
 
-        await bot.sendMessage(CHATID, 'Select the vendor', opts)
+        await this.message({ msg: 'Select the vendor', opts })
       } catch (err) {
         logs.error('Error on prices (select vendor)', err.message)
-        await bot.sendMessage(CHATID, 'Error on prices (select vendor)')
+        await this.message({ msg: 'Error on prices (select vendor)' })
       }
     })
   }
@@ -240,7 +252,7 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
   const keyboard = []
 
   try {
-    const vendors = (await getVendorsFromDB(bot))[filterActive ? 'activeVendors' : 'allVendors']
+    const vendors = (await getVendorsFromDB())[filterActive ? 'activeVendors' : 'allVendors']
     const vendorKeys = vendors
       .map(vendor => vendor.key)
       .sort()
@@ -273,4 +285,16 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
   }
 
   return keyboard
+}
+
+exports.message = async ({ msg, html = false, disablePreview = false, opts = {} }) => {
+  try {
+    if (html) opts.parse_mode = 'HTML'
+    opts.disable_web_page_preview = disablePreview
+
+    await bot.sendMessage(CHATID, msg, opts)
+  } catch (err) {
+    logs.error('Error on send message', err.message)
+    await bot.sendMessage(CHATID, `Error on send message ${err.message}`)
+  }
 }
