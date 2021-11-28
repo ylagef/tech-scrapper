@@ -2,6 +2,6 @@
     "append": true,
     "watch": true,
     "script": "index.js",
-    "outFile": "./forever/out.log",
-    "errFile": "./forever/err.log"
+    "outFile": "./log/out.log",
+    "errFile": "./log/err.log"
 }

@@ -7,8 +7,8 @@
     "start": "forever start ./forever/config.json --killSignal=SIGINT",
     "stop": "forever stopall",
     "forever-logs": "forever logs index.js -f",
-    "logs": "tail -f forever/out.log",
-    "errors": "tail -f forever/err.log",
+    "logs": "tail -f log/out.log",
+    "errors": "tail -f log/err.log",
     "restart": "npm run stop && npm run start",
     "start-logs": "npm run start && npm run logs"
   },
