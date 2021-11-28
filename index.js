@@ -5,7 +5,7 @@ const md5 = require('md5-nodejs')
 
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendorsObj')
-const { initializeDb, getItemsFromDb, updatePrice, addRow, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
+const { initializeDb, getItemsFromDb, updatePrice, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
 const { bot, initializeBotListeners } = require('./telegram/bot')
 const { getTimeString } = require('./utils')
 const { logs } = require('./log/logs')
@@ -72,30 +72,17 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
 }
 
 const handleUpdated = async ({ vendor, item, price, image, key }) => {
-  logs.success(`UPDATED!! (prev ${item?.price || 'NONE'
-    }) 👀`)
+  logs.success(`UPDATED!! (${item?.price || 'NONE'
+    } => ${price}) 👀`)
 
   const message = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'
     } => ${price}\n<a href='${item.url}'>LINK</a>`
   await bot.sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
 
-  const date = `${(new Date()).toDateString()} ${getTimeString()}`
   if (item && price !== 'CAPTCHA') {
     item.price = price
-    item.date = date
+    item.date = `${(new Date()).toDateString()} ${getTimeString()}`
     await updatePrice(bot, item)
-  } else {
-    const obj = {
-      date,
-      key,
-      vendor: vendor.name,
-      name: item.name,
-      price,
-      active: item.active,
-      url: item.url
-    }
-
-    await addRow(bot, obj)
   }
 }
 
@@ -139,7 +126,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
           image = await handleScreenshot({ page, vendor, item, image })
 
-          if (price && (!item || item.price !== price)) {
+          if (price && item.price !== price) {
             await handleUpdated({ vendor, item, price, image, key })
           }
 
