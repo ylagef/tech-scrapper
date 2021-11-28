@@ -26,28 +26,27 @@ exports.initializeBotListeners = async () => {
 
       await addRow(bot, newItem)
 
-      logs.success(` ${name} was added! 💪🏼 `)
+      logs.success(`${name} was added! 💪🏼`)
       await bot.sendMessage(CHATID, `${name} was added!`)
     })
   }
 
   const listenForName = ({ nameMessageId, newItem, vendor }) => {
-    logs.info(` Listening for name ${nameMessageId} `)
+    logs.info(`Listening for name ${nameMessageId}`)
 
     let id = null
     id = bot.onReplyToMessage(CHATID, nameMessageId, async (msg) => { // TODO here!
       bot.removeReplyListener(id) // Clear listener
 
-      logs.info(' ?? ')
       const name = msg.text
       newItem.name = name
-      logs.info(` NAME ${name} `)
+      logs.info(`NAME ${name}`)
       const urlMessage = await bot.sendMessage(CHATID, `${name}'s url?`, { reply_markup: { force_reply: true, input_field_placeholder: 'Url of the item' } })
 
       listenForUrl({ urlMessageId: urlMessage.message_id, newItem, vendor, name })
     })
 
-    logs.info(` Listener id ${id} `)
+    logs.info(`Listener id ${id}`)
   }
 
   const handleNew = async ({ action }) => {
@@ -55,7 +54,7 @@ exports.initializeBotListeners = async () => {
       const newItem = { active: true }
 
       const vendor = action.split('_')[1]
-      logs.info(` Selected ${vendor} `)
+      logs.info(`Selected ${vendor}`)
       const nameMessage = await bot.sendMessage(CHATID, 'Item name?', { reply_markup: { force_reply: true, input_field_placeholder: 'Name of the item' } })
 
       listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
@@ -69,7 +68,7 @@ exports.initializeBotListeners = async () => {
     try {
       const selectedVendor = action.split('_')[1]
 
-      logs.info(` Selected ${selectedVendor} `)
+      logs.info(`Selected ${selectedVendor}`)
 
       const items = await getItemsFromDb(bot)
       const vendors = (await getVendorsFromDB(bot)).allVendors.filter(vendor => selectedVendor !== 'all' ? vendor.key === selectedVendor : true)
@@ -96,7 +95,7 @@ exports.initializeBotListeners = async () => {
     try {
       const selectedVendor = action.split('_')[2]
 
-      logs.info(` Selected ${selectedVendor} `)
+      logs.info(`Selected ${selectedVendor}`)
 
       const keyboard = [
         [{ text: 'Enable', callback_data: `update_vendor_enable_${selectedVendor}` }],
@@ -120,7 +119,7 @@ exports.initializeBotListeners = async () => {
       const state = action.split('_')[2]
       const vendor = action.split('_')[3]
 
-      logs.info(` Selected ${state} `)
+      logs.info(`Selected ${state}`)
 
       await updateVendor({ bot, state, vendor })
       await bot.sendMessage(CHATID, `${vendor} is now ${state}d`)
@@ -135,6 +134,7 @@ exports.initializeBotListeners = async () => {
       logs.error(`Err on polling ${error.message}`)
       await bot.sendMessage(CHATID, `Err on polling ${error.message}`)
     })
+
     bot.on('webhook_error', async (error) => {
       logs.error(`Err on webhook ${error.message}`)
       await bot.sendMessage(CHATID, `Err on webhook ${error.message}`)
@@ -156,7 +156,7 @@ exports.initializeBotListeners = async () => {
 
     bot.onText(/\/restart/, async () => {
       try {
-        logs.info(' Asked for restart ')
+        logs.info('Asked for restart')
 
         process.exit()
       } catch (err) {
@@ -164,9 +164,10 @@ exports.initializeBotListeners = async () => {
         await bot.sendMessage(CHATID, 'Error on restart')
       }
     })
+
     bot.onText(/\/lastscrap/, async () => {
       try {
-        logs.info(' Asked for last scrap ')
+        logs.info('Asked for last scrap')
 
         const last = await getLastScrap(bot)
         await bot.sendMessage(CHATID, `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`, { parse_mode: 'HTML' })
@@ -175,9 +176,10 @@ exports.initializeBotListeners = async () => {
         await bot.sendMessage(CHATID, 'Error on get last scrap')
       }
     })
+
     bot.onText(/\/new/, async () => {
       try {
-        logs.info(' New requested... ')
+        logs.info('New requested...')
 
         const keyboard = await getVendorsKeyboard({ key: 'new', filterActive: true })
 
@@ -193,9 +195,10 @@ exports.initializeBotListeners = async () => {
         await bot.sendMessage(CHATID, 'Error on add new (select vendor)')
       }
     })
+
     bot.onText(/\/prices/, async () => {
       try {
-        logs.info(' Prices requested... ')
+        logs.info('Prices requested...')
 
         const keyboard = await getVendorsKeyboard({ key: 'prices', allOption: true })
 
@@ -211,9 +214,10 @@ exports.initializeBotListeners = async () => {
         await bot.sendMessage(CHATID, 'Error on prices (select vendor)')
       }
     })
+
     bot.onText(/\/updatevendor/, async () => {
       try {
-        logs.info(' Prices requested... ')
+        logs.info('Prices requested...')
 
         const keyboard = await getVendorsKeyboard({ key: 'update_vendor' })
 

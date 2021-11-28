@@ -237,7 +237,7 @@ const checkCaptcha = async (page, element, has) => {
   const captcha = (await page.$$(element)).length
 
   if (has ? captcha > 0 : captcha === 0) {
-    logs.error(' Captcha detected! ☠️ ')
+    logs.error('Captcha detected! ☠️')
     return true
   }
 
