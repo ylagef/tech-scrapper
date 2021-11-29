@@ -171,12 +171,10 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   }, 30 * 1000) // 30s
 })()
 
-// ;['exit', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGKILL'].forEach((eventType) => {
-//   process.on(eventType, async (ev) => {
-//     process.stdin.resume()
+process.on('uncaughtException', async (ev) => {
+  process.stdin.resume()
 
-//     await bot.sendMessage(CHATID, `CRITICAL (${ev})`)
-//     logs.error(`CRITICAL (${ev})`)
-//     process.exit(99)
-//   })
-// })
+  await bot.sendMessage(CHATID, `CRITICAL (${ev})`)
+  logs.error(`CRITICAL (${ev})`)
+  process.exit(1)
+})
