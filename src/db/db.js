@@ -175,11 +175,14 @@ exports.updateKey = async ({ bot, item, vendor }) => {
 
 exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
   try {
+    await doc.sheetsByTitle.vendors.loadHeaderRow()
+    const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
+    const rowIndex = servers.indexOf(SERVERID) + 2
     const sheet = doc.sheetsByTitle.stats
-    await sheet.loadCells('A2:C3')
+    await sheet.loadCells(`A${rowIndex}:C${rowIndex}`)
 
-    const dateA1 = SERVERID === 'PC' ? 'B2' : 'B3'
-    const ellapsedA1 = SERVERID === 'PC' ? 'C2' : 'C3'
+    const dateA1 = `B${rowIndex}`
+    const ellapsedA1 = `C${rowIndex}`
     const dateCell = sheet.getCellByA1(dateA1)
     const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
@@ -217,13 +220,18 @@ exports.getLastScrap = async () => {
 
 exports.updateVendor = async ({ bot, state, vendor }) => {
   try {
+    await doc.sheetsByTitle.vendors.loadHeaderRow()
+    const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
+    const rowIndex = servers.indexOf(SERVERID) + 1
+
     const sheet = doc.sheetsByTitle.vendors
     const rows = await sheet.getRows()
 
     const cellsA1 = rows.find(row => row._rawData[0] === vendor).a1Range
     await sheet.loadCells(cellsA1.split('!')[1])
 
-    const cellA1 = (SERVERID === 'PC' ? 'B' : 'C') + cellsA1.split('!')[1].split(':')[0].slice(1)
+    const colIndex = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'][rowIndex]
+    const cellA1 = colIndex + cellsA1.split('!')[1].split(':')[0].slice(1)
     const cell = sheet.getCellByA1(cellA1)
 
     cell.value = state === 'enable'
