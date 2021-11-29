@@ -15,6 +15,8 @@ let items = null
 let browser = null
 let activeVendors = null
 
+let totalSeconds = 0
+
 const scrapInitialization = async () => {
   if (!items) {
     await initializeDb()
@@ -156,7 +158,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     }
 
     const endDate = new Date()
-    const totalSeconds = Math.ceil((endDate - startDate) / 1000)
+    totalSeconds = Math.ceil((endDate - startDate) / 1000)
     logs.log(`\n\n🏁 SCRAP FINISHED (${getTimeString(endDate)}) - ${totalSeconds}s\n\n- - - - - - -`)
 
     await updateLastScrap({ bot, endDate, totalSeconds })
@@ -165,10 +167,14 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     await bot.sendMessage(CHATID, `Err on scrap (${err.message.split('=')[0].trim()})`)
   }
 
-  setTimeout(() => {
-    // Scrap again after 30s
+  // Scrap again after 30s
+  if (totalSeconds >= 60) {
     scrap()
-  }, 30 * 1000) // 30s
+  } else {
+    setTimeout(() => {
+      scrap()
+    }, 30 * 1000) // 30s
+  }
 })()
 
 process.on('uncaughtException', async (ev) => {
