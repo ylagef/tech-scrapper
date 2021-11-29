@@ -4,7 +4,7 @@
   "description": "Tech scrapper",
   "main": "index.js",
   "scripts": {
-    "start": "forever start ./src/forever/config.json --killSignal=SIGINT --watchDirectory=src",
+    "start": "forever start --watchDirectory=./src ./src/forever/config.json",
     "stop": "forever stopall",
     "forever-logs": "forever logs 0 -f",
     "logs": "tail -f src/log/out.log",
