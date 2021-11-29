@@ -167,13 +167,13 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
     await bot.sendMessage(CHATID, `Err on scrap (${err.message.split('=')[0].trim()})`)
   }
 
-  // Scrap again after 30s
+  // Scrap again each minute
   if (totalSeconds >= 60) {
     scrap()
   } else {
     setTimeout(() => {
       scrap()
-    }, 30 * 1000) // 30s
+    }, (60 - totalSeconds) * 1000)
   }
 })()
 
