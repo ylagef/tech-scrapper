@@ -16,7 +16,7 @@ exports.initializeDb = async () => {
     logs.dim('Initialize DB ok')
   } catch (err) {
     logs.error('Error on initialize DB', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on initialize DB (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(CHATID, `<b>(${SERVERID})</b> · Error on initialize DB (${err.message})`, { parse_mode: 'HTML' })
   }
 }
 
@@ -40,7 +40,7 @@ const addNewServer = async ({ sheet, servers, server }) => {
     logs.error(`Error on add new server ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on add new server (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on add new server (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
@@ -77,7 +77,7 @@ exports.getVendorsFromDB = async () => {
     logs.error('Error on get vendors', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on get vendors (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on get vendors (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
@@ -108,7 +108,7 @@ exports.getItemsFromDb = async () => {
     logs.error('Error on DB read', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on DB read (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on DB read (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
@@ -125,7 +125,7 @@ exports.addRow = async ({ key, date, vendor, name, price, active, url }) => {
     logs.error('Error on add row', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on add row (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on add row (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
@@ -146,7 +146,7 @@ exports.updatePrice = async (item) => {
     logs.error('Error on update cells', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
@@ -167,7 +167,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
     logs.error('Error on update cells', err.message)
     await bot.sendMessage(
       CHATID,
-      `<b>(${SERVERID || 'NONE'})</b> · Error on update cells (${err.message})`,
+      `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -190,7 +190,7 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     logs.error('Error on update last scrap', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
@@ -209,7 +209,7 @@ exports.getLastScrap = async () => {
     logs.error('Error on get last scrap', err.message)
     await bot.sendMessage(
       CHATID,
-      `<b>(${SERVERID || 'NONE'})</b> · Error on get last scrap (${err.message})`,
+      `<b>(${SERVERID})</b> · Error on get last scrap (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -232,7 +232,7 @@ exports.updateVendor = async ({ bot, state, vendor }) => {
     logs.error('Error on update last scrap', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Error on update last scrap (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }

@@ -30,7 +30,7 @@ const scrapInitialization = async () => {
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID || 'NONE'})</b> · Browser launched`,
+       `<b>(${SERVERID})</b> · Browser launched`,
        { parse_mode: 'HTML' }
     )
     logs.dim('\nBrowser launched')
@@ -39,7 +39,7 @@ const scrapInitialization = async () => {
       logs.error('\n ⚠️  Browser disconected')
       await bot.sendMessage(
         CHATID,
-         `<b>(${SERVERID || 'NONE'})</b> · Browser disconected`,
+         `<b>(${SERVERID})</b> · Browser disconected`,
          { parse_mode: 'HTML' }
       )
     })
