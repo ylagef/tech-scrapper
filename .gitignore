@@ -103,7 +103,7 @@ dist
 # TernJS port file
 .tern-port
 
-screenshots/*
+screenshots
 
 nohup.out
 db/prices.json

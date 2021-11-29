@@ -1,7 +1,0 @@
-{
-    "append": true,
-    "watch": true,
-    "script": "index.js",
-    "outFile": "./log/out.log",
-    "errFile": "./log/err.log"
-}

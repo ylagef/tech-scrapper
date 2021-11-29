@@ -4,11 +4,11 @@
   "description": "Tech scrapper",
   "main": "index.js",
   "scripts": {
-    "start": "forever start ./forever/config.json --killSignal=SIGINT",
+    "start": "forever start ./src/forever/config.json --killSignal=SIGINT --watchDirectory=src",
     "stop": "forever stopall",
-    "forever-logs": "forever logs index.js -f",
-    "logs": "tail -f log/out.log",
-    "errors": "tail -f log/err.log",
+    "forever-logs": "forever logs 0 -f",
+    "logs": "tail -f src/log/out.log",
+    "errors": "tail -f src/log/err.log",
     "restart": "npm run stop && npm run start",
     "start-logs": "npm run start && npm run logs"
   },
