@@ -206,9 +206,9 @@ exports.initializeBotListeners = async () => {
       try {
         logs.info('Asked for last scrap')
 
-        const last = await getLastScrap()
+        const msg = await getLastScrap()
         await this.message({
-          msg: `<b>PC</b> · ${last.pc}\n<b>Clouding</b> · ${last.clouding}`,
+          msg,
           html: true
         })
       } catch (err) {

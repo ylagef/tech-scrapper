@@ -207,12 +207,14 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
 exports.getLastScrap = async () => {
   try {
     const sheet = doc.sheetsByTitle.stats
-    await sheet.loadCells('A2:C3')
+    const rows = (await sheet.getRows())
 
-    const pc = `${sheet.getCellByA1('B2').value || 'NONE'} (${sheet.getCellByA1('C2').value || 'NONE'})`
-    const clouding = `${sheet.getCellByA1('B3').value || 'NONE'} (${sheet.getCellByA1('C3').value || 'NONE'})`
+    const message = []
+    rows.forEach(row => {
+      message.push(`<b>${row._rawData[0]}</b> · ${row._rawData[1]} - ${row._rawData[2]}`)
+    })
 
-    return { pc, clouding }
+    return message.join('\n')
   } catch (err) {
     logs.error('Error on get last scrap', err.message)
     await bot.sendMessage(
