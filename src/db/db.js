@@ -178,17 +178,22 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     await doc.sheetsByTitle.vendors.loadHeaderRow()
     const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
     const rowIndex = servers.indexOf(SERVERID) + 2
+
     const sheet = doc.sheetsByTitle.stats
     await sheet.loadCells(`A${rowIndex}:C${rowIndex}`)
 
+    const serverA1 = `A${rowIndex}`
     const dateA1 = `B${rowIndex}`
     const ellapsedA1 = `C${rowIndex}`
+
+    const serverCell = sheet.getCellByA1(serverA1)
     const dateCell = sheet.getCellByA1(dateA1)
     const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
+    serverCell.value = `${SERVERID}`
     dateCell.value = `${getTimeString(endDate)}`
     ellapsedCell.value = `${totalSeconds}s`
-    await sheet.saveCells([dateCell, ellapsedCell])
+    await sheet.saveCells([serverCell, dateCell, ellapsedCell])
   } catch (err) {
     logs.error('Error on update last scrap', err.message)
     await bot.sendMessage(
