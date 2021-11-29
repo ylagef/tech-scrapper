@@ -7,7 +7,7 @@ exports.vendorsObj = [
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
-      return stock ? ((await page.textContent('.buybox__price--current'))?.replaceAll('.', '').replaceAll(' ', '')) : 'NO STOCK'
+      return stock ? ((await page.textContent('.buybox__prices > span'))?.replaceAll('.', '').replaceAll(' ', '').trim()) : 'NO STOCK'
     }
   },
   {
