@@ -20,6 +20,32 @@ exports.initializeDb = async () => {
   }
 }
 
+const addNewServer = async ({ sheet, servers, server }) => {
+  try {
+    await sheet.setHeaderRow(['Vendors', ...servers, server])
+
+    const rows = (await sheet.getRows())
+
+    const startCell = rows[0].a1Range.split('!')[1].split(':')[1]
+    const endCell = rows[rows.length - 1].a1Range.split('!')[1].split(':')[1]
+    await sheet.loadCells(`${startCell}:${endCell}`)
+
+    for (const row of rows) {
+      const cellA1 = row.a1Range.split('!')[1].split(':')[1]
+      const cell = sheet.getCellByA1(cellA1)
+      cell.value = 'FALSE'
+      await sheet.saveCells([cell])
+    }
+  } catch (err) {
+    logs.error(`Error on add new server ${err.message}`)
+    await bot.sendMessage(
+      CHATID,
+       `<b>(${SERVERID || 'NONE'})</b> · Error on add new server (${err.message})`,
+       { parse_mode: 'HTML' }
+    )
+  }
+}
+
 exports.getVendorsFromDB = async () => {
   logs.dim('\nGetting vendors...')
   const vendors = {}
@@ -28,16 +54,22 @@ exports.getVendorsFromDB = async () => {
     const sheet = doc.sheetsByTitle.vendors
     await sheet.loadHeaderRow()
     const servers = sheet.headerValues.slice(1)
-    const rows = (await sheet.getRows()).map(row => row._rawData)
+    if (!servers.includes(SERVERID)) {
+      logs.info(`NEW server ${SERVERID} found`)
+      await addNewServer({ sheet, servers, server: SERVERID })
+      servers.push(SERVERID)
+    }
 
+    const rows = (await sheet.getRows())
+    const rowsData = rows.map(row => row._rawData)
     servers.forEach((server, index) => {
       if (!vendors[server]) vendors[server] = {}
-      rows.forEach(row => {
+      rowsData.forEach(row => {
         vendors[server][row[0]] = row[index + 1] === 'TRUE'
       })
     })
 
-    const activeVendors = Object.fromEntries(Object.entries(vendors[SERVERID]).filter(([key, value]) => value))
+    const activeVendors = Object.fromEntries(Object.entries(vendors[SERVERID]).filter(([key, value]) => value)) || {}
     logs.dim('Get vendors ok')
 
     return { allVendors: vendors, activeVendors }
