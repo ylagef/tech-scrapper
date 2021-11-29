@@ -24,7 +24,7 @@ const scrapInitialization = async () => {
   activeVendors = (await getVendorsFromDB()).activeVendors
 
   if (!browser || !browser.isConnected()) {
-    logs.dim(`\n\n${activeVendors.map(vendor => vendor.key).join(' | ')}`)
+    logs.dim(`\n\n${Object.keys(activeVendors).join(' | ')}`)
     logs.log('\n\n- - - - -')
 
     browser = await firefox.launch({ headless: HEADLESS !== 1 })
@@ -112,7 +112,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
     const vendors = vendorsObj
       .sort((a, b) => a.key < b.key ? -1 : (a.key > b.key ? 1 : 0))
-      .filter(vendorObj => activeVendors.map(vendor => vendor.key).includes(vendorObj.key))
+      .filter(vendorObj => Object.keys(activeVendors).includes(vendorObj.key))
 
     for (const vendor of vendors) {
       logs.bold(`\n${vendor.name}`).joint().dim().log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)

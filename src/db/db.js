@@ -10,35 +10,37 @@ const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps'
 
 exports.initializeDb = async () => {
   try {
+    logs.dim('\nInitialize DB...')
     await doc.useServiceAccountAuth({ client_email: CLIENTEMAIL, private_key: PRIVATEKEY })
     await doc.loadInfo()
+    logs.dim('Initialize DB ok')
   } catch (err) {
-    logs.error('Error on initialize db', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on initialize db (${err.message})`, { parse_mode: 'HTML' })
+    logs.error('Error on initialize DB', err.message)
+    await bot.sendMessage(CHATID, `<b>(${SERVERID || 'NONE'})</b> · Error on initialize DB (${err.message})`, { parse_mode: 'HTML' })
   }
 }
 
 exports.getVendorsFromDB = async () => {
   logs.dim('\nGetting vendors...')
-  const vendors = []
+  const vendors = {}
 
   try {
     const sheet = doc.sheetsByTitle.vendors
-    const rows = await sheet.getRows()
-    rows.forEach(row => {
-      vendors.push({
-        key: row._rawData[0],
-        pc: row._rawData[1],
-        clouding: row._rawData[2]
+    await sheet.loadHeaderRow()
+    const servers = sheet.headerValues.slice(1)
+    const rows = (await sheet.getRows()).map(row => row._rawData)
+
+    servers.forEach((server, index) => {
+      if (!vendors[server]) vendors[server] = {}
+      rows.forEach(row => {
+        vendors[server][row[0]] = row[index + 1] === 'TRUE'
       })
     })
 
-    const allVendors = vendors
-    const activeVendors = vendors
-      .filter(vendor => SERVERID === 'PC' ? vendor.pc === 'TRUE' : vendor.clouding === 'TRUE')
-
+    const activeVendors = Object.fromEntries(Object.entries(vendors[SERVERID]).filter(([key, value]) => value))
     logs.dim('Get vendors ok')
-    return { allVendors, activeVendors }
+
+    return { allVendors: vendors, activeVendors }
   } catch (err) {
     logs.error('Error on get vendors', err.message)
     await bot.sendMessage(

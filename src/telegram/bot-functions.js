@@ -1,4 +1,4 @@
-const { CHATID, LISTENBOT } = process.env
+const { CHATID, LISTENBOT, SERVERID } = process.env
 
 const { addRow, getLastScrap, getVendorsFromDB, getItemsFromDb, updateVendor } = require('../db/db.js')
 const md5 = require('md5-nodejs')
@@ -82,15 +82,15 @@ exports.initializeBotListeners = async () => {
       logs.info(`Selected ${selectedVendor}`)
 
       const items = await getItemsFromDb()
-      const vendors = (await getVendorsFromDB())
-        .allVendors
-        .filter(vendor => selectedVendor !== 'all' ? vendor.key === selectedVendor : true)
+      const vendors = Object.keys((await getVendorsFromDB())
+        .allVendors[SERVERID])
+        .filter(vendor => selectedVendor !== 'all' ? vendor === selectedVendor : true)
 
       const message = vendors.map(vendor => {
-        let vendorMessage = `<b>${vendorsObj.find(vendorObj => vendorObj.key === vendor.key).name}</b>\n`
+        let vendorMessage = `<b>${vendorsObj.find(vendorObj => vendorObj.key === vendor).name}</b>\n`
         vendorMessage += items
           .sort((a, b) => a.key < b.key ? -1 : (a.vendor > b.vendor ? 1 : 0))
-          .filter(item => item.vendor === vendor.key)
+          .filter(item => item.vendor === vendor)
           .map(item => `         ${item.name} · <a href="${item.url}">${item.price}</a>`)
           .join('\n')
         return vendorMessage
@@ -147,12 +147,15 @@ exports.initializeBotListeners = async () => {
       const all = selectedVendor === 'all'
       logs.info(`Selected ${selectedVendor}`)
 
-      const vendors = (await getVendorsFromDB()).allVendors
-      const filteredVendors = all ? vendors : vendors.find(vendor => vendor.key === selectedVendor)
+      const vendors = (await getVendorsFromDB()).allVendors[SERVERID]
 
-      const message = all
-        ? filteredVendors.map(vendor => `${vendor.pc === 'TRUE' ? '🟢' : '🔴'} <b>${vendorsObj.find(v => v.key === vendor.key).name}</b>`).join('\n')
-        : `${filteredVendors.pc === 'TRUE' ? '🟢' : '🔴'} <b>${vendorsObj.find(v => v.key === filteredVendors.key).name}</b>`
+      let message = ''
+      if (all) {
+        message = Object.entries(vendors).map(([vendor, state]) => `${state ? '🟢' : '🔴'} <b>${vendorsObj.find(v => v.key === vendor).name}</b>`).join('\n')
+      } else {
+        const state = vendors[selectedVendor]
+        message = `${state ? '🟢' : '🔴'} <b>${vendorsObj.find(v => v.key === selectedVendor).name}</b>`
+      }
 
       await this.message({ msg: message, html: true })
     } catch (err) {
@@ -288,9 +291,10 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
   const keyboard = []
 
   try {
-    const vendors = (await getVendorsFromDB())[filterActive ? 'activeVendors' : 'allVendors']
-    const vendorKeys = vendors
-      .map(vendor => vendor.key)
+    let vendors = (await getVendorsFromDB())[filterActive ? 'activeVendors' : 'allVendors']
+    if (!filterActive) vendors = vendors[SERVERID]
+
+    const vendorKeys = Object.keys(vendors)
       .sort()
       .map(vendor =>
         ({
