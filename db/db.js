@@ -4,10 +4,11 @@ const { GoogleSpreadsheet } = require('google-spreadsheet')
 const md5 = require('md5-nodejs')
 const { getTimeString } = require('../utils')
 const { logs } = require('../log/logs')
+const { bot } = require('../telegram/bot')
 
 const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
 
-exports.initializeDb = async (bot) => {
+exports.initializeDb = async () => {
   try {
     await doc.useServiceAccountAuth({ client_email: CLIENTEMAIL, private_key: PRIVATEKEY })
     await doc.loadInfo()
@@ -17,7 +18,7 @@ exports.initializeDb = async (bot) => {
   }
 }
 
-exports.getVendorsFromDB = async (bot) => {
+exports.getVendorsFromDB = async () => {
   logs.dim('\nGetting vendors...')
   const vendors = []
 
@@ -48,7 +49,7 @@ exports.getVendorsFromDB = async (bot) => {
   }
 }
 
-exports.getItemsFromDb = async (bot) => {
+exports.getItemsFromDb = async () => {
   logs.dim('\nReading DB...')
   const items = []
 
@@ -81,7 +82,7 @@ exports.getItemsFromDb = async (bot) => {
   return items
 }
 
-exports.addRow = async (bot, { key, date, vendor, name, price, active, url }) => {
+exports.addRow = async ({ key, date, vendor, name, price, active, url }) => {
   try {
     const sheet = doc.sheetsByTitle.products
     const row = await sheet.addRow([date, key, vendor, name, price, active, url])
@@ -96,7 +97,7 @@ exports.addRow = async (bot, { key, date, vendor, name, price, active, url }) =>
   }
 }
 
-exports.updatePrice = async (bot, item) => {
+exports.updatePrice = async (item) => {
   try {
     const sheet = doc.sheetsByTitle.products
     await sheet.loadCells(item.cells)
@@ -161,7 +162,7 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
   }
 }
 
-exports.getLastScrap = async (bot) => {
+exports.getLastScrap = async () => {
   try {
     const sheet = doc.sheetsByTitle.stats
     await sheet.loadCells('A2:C3')

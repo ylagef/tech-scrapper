@@ -4,11 +4,12 @@ const { CHATID, HEADLESS, SERVERID } = process.env
 const md5 = require('md5-nodejs')
 
 const { firefox } = require('playwright')
-const { vendorsObj } = require('./vendors/vendorsObj')
+const { vendorsObj } = require('./vendors/vendors-obj')
 const { initializeDb, getItemsFromDb, updatePrice, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
-const { bot, initializeBotListeners } = require('./telegram/bot')
+const { initializeBotListeners } = require('./telegram/bot-functions')
 const { getTimeString } = require('./utils')
 const { logs } = require('./log/logs')
+const { bot } = require('./telegram/bot')
 
 let items = null
 let browser = null
@@ -16,7 +17,7 @@ let activeVendors = null
 
 const scrapInitialization = async () => {
   if (!items) {
-    await initializeDb(bot)
+    await initializeDb()
     await initializeBotListeners()
   }
 
@@ -44,7 +45,7 @@ const scrapInitialization = async () => {
     })
   }
 
-  items = await getItemsFromDb(bot)
+  items = await getItemsFromDb()
 }
 
 const checkItem = async ({ item, vendor }) => {
@@ -98,7 +99,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   if (item && price !== 'CAPTCHA') {
     item.price = price
     item.date = `${(new Date()).toDateString()} ${getTimeString()}`
-    await updatePrice(bot, item)
+    await updatePrice(item)
   }
 }
 
@@ -170,12 +171,12 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
   }, 30 * 1000) // 30s
 })()
 
-;['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM', 'SIGKILL'].forEach((eventType) => {
-  process.on(eventType, async (ev) => {
-    process.stdin.resume()
+// ;['exit', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGKILL'].forEach((eventType) => {
+//   process.on(eventType, async (ev) => {
+//     process.stdin.resume()
 
-    await bot.sendMessage(CHATID, `CRITICAL (${ev})`)
-    logs.error(`CRITICAL (${ev})`)
-    process.exit(99)
-  })
-})
+//     await bot.sendMessage(CHATID, `CRITICAL (${ev})`)
+//     logs.error(`CRITICAL (${ev})`)
+//     process.exit(99)
+//   })
+// })

@@ -1,4 +1,5 @@
-screenshots
+screenshots/*
 node_modules
-**.log**
 
+*.png
+.git/*
