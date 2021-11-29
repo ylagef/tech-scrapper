@@ -70,7 +70,7 @@ exports.initializeBotListeners = async () => {
 
       listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
     } catch (err) {
-      logs.error('Error on add new', err.message)
+      logs.error(`Error on add new ${err.message}`)
       await this.message({ msg: 'Error on add new' })
     }
   }
@@ -98,7 +98,7 @@ exports.initializeBotListeners = async () => {
 
       await this.message({ msg: message, html: true, disablePreview: true })
     } catch (err) {
-      logs.error('Error on add new', err.message)
+      logs.error(`Error on add new ${err.message}`)
       await this.message({ msg: 'Error on add new' })
     }
   }
@@ -121,7 +121,7 @@ exports.initializeBotListeners = async () => {
 
       await this.message({ msg: `What do you want to do with ${selectedVendor}?`, opts })
     } catch (err) {
-      logs.error('Error on add new', err.message)
+      logs.error(`Error on add new ${err.message}`)
       await this.message({ msg: 'Error on add new' })
     }
   }
@@ -136,8 +136,28 @@ exports.initializeBotListeners = async () => {
       await updateVendor({ bot, state, vendor })
       await this.message({ msg: `${vendor} is now ${state}d` })
     } catch (err) {
-      logs.error('Error on add new', err.message)
+      logs.error(`Error on add new ${err.message}`)
       await this.message({ msg: 'Error on add new' })
+    }
+  }
+
+  const handleVendorState = async ({ action }) => {
+    try {
+      const selectedVendor = action.split('_')[2]
+      const all = selectedVendor === 'all'
+      logs.info(`Selected ${selectedVendor}`)
+
+      const vendors = (await getVendorsFromDB()).allVendors
+      const filteredVendors = all ? vendors : vendors.find(vendor => vendor.key === selectedVendor)
+
+      const message = all
+        ? filteredVendors.map(vendor => `${vendor.pc === 'TRUE' ? '🟢' : '🔴'} <b>${vendorsObj.find(v => v.key === vendor.key).name}</b>`).join('\n')
+        : `${filteredVendors.pc === 'TRUE' ? '🟢' : '🔴'} <b>${vendorsObj.find(v => v.key === filteredVendors.key).name}</b>`
+
+      await this.message({ msg: message, html: true })
+    } catch (err) {
+      logs.error(`Error on vendor state ${err.message}`)
+      await this.message({ msg: 'Error on vendor state' })
     }
   }
 
@@ -163,6 +183,8 @@ exports.initializeBotListeners = async () => {
         await handleUpdateVendorEnableDisable({ action })
       } else if (action.startsWith('update_vendor')) {
         await handleUpdateVendor({ action })
+      } else if (action.startsWith('vendor_state')) {
+        await handleVendorState({ action })
       }
     })
 
@@ -172,7 +194,7 @@ exports.initializeBotListeners = async () => {
 
         process.exit()
       } catch (err) {
-        logs.error('Error on restart', err.message)
+        logs.error(`Error on restart ${err.message}`)
         await this.message({ msg: 'Error on restart' })
       }
     })
@@ -187,7 +209,7 @@ exports.initializeBotListeners = async () => {
           html: true
         })
       } catch (err) {
-        logs.error('Error on get last scrap', err.message)
+        logs.error(`Error on get last scrap ${err.message}`)
         await this.message({ msg: 'Error on get last scrap' })
       }
     })
@@ -204,7 +226,7 @@ exports.initializeBotListeners = async () => {
 
         await this.message({ msg: 'Select the vendor', opts })
       } catch (err) {
-        logs.error('Error on add new (select vendor)', err.message)
+        logs.error(`Error on add new (select vendor) ${err.message}`)
         await this.message({ msg: 'Error on add new (select vendor)' })
       }
     })
@@ -221,14 +243,14 @@ exports.initializeBotListeners = async () => {
 
         await this.message({ msg: 'Select the vendor', opts })
       } catch (err) {
-        logs.error('Error on prices (select vendor)', err.message)
+        logs.error(`Error on prices (select vendor) ${err.message}`)
         await this.message({ msg: 'Error on prices (select vendor)' })
       }
     })
 
     bot.onText(/\/updatevendor/, async () => {
       try {
-        logs.info('Prices requested')
+        logs.info('Update vendor requested')
 
         const opts = {
           reply_markup: {
@@ -238,8 +260,25 @@ exports.initializeBotListeners = async () => {
 
         await this.message({ msg: 'Select the vendor', opts })
       } catch (err) {
-        logs.error('Error on prices (select vendor)', err.message)
-        await this.message({ msg: 'Error on prices (select vendor)' })
+        logs.error(`Error on update vendor (select vendor) ${err.message}`)
+        await this.message({ msg: 'Error on update vendor (select vendor)' })
+      }
+    })
+
+    bot.onText(/\/vendorstate/, async () => {
+      try {
+        logs.info('Vendor state requested')
+
+        const opts = {
+          reply_markup: {
+            inline_keyboard: await getVendorsKeyboard({ key: 'vendor_state', allOption: true })
+          }
+        }
+
+        await this.message({ msg: 'Select the vendor', opts })
+      } catch (err) {
+        logs.error(`Error on vendor state (select vendor) ${err.message}`)
+        await this.message({ msg: 'Error on vendor state (select vendor)' })
       }
     })
   }
@@ -278,7 +317,7 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
       }])
     }
   } catch (err) {
-    logs.error('Error on get vendors keyboard', err.message)
+    logs.error(`Error on get vendors keyboard ${err.message}`)
   }
 
   return keyboard
@@ -291,7 +330,7 @@ exports.message = async ({ msg, html = false, disablePreview = false, opts = {} 
 
     await bot.sendMessage(CHATID, msg, opts)
   } catch (err) {
-    logs.error('Error on send message', err.message)
+    logs.error(`Error on send message ${err.message}`)
     await bot.sendMessage(CHATID, `Error on send message ${err.message}`)
   }
 }
