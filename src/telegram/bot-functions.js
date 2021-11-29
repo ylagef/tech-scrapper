@@ -10,10 +10,10 @@ const { bot } = require('./bot.js')
 exports.initializeBotListeners = async () => {
   logs.dim('\nInitializing bot listeners...')
 
-  const listenForUrl = ({ urlMessageId, newItem, vendor, name }) => {
-    logs.info(`Listening for url ${urlMessageId}`)
+  const listenForUrl = ({ urlMessage, newItem, vendor, name }) => {
+    logs.info(`Listening for url ${urlMessage.message_id}`)
 
-    bot.onReplyToMessage(CHATID, urlMessageId, async (msg) => {
+    bot.onReplyToMessage(urlMessage.chat.id, urlMessage.message_id, async (msg) => {
       const url = msg.text
 
       newItem.url = url
@@ -28,27 +28,32 @@ exports.initializeBotListeners = async () => {
     })
   }
 
-  const listenForName = ({ nameMessageId, newItem, vendor }) => {
-    logs.info(`Listening for name ${nameMessageId}`)
+  const listenForName = async ({ nameMessage, newItem, vendor }) => {
+    try {
+      logs.info(`Listening for name ${nameMessage.id}`)
 
-    bot.onReplyToMessage(CHATID, nameMessageId, async (msg) => { // TODO here!
-      const name = msg.text
-      newItem.name = name
-      logs.info(`NAME ${name}`)
-      const urlMessage = await this.message({
-        msg: `${name}'s url?`,
-        opts: {
-          reply_markup:
+      bot.onReplyToMessage(nameMessage.chat.id, nameMessage.message_id, async (msg) => {
+        const name = msg.text
+
+        newItem.name = name
+        const urlMessage = await this.message({
+          msg: `${name}'s url?`,
+          opts: {
+            reply_markup:
           {
             force_reply: true,
             input_field_placeholder: 'Url of the item'
           }
 
-        }
-      })
+          }
+        })
 
-      listenForUrl({ urlMessageId: urlMessage.message_id, newItem, vendor, name })
-    })
+        listenForUrl({ urlMessage, newItem, vendor, name })
+      })
+    } catch (err) {
+      logs.error(`Error on listen for name ${err.message}`)
+      await this.message({ msg: `Error on listen for name ${err.message}` })
+    }
   }
 
   const handleNew = async ({ action }) => {
@@ -68,10 +73,10 @@ exports.initializeBotListeners = async () => {
         }
       })
 
-      listenForName({ nameMessageId: nameMessage.message_id, newItem, vendor })
+      listenForName({ nameMessage, newItem, vendor })
     } catch (err) {
       logs.error(`Error on add new ${err.message}`)
-      await this.message({ msg: 'Error on add new' })
+      await this.message({ msg: `Error on add new ${err.message}` })
     }
   }
 
@@ -217,13 +222,14 @@ exports.initializeBotListeners = async () => {
       }
     })
 
-    bot.onText(/\/new/, async () => {
+    bot.onText(/\/new/, async (msg) => {
       try {
         logs.info('New requested')
 
         const opts = {
+          reply_to_message_id: msg.message_id,
           reply_markup: {
-            inline_keyboard: await getVendorsKeyboard({ key: 'new', filterActive: true })
+            inline_keyboard: await getVendorsKeyboard({ key: 'new' })
           }
         }
 
@@ -328,13 +334,17 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
 }
 
 exports.message = async ({ msg, html = false, disablePreview = false, opts = {} }) => {
+  let message = null
+
   try {
     if (html) opts.parse_mode = 'HTML'
     opts.disable_web_page_preview = disablePreview
 
-    await bot.sendMessage(CHATID, msg, opts)
+    message = await bot.sendMessage(CHATID, msg, opts)
   } catch (err) {
     logs.error(`Error on send message ${err.message}`)
-    await bot.sendMessage(CHATID, `Error on send message ${err.message}`)
+    message = await bot.sendMessage(CHATID, `Error on send message ${err.message}`)
   }
+
+  return message
 }
