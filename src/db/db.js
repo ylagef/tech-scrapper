@@ -74,7 +74,7 @@ exports.getVendorsFromDB = async () => {
 
     return { allVendors: vendors, activeVendors }
   } catch (err) {
-    logs.error('Error on get vendors', err.message)
+    logs.error(`Error on get vendors ${err.message}`)
     await bot.sendMessage(
       CHATID,
        `<b>(${SERVERID})</b> · Error on get vendors (${err.message})`,
@@ -105,7 +105,7 @@ exports.getItemsFromDb = async () => {
 
     logs.dim('Read DB ok')
   } catch (err) {
-    logs.error('Error on DB read', err.message)
+    logs.error(`Error on DB read ${err.message}`)
     await bot.sendMessage(
       CHATID,
        `<b>(${SERVERID})</b> · Error on DB read (${err.message})`,
@@ -143,7 +143,7 @@ exports.updatePrice = async (item) => {
     priceCell.value = item.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
-    logs.error('Error on update cells', err.message)
+    logs.error(`Error on update cells ${err.message}`)
     await bot.sendMessage(
       CHATID,
        `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
@@ -164,7 +164,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
     keyCell.value = md5(`${vendor.key}${item.name}${item.url}`)
     await sheet.saveCells([dateCell, keyCell])
   } catch (err) {
-    logs.error('Error on update cells', err.message)
+    logs.error(`Error on update cells ${err.message}`)
     await bot.sendMessage(
       CHATID,
       `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
@@ -195,7 +195,7 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     ellapsedCell.value = `${totalSeconds}s`
     await sheet.saveCells([serverCell, dateCell, ellapsedCell])
   } catch (err) {
-    logs.error('Error on update last scrap', err.message)
+    logs.error(`Error on update last scrap ${err.message}`)
     await bot.sendMessage(
       CHATID,
        `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
@@ -216,7 +216,7 @@ exports.getLastScrap = async () => {
 
     return message.join('\n')
   } catch (err) {
-    logs.error('Error on get last scrap', err.message)
+    logs.error(`Error on get last scrap ${err.message}`)
     await bot.sendMessage(
       CHATID,
       `<b>(${SERVERID})</b> · Error on get last scrap (${err.message})`,
@@ -244,7 +244,7 @@ exports.updateVendor = async ({ bot, state, vendor }) => {
     cell.value = state === 'enable'
     await sheet.saveCells([cell])
   } catch (err) {
-    logs.error('Error on update last scrap', err.message)
+    logs.error(`Error on update last scrap ${err.message}`)
     await bot.sendMessage(
       CHATID,
        `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
