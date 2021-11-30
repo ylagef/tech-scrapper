@@ -2,27 +2,6 @@ const { logs } = require('../log/logs')
 
 exports.vendorsObj = [
   {
-    key: 'carrefour',
-    name: 'Carrefour',
-    jsEnabled: false,
-    checkPrice: async ({ page }) => {
-      const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
-      return stock ? ((await page.textContent('.buybox__prices > span'))?.replaceAll('.', '').replaceAll(' ', '').trim()) : 'NO STOCK'
-    }
-  },
-  {
-    key: 'carrefourquery',
-    name: 'Carrefour query',
-    jsEnabled: true,
-    checkPrice: async ({ page }) => {
-      await page.waitForSelector('.ebx-result-figure__img')
-      const items = (await page.$$('article.ebx-result.ebx-result--normal')).length
-      const stock = (await page.$$('.ebx-result-add2cart__full-button.ebx-result-add2cart__button')).length
-
-      return `${items} products (${stock} stock)`
-    }
-  },
-  {
     key: 'amazon',
     name: 'Amazon',
     jsEnabled: false,
@@ -55,15 +34,47 @@ exports.vendorsObj = [
     }
   },
   {
-    key: 'xtralife',
-    name: 'Xtralife',
+    key: 'carrefour',
+    name: 'Carrefour',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
+      return stock ? ((await page.textContent('.buybox__prices > span'))?.replaceAll('.', '').replaceAll(' ', '').trim()) : 'NO STOCK'
+    }
+  },
+  {
+    key: 'carrefourquery',
+    name: 'Carrefour query',
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('a > img')
+      await page.waitForSelector('.ebx-result-figure__img')
+      const items = (await page.$$('article.ebx-result.ebx-result--normal')).length
+      const stock = (await page.$$('.ebx-result-add2cart__full-button.ebx-result-add2cart__button')).length
 
-      const items = (await page.$$('.view-smallGridElement')).length
-      const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
-      const stock = buttons.filter(button => button.includes('Añadir a cesta')).length
+      return `${items} products (${stock} stock)`
+    }
+  },
+  {
+    key: 'elcorteingles',
+    name: 'El corte inglés',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '.product_detail-main-container', false)) return 'CAPTCHA' // Check if captcha
+
+      const stock = (await page.$$('.price._big')).length > 0
+      return stock ? (await page.textContent('.price._big'))?.replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
+    }
+  },
+  {
+    key: 'elcorteinglesquery',
+    name: 'El corte inglés query',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '.plp_title_h1', false)) return 'CAPTCHA' // Check if captcha
+
+      const items = (await page.$$('.products_list-item')).length
+      const prices = await page.$$eval('.price._big', nodes => nodes.map(node => node.innerText))
+      const stock = prices.filter(price => price !== '').length
       return `${items} products (${stock} stock)`
     }
   },
@@ -90,32 +101,25 @@ exports.vendorsObj = [
     }
   },
   {
-    key: 'worten',
-    name: 'Worten',
-    jsEnabled: false,
-    checkPrice: async ({ page }) => {
-      const stock = (await page.$$('.iss-product-availability')).length > 0
-      return stock ? await page.textContent('.iss-product-current-price') : 'NO STOCK'
-    }
-  },
-  {
-    key: 'wortenquery',
-    name: 'Worten query',
+    key: 'game',
+    name: 'Game',
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('figure > img')
-      const items = (await page.$$('.w-product__wrapper')).length
-      return `${items} products`
+      const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
+      return stock ? (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '') : 'NO STOCK'
     }
   },
   {
-
-    key: 'wivai',
-    name: 'Wivai',
-    jsEnabled: false,
+    key: 'gamequery',
+    name: 'Game query',
+    jsEnabled: true,
     checkPrice: async ({ page }) => {
-      const items = (await page.$$('.product-tile')).length
-      return `${items} products`
+      await page.waitForSelector('img.img-responsive')
+
+      const items = (await page.$$('.item-info')).length
+      const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
+
+      return `${items} products (${stock} stock)`
     }
   },
   {
@@ -130,7 +134,7 @@ exports.vendorsObj = [
     }
   },
   {
-    key: 'mediamarktQuery',
+    key: 'mediamarktquery',
     name: 'Mediamarkt query',
     jsEnabled: false,
     checkPrice: async ({ page }) => {
@@ -142,27 +146,12 @@ exports.vendorsObj = [
     }
   },
   {
-    key: 'elcorteingles',
-    name: 'El corte inglés',
+    key: 'mielectro',
+    name: 'Mielectro',
     jsEnabled: false,
     checkPrice: async ({ page }) => {
-      if (await checkCaptcha(page, '.product_detail-main-container', false)) return 'CAPTCHA' // Check if captcha
-
-      const stock = (await page.$$('.price._big')).length > 0
-      return stock ? (await page.textContent('.price._big'))?.replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
-    }
-  },
-  {
-    key: 'elcorteinglesquery',
-    name: 'El corte inglés query',
-    jsEnabled: false,
-    checkPrice: async ({ page }) => {
-      if (await checkCaptcha(page, '.plp_title_h1', false)) return 'CAPTCHA' // Check if captcha
-
-      const items = (await page.$$('.products_list-item')).length
-      const prices = await page.$$eval('.price._big', nodes => nodes.map(node => node.innerText))
-      const stock = prices.filter(price => price !== '').length
-      return `${items} products (${stock} stock)`
+      const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
+      return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
     }
   },
   {
@@ -192,43 +181,52 @@ exports.vendorsObj = [
     }
   },
   {
-    key: 'mielectro',
-    name: 'Mielectro',
-    jsEnabled: false,
-    checkPrice: async ({ page }) => {
-      const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
-      return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
-    }
-  },
-
-  {
-    key: 'game',
-    name: 'Game',
-    jsEnabled: true,
-    checkPrice: async ({ page }) => {
-      const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
-      return stock ? (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '') : 'NO STOCK'
-    }
-  },
-  {
-    key: 'gamequery',
-    name: 'Game query',
-    jsEnabled: true,
-    checkPrice: async ({ page }) => {
-      await page.waitForSelector('img.img-responsive')
-
-      const items = (await page.$$('.item-info')).length
-      const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
-
-      return `${items} products (${stock} stock)`
-    }
-  },
-  {
     key: 'sonyexperience',
     name: 'Sonyexperience',
     jsEnabled: false,
     checkPrice: async ({ page }) => {
       return (await page.textContent('.current-price > span'))?.replace('.', '').replace(/\s/g, '')
+    }
+  },
+  {
+    key: 'wivai',
+    name: 'Wivai',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      const items = (await page.$$('.product-tile')).length
+      return `${items} products`
+    }
+  },
+  {
+    key: 'worten',
+    name: 'Worten',
+    jsEnabled: false,
+    checkPrice: async ({ page }) => {
+      const stock = (await page.$$('.iss-product-availability')).length > 0
+      return stock ? await page.textContent('.iss-product-current-price') : 'NO STOCK'
+    }
+  },
+  {
+    key: 'wortenquery',
+    name: 'Worten query',
+    jsEnabled: true,
+    checkPrice: async ({ page }) => {
+      await page.waitForSelector('figure > img')
+      const items = (await page.$$('.w-product__wrapper')).length
+      return `${items} products`
+    }
+  },
+  {
+    key: 'xtralife',
+    name: 'Xtralife',
+    jsEnabled: true,
+    checkPrice: async ({ page }) => {
+      await page.waitForSelector('a > img')
+
+      const items = (await page.$$('.view-smallGridElement')).length
+      const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
+      const stock = buttons.filter(button => button.includes('Añadir a cesta')).length
+      return `${items} products (${stock} stock)`
     }
   }
 ]
