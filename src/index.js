@@ -1,8 +1,6 @@
 require('dotenv').config()
 const { CHATID, HEADLESS, SERVERID } = process.env
 
-const md5 = require('md5-nodejs')
-
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendors-obj')
 const { initializeDb, getItemsFromDb, updatePrice, updateLastScrap, updateKey, getVendorsFromDB } = require('./db/db.js')
@@ -33,7 +31,7 @@ const scrapInitialization = async () => {
     await bot.sendMessage(
       CHATID,
        `<b>(${SERVERID})</b> · Browser launched`,
-       { parse_mode: 'HTML' }
+       { parse_mode: 'HTML', disable_notification: true }
     )
     logs.dim('\nBrowser launched')
 
@@ -66,7 +64,7 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
     await bot.sendMessage(
       CHATID,
       `${vendor.name} - ${item.name} · Err (${err.message.split('=')[0].trim()})`
-    )
+      , { disable_notification: true })
     logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
   }
 
@@ -83,7 +81,8 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
   } catch (err) {
     await bot.sendMessage(
       CHATID,
-      `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`
+      `${vendor.name} - ${item.name} · Err on screenshot (${err.message.split('=')[0].trim()})`,
+      { disable_notification: true }
     )
     logs.error(`Err on screenshot (${err.message.split('=')[0].trim()})`)
   }
@@ -91,17 +90,26 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
   return image
 }
 
-const handleUpdated = async ({ vendor, item, price, image, key }) => {
-  logs.success(`UPDATED!! (${item?.price || 'NONE'
-    } => ${price}) 👀`)
+const handleUpdated = async ({ vendor, item, price, image }) => {
+  if (item) {
+    const opts = { parse_mode: 'HTML' }
 
-  const message = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'} => ${price}\n<a href='${item.url}'>LINK</a>`
-  await bot.sendPhoto(CHATID, image, { parse_mode: 'HTML', caption: message })
+    if (price !== 'CAPTCHA' && price !== 'NOT FOUND') {
+      logs.success(`UPDATED!! (${item?.price || 'NONE'} => ${price}) 👀`)
 
-  if (item && price !== 'CAPTCHA') {
-    item.price = price
-    item.date = `${(new Date()).toDateString()} ${getTimeString()}`
-    await updatePrice(item)
+      opts.disable_notification = false
+      opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${item?.price || 'NONE'} => ${price}\n<a href='${item.url}'>LINK</a>`
+
+      item.price = price
+      item.date = `${(new Date()).toDateString()} ${getTimeString()}`
+
+      await updatePrice(item)
+    } else {
+      opts.disable_notification = true
+      opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${price}\n<a href='${item.url}'>LINK</a>`
+    }
+
+    await bot.sendPhoto(CHATID, image, opts)
   }
 }
 
@@ -138,8 +146,6 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
 
           const page = await context.newPage()
 
-          const key = md5(`${vendor.key}${item.name}${item.url}`)
-
           let price = null
           let image = null
 
@@ -148,7 +154,7 @@ const handleUpdated = async ({ vendor, item, price, image, key }) => {
           image = await handleScreenshot({ page, vendor, item, image })
 
           if (price && item.price !== price) {
-            await handleUpdated({ vendor, item, price, image, key })
+            await handleUpdated({ vendor, item, price, image })
           }
 
           await page.close()

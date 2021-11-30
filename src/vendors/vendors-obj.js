@@ -47,7 +47,8 @@ exports.vendorsObj = [
     name: 'Carrefour query',
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('.ebx-result-figure__img')
+      const found = await searchItem(page, '.ebx-result-figure__img')
+      if (!found) return 'NOT FOUND'
       const items = (await page.$$('article.ebx-result.ebx-result--normal')).length
       const stock = (await page.$$('.ebx-result-add2cart__full-button.ebx-result-add2cart__button')).length
 
@@ -114,7 +115,8 @@ exports.vendorsObj = [
     name: 'Game query',
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('img.img-responsive')
+      const found = await searchItem(page, 'img.img-responsive')
+      if (!found) return 'NOT FOUND'
 
       const items = (await page.$$('.item-info')).length
       const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
@@ -211,7 +213,8 @@ exports.vendorsObj = [
     name: 'Worten query',
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('figure > img')
+      const found = await searchItem(page, 'figure > img')
+      if (!found) return 'NOT FOUND'
       const items = (await page.$$('.w-product__wrapper')).length
       return `${items} products`
     }
@@ -221,7 +224,8 @@ exports.vendorsObj = [
     name: 'Xtralife',
     jsEnabled: true,
     checkPrice: async ({ page }) => {
-      await page.waitForSelector('a > img')
+      const found = await searchItem(page, 'a > img')
+      if (!found) return 'NOT FOUND'
 
       const items = (await page.$$('.view-smallGridElement')).length
       const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
@@ -240,4 +244,15 @@ const checkCaptcha = async (page, element, has) => {
   }
 
   return false
+}
+
+const searchItem = async (page, selector) => {
+  try {
+    await page.waitForSelector(selector)
+  } catch (err) {
+    logs.error(`Search item err ${err.message}`)
+    return false
+  }
+
+  return true
 }
