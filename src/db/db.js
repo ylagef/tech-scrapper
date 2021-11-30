@@ -84,7 +84,7 @@ exports.getVendorsFromDB = async () => {
 }
 
 exports.getItemsFromDb = async () => {
-  logs.dim('\nReading DB...')
+  logs.dim('\nGetting items...')
   const items = []
 
   try {
@@ -103,12 +103,12 @@ exports.getItemsFromDb = async () => {
       })
     })
 
-    logs.dim('Read DB ok')
+    logs.dim('Get items ok')
   } catch (err) {
-    logs.error(`Error on DB read ${err.message}`)
+    logs.error(`Error on getting items ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on DB read (${err.message})`,
+       `<b>(${SERVERID})</b> · Error on getting items (${err.message})`,
        { parse_mode: 'HTML' }
     )
   }
