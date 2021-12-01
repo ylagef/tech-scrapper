@@ -107,9 +107,8 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       item.date = `${(new Date()).toDateString()} ${getTimeString()}`
 
       await updatePrice(item)
+      await bot.sendPhoto(CHATID, image, opts)
     }
-
-    await bot.sendPhoto(CHATID, image, opts)
   }
 }
 
