@@ -94,7 +94,10 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
   if (item) {
     const opts = { parse_mode: 'HTML' }
 
-    if (price !== 'CAPTCHA' && price !== 'NOT FOUND') {
+    if (price === 'CAPTCHA' || price === 'NOT FOUND') {
+      opts.disable_notification = true
+      opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${price}\n<a href='${item.url}'>LINK</a>`
+    } else {
       logs.success(`UPDATED!! (${item?.price || 'NONE'} => ${price}) 👀`)
 
       opts.disable_notification = false
@@ -104,9 +107,6 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       item.date = `${(new Date()).toDateString()} ${getTimeString()}`
 
       await updatePrice(item)
-    } else {
-      opts.disable_notification = true
-      opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${price}\n<a href='${item.url}'>LINK</a>`
     }
 
     await bot.sendPhoto(CHATID, image, opts)
