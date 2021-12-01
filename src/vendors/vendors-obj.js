@@ -8,8 +8,15 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
       await page.$$eval('[data-action="sp-cc"]', nodes => nodes.forEach(node => { node.style.display = 'none' }))
-      const stock = (await page.$$('#outOfStock')).length === 0
-      return stock ? ((await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll('.', '').split('€')[0] + '€') : 'NO STOCK'
+
+      const outOfStock = (await page.$$('#outOfStock')).length > 0
+      const stockOthers = (await page.$$('#buybox-see-all-buying-choices')).length > 0
+
+      return stockOthers
+        ? 'STOCK OTHERS'
+        : !outOfStock
+            ? ((await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll('.', '').split('€')[0] + '€')
+            : 'NO STOCK'
     }
   },
   {
@@ -195,8 +202,10 @@ exports.vendorsObj = [
     name: 'Wivai',
     jsEnabled: false,
     checkPrice: async ({ page }) => {
+      const itemNames = await page.$$eval('[data-js="tile-title-text"]', nodes => nodes.map(node => node.innerText))
+      const stock = itemNames.filter(itemName => itemName.toLowerCase().includes('playstation 5')).length
       const items = (await page.$$('.product-tile')).length
-      return `${items} products`
+      return `${items} products (${stock} PS5)`
     }
   },
   {
