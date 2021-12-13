@@ -94,7 +94,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
   if (item) {
     const opts = { parse_mode: 'HTML' }
 
-    if (price === 'CAPTCHA' || price === 'NOT FOUND') {
+    if (price === 'CAPTCHA' || price === 'NOT FOUND 😵') {
       opts.disable_notification = true
       opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${price}\n<a href='${item.url}'>LINK</a>`
     } else {
@@ -138,9 +138,17 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         for (const item of activeItems) {
           await checkItem({ item, vendor })
 
-          const context = await browser.newContext({
-            javaScriptEnabled: vendor.jsEnabled
-          })
+          let context = null
+          if (vendor.auth) {
+            context = await browser.newContext({
+              javaScriptEnabled: vendor.jsEnabled,
+              storageState: `state-keys/${vendor.key}.json`
+            })
+          } else {
+            context = await browser.newContext({
+              javaScriptEnabled: vendor.jsEnabled
+            })
+          }
           context.setDefaultTimeout(10000)
 
           const page = await context.newPage()
@@ -149,6 +157,8 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
           let image = null
 
           price = await handleNavigation({ page, vendor, item, context, price })
+
+          if (vendor.auth) await context.storageState({ path: `state-keys/${vendor.key}.json` })
 
           image = await handleScreenshot({ page, vendor, item, image })
 

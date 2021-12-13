@@ -5,6 +5,7 @@ exports.vendorsObj = [
     key: 'amazon',
     name: 'Amazon',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) return 'CAPTCHA' // Check if captcha
       await page.$$eval('[data-action="sp-cc"]', nodes => nodes.forEach(node => { node.style.display = 'none' }))
@@ -12,17 +13,21 @@ exports.vendorsObj = [
       const outOfStock = (await page.$$('#outOfStock')).length > 0
       const stockOthers = (await page.$$('#buybox-see-all-buying-choices')).length > 0
 
+      const ourPrice = (await page.$$('#priceblock_ourprice')).length > 0 ? (await page.textContent('#priceblock_ourprice'))?.replace(/\s/g, '').replaceAll('.', '') : null
+      const price = (await page.$$('.a-price.a-text-price > .a-offscreen')).length > 0 ? (await page.textContent('.a-price.a-text-price > .a-offscreen'))?.replace(/\s/g, '').replaceAll('.', '') : null
+
       return stockOthers
         ? 'STOCK OTHERS'
-        : !outOfStock
-            ? ((await page.textContent('.a-price.a-text-price.a-size-medium'))?.replaceAll('.', '').split('€')[0] + '€')
-            : 'NO STOCK'
+        : outOfStock
+          ? 'NO STOCK'
+          : price || ourPrice
     }
   },
   {
     key: 'ardistel',
     name: 'Ardistel',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const price = ((await page.textContent("[style='font-size:28px;color:#EC7306;']"))?.replaceAll(' ', ''))
       const stock = (await page.$$('#sistock')).length > 0 ? '' : '(NO STOCK)'
@@ -34,6 +39,7 @@ exports.vendorsObj = [
     key: 'ardistelquery',
     name: 'Ardistel query',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('.product-image-wrapper')).length
       const stock = (await page.$$('.product-image-wrapper  .fas.fa-shopping-cart.fa-fw')).length
@@ -44,6 +50,7 @@ exports.vendorsObj = [
     key: 'carrefour',
     name: 'Carrefour',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
       return stock ? ((await page.textContent('.buybox__prices > span'))?.replaceAll('.', '').replaceAll(' ', '').trim()) : 'NO STOCK'
@@ -53,9 +60,10 @@ exports.vendorsObj = [
     key: 'carrefourquery',
     name: 'Carrefour query',
     jsEnabled: true,
+    auth: false,
     checkPrice: async ({ page }) => {
       const found = await searchItem(page, '.ebx-result-figure__img')
-      if (!found) return 'NOT FOUND'
+      if (!found) return 'NOT FOUND 😵'
       const items = (await page.$$('article.ebx-result.ebx-result--normal')).length
       const stock = (await page.$$('.ebx-result-add2cart__full-button.ebx-result-add2cart__button')).length
 
@@ -66,6 +74,7 @@ exports.vendorsObj = [
     key: 'elcorteingles',
     name: 'El corte inglés',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.product_detail-main-container', false)) return 'CAPTCHA' // Check if captcha
 
@@ -77,6 +86,7 @@ exports.vendorsObj = [
     key: 'elcorteinglesquery',
     name: 'El corte inglés query',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.plp_title_h1', false)) return 'CAPTCHA' // Check if captcha
 
@@ -90,6 +100,7 @@ exports.vendorsObj = [
     key: 'fnac',
     name: 'Fnac',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.f-productVisuals__mainMedia.js-ProductVisuals-imagePreview', false)) return 'CAPTCHA' // Check if captcha
       const stock = (await page.$$('.f-priceBox-price')).length > 0
@@ -100,6 +111,7 @@ exports.vendorsObj = [
     key: 'fnacquery',
     name: 'Fnac query',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.Article-itemVisualImg', false)) return 'CAPTCHA' // Check if captcha
       const items = (await page.$$('article.Article-itemGroup')).length
@@ -112,6 +124,7 @@ exports.vendorsObj = [
     key: 'game',
     name: 'Game',
     jsEnabled: true,
+    auth: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
       return stock ? (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '') : 'NO STOCK'
@@ -121,9 +134,10 @@ exports.vendorsObj = [
     key: 'gamequery',
     name: 'Game query',
     jsEnabled: true,
+    auth: false,
     checkPrice: async ({ page }) => {
       const found = await searchItem(page, 'img.img-responsive')
-      if (!found) return 'NOT FOUND'
+      if (!found) return 'NOT FOUND 😵'
 
       const items = (await page.$$('.item-info')).length
       const stock = (await page.$$eval('.buy--type', nodes => nodes.map(node => node.innerText))).length
@@ -135,6 +149,7 @@ exports.vendorsObj = [
     key: 'mediamarkt',
     name: 'Mediamarkt',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const price = (await page.textContent('[font-family="price"]'))?.split('.')[0] + '€'
       const stock = (await page.$$('#pdp-add-to-cart-button')).length > 0 ? '' : '(NO STOCK)'
@@ -143,9 +158,24 @@ exports.vendorsObj = [
     }
   },
   {
+    key: 'mediamarktcart',
+    name: 'Mediamarkt cart',
+    jsEnabled: true,
+    auth: true,
+    checkPrice: async ({ page }) => {
+      const found = await searchItem(page, 'img')
+      if (!found) return 'NOT FOUND 😵'
+
+      const available = (await page.$$('[data-test="checkout-continue-desktop-disabled"]')).length > 0 ? 'NO AVAILABLE' : 'AVAILABLE'
+
+      return `${available}`
+    }
+  },
+  {
     key: 'mediamarktquery',
     name: 'Mediamarkt query',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const items = (await page.$$('[data-test="mms-search-srp-productlist-item"]')).length
       const delivery = (await page.$$('[data-test="mms-delivery-online-availability_AVAILABLE"]')).length
@@ -158,6 +188,7 @@ exports.vendorsObj = [
     key: 'mielectro',
     name: 'Mielectro',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
       return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
@@ -167,6 +198,7 @@ exports.vendorsObj = [
     key: 'pccomponentes',
     name: 'PcComponentes',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
 
@@ -180,6 +212,7 @@ exports.vendorsObj = [
     key: 'pccomponentesquery',
     name: 'PcComponentes query',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
 
@@ -193,6 +226,7 @@ exports.vendorsObj = [
     key: 'sonyexperience',
     name: 'Sonyexperience',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       return (await page.textContent('.current-price > span'))?.replace('.', '').replace(/\s/g, '')
     }
@@ -201,6 +235,7 @@ exports.vendorsObj = [
     key: 'wivai',
     name: 'Wivai',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const itemNames = await page.$$eval('[data-js="tile-title-text"]', nodes => nodes.map(node => node.innerText))
       const stock = itemNames.filter(itemName => itemName.toLowerCase().includes('playstation 5')).length
@@ -212,6 +247,7 @@ exports.vendorsObj = [
     key: 'worten',
     name: 'Worten',
     jsEnabled: false,
+    auth: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.iss-product-availability')).length > 0
       return stock ? await page.textContent('.iss-product-current-price') : 'NO STOCK'
@@ -221,9 +257,10 @@ exports.vendorsObj = [
     key: 'wortenquery',
     name: 'Worten query',
     jsEnabled: true,
+    auth: false,
     checkPrice: async ({ page }) => {
       const found = await searchItem(page, 'figure > img')
-      if (!found) return 'NOT FOUND'
+      if (!found) return 'NOT FOUND 😵'
       const items = (await page.$$('.w-product__wrapper')).length
       return `${items} products`
     }
@@ -232,9 +269,10 @@ exports.vendorsObj = [
     key: 'xtralife',
     name: 'Xtralife',
     jsEnabled: true,
+    auth: false,
     checkPrice: async ({ page }) => {
       const found = await searchItem(page, 'a > img')
-      if (!found) return 'NOT FOUND'
+      if (!found) return 'NOT FOUND 😵'
 
       const items = (await page.$$('.view-smallGridElement')).length
       const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
@@ -248,7 +286,7 @@ const checkCaptcha = async (page, element, has) => {
   const captcha = (await page.$$(element)).length
 
   if (has ? captcha > 0 : captcha === 0) {
-    logs.error('Captcha detected! ☠️')
+    logs.error('☠️ · Captcha detected! · ⬇')
     return true
   }
 
@@ -259,7 +297,7 @@ const searchItem = async (page, selector) => {
   try {
     await page.waitForSelector(selector)
   } catch (err) {
-    logs.error(`Search item err ${err.message}`)
+    logs.error('😵 · NOT FOUND · ⬇')
     return false
   }
 
