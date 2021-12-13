@@ -72,12 +72,13 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
 }
 
 const handleScreenshot = async ({ page, vendor, item, image }) => {
+  const itemName = item.name.replace(/\s/g, '').toLowerCase()
   try {
     await page.screenshot({
-      path: `screenshots/full/${vendor.name}_${item.name}_full.png`,
+      path: `screenshots/full/${vendor.key}_${itemName}_full.png`,
       fullPage: true
     })
-    image = await page.screenshot({ path: `screenshots/${vendor.name}_${item.name}.png` })
+    image = await page.screenshot({ path: `screenshots/${vendor.key}_${itemName}.png` })
   } catch (err) {
     await bot.sendMessage(
       CHATID,

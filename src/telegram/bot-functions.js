@@ -1,11 +1,12 @@
-const { CHATID, LISTENBOT, SERVERID } = process.env
 
+const { CHATID, LISTENBOT, SERVERID } = process.env
 const { addRow, getLastScrap, getVendorsFromDB, getItemsFromDb, updateVendor } = require('../db/db.js')
 const md5 = require('md5-nodejs')
 const { vendorsObj } = require('../vendors/vendors-obj')
 const { getTimeString } = require('../utils.js')
 const { logs } = require('../log/logs.js')
 const { bot } = require('./bot.js')
+const fs = require('fs')
 
 exports.initializeBotListeners = async () => {
   logs.dim('\nInitializing bot listeners...')
@@ -169,6 +170,50 @@ exports.initializeBotListeners = async () => {
     }
   }
 
+  const handleLastScreenshotVendor = async ({ action }) => {
+    try {
+      const selectedVendor = action.split('_')[2]
+      logs.info(`Selected ${selectedVendor}`)
+
+      const items = await getItemsFromDb()
+      const vendorItems = items.filter(item => item.vendor === selectedVendor)
+
+      const opts = {
+        reply_markup: {
+          inline_keyboard: getItemsKeyboard({ key: 'screenshot_item', items: vendorItems })
+        }
+      }
+
+      await this.message({ msg: 'Select the item', opts })
+    } catch (err) {
+      logs.error(`Error on screenshot vendor ${err.message}`)
+      await this.message({ msg: 'Error on screenshot vendor' })
+    }
+  }
+
+  const handleLastScreenshotItem = async ({ action }) => {
+    try {
+      const selectedVendor = action.split('_')[2]
+      const selectedItem = action.split('_')[3]
+      const full = action.split('_')[4] === 'full'
+      logs.info(`Selected ${selectedVendor} - ${selectedItem}`)
+
+      const items = await getItemsFromDb()
+      const item = items.find(item => item.key === selectedItem)
+
+      const itemName = item.name.replace(/\s/g, '').toLowerCase()
+      const path = full
+        ? `screenshots/full/${selectedVendor}_${itemName}_full.png`
+        : `screenshots/${selectedVendor}_${itemName}.png`
+
+      const image = await fs.readFileSync(path)
+      await bot.sendPhoto(CHATID, image, { caption: item.name })
+    } catch (err) {
+      logs.error(`Error on screenshot item ${err.message}`)
+      await this.message({ msg: 'Error on screenshot item' })
+    }
+  }
+
   if (LISTENBOT === '1') {
     bot.on('polling_error', async (error) => {
       logs.error(`Err on polling ${error.message}`)
@@ -193,6 +238,10 @@ exports.initializeBotListeners = async () => {
         await handleUpdateVendor({ action })
       } else if (action.startsWith('vendor_state')) {
         await handleVendorState({ action })
+      } else if (action.startsWith('screenshot_vendor')) {
+        await handleLastScreenshotVendor({ action })
+      } else if (action.startsWith('screenshot_item')) {
+        await handleLastScreenshotItem({ action })
       }
     })
 
@@ -290,6 +339,23 @@ exports.initializeBotListeners = async () => {
         await this.message({ msg: 'Error on vendor state (select vendor)' })
       }
     })
+
+    bot.onText(/\/lastscreenshot/, async () => {
+      try {
+        logs.info('Last screenshot requested')
+
+        const opts = {
+          reply_markup: {
+            inline_keyboard: await getVendorsKeyboard({ key: 'screenshot_vendor' })
+          }
+        }
+
+        await this.message({ msg: 'Select the vendor', opts })
+      } catch (err) {
+        logs.error(`Error on last screenshot (select vendor) ${err.message}`)
+        await this.message({ msg: 'Error on last screenshot (select vendor)' })
+      }
+    })
   }
 }
 
@@ -328,6 +394,28 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
     }
   } catch (err) {
     logs.error(`Error on get vendors keyboard ${err.message}`)
+  }
+
+  return keyboard
+}
+
+const getItemsKeyboard = ({ key, items }) => {
+  let keyboard = []
+
+  try {
+    keyboard = items
+      .sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0)
+      .map(item =>
+        [{
+          text: item.name,
+          callback_data: `${key}_${item.vendor}_${item.key}`
+        }, {
+          text: `${item.name} (FULL)`,
+          callback_data: `${key}_${item.vendor}_${item.key}_full`
+        }]
+      )
+  } catch (err) {
+    logs.error(`Error on get items keyboard ${err.message}`)
   }
 
   return keyboard

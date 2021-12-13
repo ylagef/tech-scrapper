@@ -249,8 +249,11 @@ exports.vendorsObj = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
-      const stock = (await page.$$('.iss-product-availability')).length > 0
-      return stock ? await page.textContent('.iss-product-current-price') : 'NO STOCK'
+      const hasPrice = (await page.$$('.w-product__price__current.iss-product-current-price')).length > 0
+      const price = hasPrice ? await page.textContent('.w-product__price__current.iss-product-current-price') : ''
+      const stock = (await page.$$('.iss-product-availability')).length > 0 ? '' : '(NO STOCK)'
+
+      return hasPrice ? `${price} ${stock}` : 'NO STOCK'
     }
   },
   {
