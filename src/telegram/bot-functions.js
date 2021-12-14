@@ -194,12 +194,12 @@ exports.initializeBotListeners = async () => {
   const handleLastScreenshotItem = async ({ action }) => {
     try {
       const selectedVendor = action.split('_')[2]
-      const selectedItem = action.split('_')[3]
+      const selectedItemCells = action.split('_')[3]
       const full = action.split('_')[4] === 'full'
-      logs.info(`Selected ${selectedVendor} - ${selectedItem}`)
+      logs.info(`Selected ${selectedVendor} - ${selectedItemCells}`)
 
       const items = await getItemsFromDb()
-      const item = items.find(item => item.key === selectedItem)
+      const item = items.find(item => item.cells === selectedItemCells)
 
       const itemName = item.name.replace(/\s/g, '').toLowerCase()
       const path = full
@@ -402,20 +402,20 @@ const getVendorsKeyboard = async ({ key, filterActive = false, allOption = false
 const getItemsKeyboard = ({ key, items }) => {
   let keyboard = []
 
-  try {
+  if (items.length > 0) {
     keyboard = items
       .sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0)
       .map(item =>
         [{
           text: item.name,
-          callback_data: `${key}_${item.vendor}_${item.key}`
+          callback_data: `${key}_${item.vendor}_${item.cells}`
         }, {
           text: `${item.name} (FULL)`,
-          callback_data: `${key}_${item.vendor}_${item.key}_full`
+          callback_data: `${key}_${item.vendor}_${item.cells}_full`
         }]
       )
-  } catch (err) {
-    logs.error(`Error on get items keyboard ${err.message}`)
+  } else {
+    keyboard = []
   }
 
   return keyboard
