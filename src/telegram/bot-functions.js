@@ -193,20 +193,26 @@ exports.initializeBotListeners = async () => {
 
   const handleLastScreenshotItem = async ({ action }) => {
     try {
-      const selectedVendor = action.split('_')[2]
-      const selectedItemCells = action.split('_')[3]
-      const full = action.split('_')[4] === 'full'
-      logs.info(`Selected ${selectedVendor} - ${selectedItemCells}`)
+      const selectedItemCells = action.split('_')[2]
+      const full = action.split('_')[3] === 'full'
+      logs.info(`Selected ${selectedItemCells} ${full ? 'full' : ''}`)
 
       const items = await getItemsFromDb()
       const item = items.find(item => item.cells === selectedItemCells)
 
       const itemName = item.name.replace(/\s/g, '').toLowerCase()
       const path = full
-        ? `screenshots/full/${selectedVendor}_${itemName}_full.png`
-        : `screenshots/${selectedVendor}_${itemName}.png`
+        ? `screenshots/full/${item.vendor}_${itemName}_full.png`
+        : `screenshots/${item.vendor}_${itemName}.png`
 
-      const image = await fs.readFileSync(path)
+      let image = null
+      try {
+        image = await fs.readFileSync(path)
+      } catch (err) {
+        logs.error(`Error on screenshot item (read file) ${err.message}`)
+        await this.message({ msg: `FILE NOT FOUND - ${item.vendor} · ${item.name}` })
+        return
+      }
       await bot.sendPhoto(CHATID, image, { caption: item.name })
     } catch (err) {
       logs.error(`Error on screenshot item ${err.message}`)
@@ -408,10 +414,10 @@ const getItemsKeyboard = ({ key, items }) => {
       .map(item =>
         [{
           text: item.name,
-          callback_data: `${key}_${item.vendor}_${item.cells}`
+          callback_data: `${key}_${item.cells}`
         }, {
           text: `${item.name} (FULL)`,
-          callback_data: `${key}_${item.vendor}_${item.cells}_full`
+          callback_data: `${key}_${item.cells}_full`
         }]
       )
   } else {
