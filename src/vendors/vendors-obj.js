@@ -43,6 +43,7 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       const items = (await page.$$('.product-image-wrapper')).length
       const stock = (await page.$$('.product-image-wrapper  .fas.fa-shopping-cart.fa-fw')).length
+
       return `${items} products (${stock} stock)`
     }
   },
@@ -53,7 +54,10 @@ exports.vendorsObj = [
     auth: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.add-to-cart-button__full-button.add-to-cart-button__button')).length > 0
-      return stock ? ((await page.textContent('.buybox__prices > span'))?.replaceAll('.', '').replaceAll(' ', '').trim()) : 'NO STOCK'
+
+      return stock
+        ? ((await page.textContent('.buybox__prices > span'))?.replaceAll('.', '').replaceAll(' ', '').trim())
+        : 'NO STOCK'
     }
   },
   {
@@ -64,6 +68,7 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       const found = await searchItem(page, '.ebx-result-figure__img')
       if (!found) return 'NOT FOUND 😵'
+
       const items = (await page.$$('article.ebx-result.ebx-result--normal')).length
       const stock = (await page.$$('.ebx-result-add2cart__full-button.ebx-result-add2cart__button')).length
 
@@ -79,7 +84,10 @@ exports.vendorsObj = [
       if (await checkCaptcha(page, '.product_detail-main-container', false)) return 'CAPTCHA' // Check if captcha
 
       const stock = (await page.$$('.price._big')).length > 0
-      return stock ? (await page.textContent('.price._big'))?.replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
+
+      return stock
+        ? (await page.textContent('.price._big'))?.replaceAll('.', '').replace(/\s/g, '')
+        : 'NO STOCK'
     }
   },
   {
@@ -103,8 +111,12 @@ exports.vendorsObj = [
     auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.f-productVisuals__mainMedia.js-ProductVisuals-imagePreview', false)) return 'CAPTCHA' // Check if captcha
+
       const stock = (await page.$$('.f-priceBox-price')).length > 0
-      return stock ? (await page.textContent('.f-priceBox-price')).replaceAll('.', '').replace(/\s/g, '') : 'NO STOCK'
+
+      return stock
+        ? (await page.textContent('.f-priceBox-price')).replaceAll('.', '').replace(/\s/g, '')
+        : 'NO STOCK'
     }
   },
   {
@@ -114,6 +126,7 @@ exports.vendorsObj = [
     auth: false,
     checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '.Article-itemVisualImg', false)) return 'CAPTCHA' // Check if captcha
+
       const items = (await page.$$('article.Article-itemGroup')).length
       const stock = (await page.$$('article.Article-itemGroup  .js-ProductBuy-add')).length
 
@@ -127,6 +140,7 @@ exports.vendorsObj = [
     auth: false,
     checkPrice: async ({ page }) => {
       const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
+
       return stock ? (await page.textContent('.buy-xl.buy-new > .buy--price'))?.trim().replace(/\s/g, '') : 'NO STOCK'
     }
   },
@@ -191,6 +205,7 @@ exports.vendorsObj = [
     auth: false,
     checkPrice: async ({ page }) => {
       const price = await page.$$eval('.mod-precio-mielectro-rojo', nodes => nodes.map(node => node.innerText))
+
       return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
     }
   },
@@ -205,6 +220,7 @@ exports.vendorsObj = [
       const hasPrice = (await page.$$('#precio-main')).length > 0
       const price = hasPrice ? (await page.textContent('#precio-main')) : ''
       const stock = (await page.$$('#btnsWishAddBuy > .buy-button')).length > 0 ? '' : '(NO STOCK)'
+
       return hasPrice ? `${price} ${stock}` : 'NO STOCK'
     }
   },
@@ -219,6 +235,7 @@ exports.vendorsObj = [
       const items = (await page.$$('article')).length
       const availabilities = await page.$$eval('.c-product-card__availability', nodes => nodes.map(node => node.innerText))
       const stock = availabilities.filter(availability => availability.includes('Recíbelo')).length
+
       return `${items} products (${stock} stock)`
     }
   },
@@ -240,6 +257,7 @@ exports.vendorsObj = [
       const itemNames = await page.$$eval('[data-js="tile-title-text"]', nodes => nodes.map(node => node.innerText))
       const stock = itemNames.filter(itemName => itemName.toLowerCase().includes('playstation 5')).length
       const items = (await page.$$('.product-tile')).length
+
       return `${items} products (${stock} PS5)`
     }
   },
@@ -264,7 +282,9 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       const found = await searchItem(page, 'figure > img')
       if (!found) return 'NOT FOUND 😵'
+
       const items = (await page.$$('.w-product__wrapper')).length
+
       return `${items} products`
     }
   },
@@ -280,6 +300,7 @@ exports.vendorsObj = [
       const items = (await page.$$('.view-smallGridElement')).length
       const buttons = await page.$$eval('.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl', nodes => nodes.map(node => node.innerText))
       const stock = buttons.filter(button => button.includes('Añadir a cesta')).length
+
       return `${items} products (${stock} stock)`
     }
   }
