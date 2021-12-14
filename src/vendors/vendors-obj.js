@@ -163,7 +163,7 @@ exports.vendorsObj = [
     jsEnabled: true,
     auth: true,
     checkPrice: async ({ page }) => {
-      const found = await searchItem(page, 'img')
+      const found = await searchItem(page, '.StyledPicture-sc-1s3zfhk-0.jRuVsy img')
       if (!found) return 'NOT FOUND 😵'
 
       const available = (await page.$$('[data-test="checkout-continue-desktop-disabled"]')).length > 0 ? 'NO AVAILABLE' : 'AVAILABLE'
