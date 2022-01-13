@@ -139,18 +139,12 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         for (const item of activeItems) {
           await checkItem({ item, vendor })
 
-          let context = null
-          if (vendor.auth) {
-            context = await browser.newContext({
-              javaScriptEnabled: vendor.jsEnabled,
-              storageState: `state-keys/${vendor.key}.json`
-            })
-          } else {
-            context = await browser.newContext({
-              javaScriptEnabled: vendor.jsEnabled
-            })
-          }
+          const context = await browser.newContext({
+            javaScriptEnabled: vendor.jsEnabled
+          })
+
           context.setDefaultTimeout(10000)
+          if (vendor.auth) context.storageState(`state-keys/${vendor.key}.json`)
 
           const page = await context.newPage()
 
