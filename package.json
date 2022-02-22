@@ -10,7 +10,8 @@
     "logs": "tail -f src/log/out.log",
     "errors": "tail -f src/log/err.log",
     "restart": "npm run stop && npm run start",
-    "start-logs": "npm run start && npm run logs"
+    "start-logs": "npm run start && npm run logs",
+    "node-start": "npx playwright install && node src/index.js"
   },
   "repository": {
     "type": "git",
