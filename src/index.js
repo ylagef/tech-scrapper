@@ -213,13 +213,14 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
     )
   }
 
-  // Scrap again each minute
-  if (totalSeconds >= 60) {
+  // Scrap again each 2 minutes
+  const minutes = 2
+  if (totalSeconds >= minutes * 60) {
     scrap()
   } else {
     setTimeout(() => {
       scrap()
-    }, (60 - totalSeconds) * 1000)
+    }, (minutes * 60 - totalSeconds) * 1000)
   }
 })()
 
