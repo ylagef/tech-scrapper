@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { CHATID, HEADLESS, SERVERID } = process.env
+const { CHATID, SERVERID } = process.env
 
 const { firefox } = require('playwright')
 const { vendorsObj } = require('./vendors/vendors-obj')
@@ -34,7 +34,6 @@ const scrapInitialization = async () => {
     logs.dim(`\n\n${Object.keys(activeVendors).join(' | ')}`)
     logs.log('\n\n- - - - -')
 
-    console.log({ headless: HEADLESS })
     browser = await firefox.launch({ headless: true, chromiumSandbox: false })
     await bot.sendMessage(CHATID, `<b>(${SERVERID})</b> · Browser launched`, {
       parse_mode: 'HTML',
