@@ -26,10 +26,15 @@ exports.vendorsObj = [
               ?.replace(/\s/g, '')
               .replaceAll('.', '')
           : null
+
+      const priceElements = await page.$$(
+        '.a-price.aok-align-center > .a-offscreen'
+      )
+
       const price =
-        (await page.$$('.a-price.a-text-price > .a-offscreen')).length > 0
-          ? (await page.textContent('.a-price.a-text-price > .a-offscreen'))
-              ?.replace(/\s/g, '')
+        priceElements.length > 0
+          ? (await page.textContent('.a-price.aok-align-center > .a-offscreen'))
+              .replace(/\s/g, '')
               .replaceAll('.', '')
           : null
 
@@ -237,7 +242,7 @@ exports.vendorsObj = [
         nodes.map((node) => node.innerText)
       )
       const filtered = nodes?.filter((node) => node.includes('€'))
-      const price = filtered.length > 0 ? filtered[0]?.replaceAll(' ', '') : ''
+      const price = filtered.length > 0 ? filtered[0]?.replace(/\s/g, '') : ''
 
       const stock =
         (await page.$$('#pdp-add-to-cart-button')).length > 0
