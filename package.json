@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "forever start --watchDirectory=./src ./src/forever/config.json",
-    "stop": "forever stopall",
+    "stop-all": "forever stopall",
+    "stop": "forever stop tech-scrapper",
     "forever-logs": "forever logs 0 -f",
-    "logs": "tail -f src/log/out.log",
-    "errors": "tail -f src/log/err.log",
+    "logs": "tail -f log/out.log",
+    "errors": "tail -f log/err.log",
     "restart": "npm run stop && npm run start",
     "start-logs": "npm run start && npm run logs",
     "node-start": "npx playwright install && node src/index.js"
@@ -30,7 +31,7 @@
     "md5-nodejs": "^1.0.3",
     "node-color-log": "^7.0.0",
     "node-telegram-bot-api": "^0.54.0",
-    "playwright": "^1.16.3"
+    "playwright": "^1.21.0"
   },
   "devDependencies": {
     "standard": "^16.0.4"

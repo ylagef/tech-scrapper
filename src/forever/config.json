@@ -1,7 +1,8 @@
 {
-    "append": true,
-    "watch": true,
-    "script": "./src/index.js",
-    "outFile": "./src/log/out.log",
-    "errFile": "./src/log/err.log"
+  "uid": "tech-scrapper",
+  "append": true,
+  "watch": true,
+  "script": "./src/index.js",
+  "outFile": "./log/out.log",
+  "errFile": "./log/err.log"
 }
