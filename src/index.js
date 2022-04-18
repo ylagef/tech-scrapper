@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { CHATID, SERVERID } = process.env
+const { CHATID, SERVERID, MINUTES } = process.env
 
 const { chromium } = require('playwright')
 const { vendorsObj } = require('./vendors/vendors-obj')
@@ -34,7 +34,13 @@ const scrapInitialization = async () => {
     logs.dim(`\n\n${Object.keys(activeVendors).join(' | ')}`)
     logs.log('\n\n- - - - -')
 
-    browser = await chromium.launch({ headless: true, chromiumSandbox: false })
+    try {
+      browser = await chromium.launch({ headless: true })
+    } catch (err) {
+      logs.error(`Error on launch: ${err.message}`)
+      process.exit(1)
+    }
+
     await bot.sendMessage(CHATID, `<b>(${SERVERID})</b> · Browser launched`, {
       parse_mode: 'HTML',
       disable_notification: true
@@ -213,14 +219,13 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
     )
   }
 
-  // Scrap again each 2 minutes
-  const minutes = 5
-  if (totalSeconds >= minutes * 60) {
+  // Scrap again each ${MINUTES} minutes
+  if (totalSeconds >= MINUTES * 60) {
     scrap()
   } else {
     setTimeout(() => {
       scrap()
-    }, (minutes * 60 - totalSeconds) * 1000)
+    }, (MINUTES * 60 - totalSeconds) * 1000)
   }
 })()
 
