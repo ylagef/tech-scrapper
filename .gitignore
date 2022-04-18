@@ -106,3 +106,4 @@ dist
 screenshots
 .DS_Store
 state-keys/*.json
+log/*.log
