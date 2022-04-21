@@ -244,3 +244,15 @@ process.on('uncaughtException', async (ev) => {
   logs.error(`CRITICAL (${ev})`)
   process.exit(1)
 })
+
+process.on('SIGTERM', async () => {
+  logs.info('SIGTERM signal')
+
+  try {
+    await browser.close()
+  } catch (e) {
+    logs.error('Error on close browser')
+  }
+
+  process.exit(1)
+})

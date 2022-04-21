@@ -4,5 +4,6 @@
   "watch": true,
   "script": "./src/index.js",
   "outFile": "./log/out.log",
-  "errFile": "./log/err.log"
+  "errFile": "./log/err.log",
+  "killSignal":"SIGTERM"
 }
