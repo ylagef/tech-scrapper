@@ -154,9 +154,9 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
     for (const vendor of vendors) {
       logs
         .bold(`\n${vendor.name}`)
-        .joint()
-        .dim()
-        .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
+        // .joint()
+        // .dim()
+        // .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
 
       const activeItems = items
         .filter((item) => item.vendor === vendor.key)
