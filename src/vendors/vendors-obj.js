@@ -25,8 +25,8 @@ exports.vendorsObj = [
         (await page.$$('#buybox-see-all-buying-choices')).length > 0
 
       const ourPrice =
-        (await page.$$('#priceblock_ourprice')).length > 0
-          ? (await page.evaluate(() => document.querySelector('#priceblock_ourprice').innerText))
+        (await page.$$('.priceToPay')).length > 0
+          ? (await page.evaluate(() => document.querySelector('.priceToPay').innerText))
 
               ?.replace(/\s/g, '')
               .replaceAll('.', '')
