@@ -10,6 +10,10 @@ exports.vendorsObj = [
       if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) {
         return 'CAPTCHA'
       } // Check if captcha
+
+      const found = await searchItem(page, '#nav-logo')
+      if (!found) return 'NOT FOUND 😵'
+
       await page.$$eval('[data-action="sp-cc"]', (nodes) =>
         nodes.forEach((node) => {
           node.style.display = 'none'
@@ -22,7 +26,8 @@ exports.vendorsObj = [
 
       const ourPrice =
         (await page.$$('#priceblock_ourprice')).length > 0
-          ? (await page.textContent('#priceblock_ourprice'))
+          ? (await page.evaluate(() => document.querySelector('#priceblock_ourprice').innerText))
+
               ?.replace(/\s/g, '')
               .replaceAll('.', '')
           : null
@@ -33,7 +38,8 @@ exports.vendorsObj = [
 
       const price =
         priceElements.length > 0
-          ? (await page.textContent('.a-price.aok-align-center > .a-offscreen'))
+          ? (await page.evaluate(() => document.querySelector('.a-price.aok-align-center > .a-offscreen').innerText))
+
               .replace(/\s/g, '')
               .replaceAll('.', '')
           : null
@@ -41,8 +47,8 @@ exports.vendorsObj = [
       return stockOthers
         ? 'STOCK OTHERS'
         : outOfStock
-        ? 'NO STOCK'
-        : price || ourPrice
+          ? 'NO STOCK'
+          : price || ourPrice
     }
   },
   {
@@ -51,9 +57,9 @@ exports.vendorsObj = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
-      const price = (
-        await page.textContent("[style='font-size:28px;color:#EC7306;']")
-      )?.replaceAll(' ', '')
+      const price =
+      (await page.evaluate(() => document.querySelector("[style='font-size:28px;color:#EC7306;']").innerText))
+        ?.replaceAll(' ', '')
       const stock = (await page.$$('#sistock')).length > 0 ? '' : '(NO STOCK)'
 
       return `${price} ${stock}`
@@ -87,14 +93,13 @@ exports.vendorsObj = [
         ).length > 0
 
       const price =
-        (await page.textContent('.buybox__price'))
-          ?.replaceAll('.', '')
-          .replaceAll(' ', '')
-          .trim() || ''
+(await page.evaluate(() => document.querySelector('.buybox__price').innerText))
+  ?.replaceAll('.', '')
+  .replaceAll(' ', '')
+  .trim() || ''
 
       return stock
-        ? (await page.textContent('.buybox__prices > span'))
-            ?.replaceAll('.', '')
+        ? (await page.evaluate(() => document.querySelector('.buybox__prices > span').innerText))?.replaceAll('.', '')
             .replaceAll(' ', '')
             .trim()
         : `${price} (NO STOCK)`
@@ -133,7 +138,8 @@ exports.vendorsObj = [
       const stock = (await page.$$('.price._big')).length > 0
 
       return stock
-        ? (await page.textContent('.price._big'))
+        ? (await page.evaluate(() => document.querySelector('.price._big').innerText))
+
             ?.replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
@@ -158,7 +164,7 @@ exports.vendorsObj = [
   {
     key: 'fnac',
     name: 'Fnac',
-    jsEnabled: false,
+    jsEnabled: true,
     auth: false,
     checkPrice: async ({ page }) => {
       if (
@@ -174,7 +180,8 @@ exports.vendorsObj = [
       const stock = (await page.$$('.f-priceBox-price')).length > 0
 
       return stock
-        ? (await page.textContent('.f-priceBox-price'))
+        ? (await page.evaluate(() => document.querySelector('.f-priceBox-price').innerText))
+
             .replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
@@ -207,7 +214,8 @@ exports.vendorsObj = [
       const stock = (await page.$$('.buy-xl.buy-new > .buy--price')).length > 0
 
       return stock
-        ? (await page.textContent('.buy-xl.buy-new > .buy--price'))
+        ? (await page.evaluate(() => document.querySelector('.buy-xl.buy-new > .buy--price').innerText))
+
             ?.trim()
             .replace(/\s/g, '')
         : 'NO STOCK'
@@ -318,7 +326,7 @@ exports.vendorsObj = [
       if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
 
       const hasPrice = (await page.$$('#precio-main')).length > 0
-      const price = hasPrice ? await page.textContent('#precio-main') : ''
+      const price = hasPrice ? (await page.evaluate(() => document.querySelector('#precio-main').innerText)) : ''
       const stock =
         (await page.$$('#btnsWishAddBuy > .buy-button')).length > 0
           ? ''
@@ -353,7 +361,7 @@ exports.vendorsObj = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
-      return (await page.textContent('.current-price > span'))
+      return (await page.evaluate(() => document.querySelector('.current-price > span').innerText))
         ?.replace('.', '')
         .replace(/\s/g, '')
     }
@@ -386,9 +394,7 @@ exports.vendorsObj = [
         (await page.$$('.w-product__price__current.iss-product-current-price'))
           .length > 0
       const price = hasPrice
-        ? await page.textContent(
-            '.w-product__price__current.iss-product-current-price'
-          )
+        ? (await page.evaluate(() => document.querySelector('.w-product__price__current.iss-product-current-price').innerText))
         : ''
       const stock =
         (await page.$$('.iss-product-availability')).length > 0

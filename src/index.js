@@ -1,7 +1,6 @@
 require('dotenv').config()
 const { CHATID, SERVERID, MINUTES } = process.env
 
-const { chromium } = require('playwright')
 const { vendorsObj } = require('./vendors/vendors-obj')
 const {
   initializeDb,
@@ -15,6 +14,13 @@ const { initializeBotListeners } = require('./telegram/bot-functions')
 const { getTimeString } = require('./utils')
 const { logs } = require('./log/logs')
 const { bot } = require('./telegram/bot')
+const puppeteer = require('puppeteer-extra')
+
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(StealthPlugin())
+
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
+puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
 
 let items = null
 let browser = null
@@ -35,7 +41,7 @@ const scrapInitialization = async () => {
     logs.log('\n\n- - - - -')
 
     try {
-      browser = await chromium.launch({ headless: true })
+      browser = await puppeteer.launch()
     } catch (err) {
       logs.error(`Error on launch: ${err.message}`)
       process.exit(1)
@@ -162,14 +168,15 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         for (const item of activeItems) {
           await checkItem({ item, vendor })
 
-          const context = await browser.newContext({
-            javaScriptEnabled: vendor.jsEnabled
-          })
+          const context = await browser.createIncognitoBrowserContext()
+          //  await browser.newContext({
+          //   javaScriptEnabled: vendor.jsEnabled
+          // })
 
-          context.setDefaultTimeout(10000)
-          if (vendor.auth) {
-            context.storageState(`state-keys/${vendor.key}.json`)
-          }
+          // context.setDefaultTimeout(10000)
+          // if (vendor.auth) {
+          //   context.storageState(`state-keys/${vendor.key}.json`)
+          // }
 
           const page = await context.newPage()
 
@@ -184,11 +191,11 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
             price
           })
 
-          if (vendor.auth) {
-            await context.storageState({
-              path: `state-keys/${vendor.key}.json`
-            })
-          }
+          // if (vendor.auth) {
+          //   await context.storageState({
+          //     path: `state-keys/${vendor.key}.json`
+          //   })
+          // }
 
           image = await handleScreenshot({ page, vendor, item, image })
 
@@ -207,7 +214,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
     logs.log(
       `\n\n🏁 SCRAP FINISHED (${getTimeString(
         endDate
-      )}) - ${totalSeconds}s\n\n- - - - - - -`
+      )}) - ${Math.floor(totalSeconds / 60)}m ${totalSeconds % 60}s\n\n- - - - - - -`
     )
 
     await updateLastScrap({ bot, endDate, totalSeconds })

@@ -12,7 +12,8 @@
     "errors": "tail -f log/err.log",
     "restart": "npm run stop && npm run start",
     "start-logs": "npm run start && npm run logs",
-    "node-start": "npx playwright install && node src/index.js"
+    "node-start": "npx playwright install && node src/index.js",
+    "clear-screenshots": "rm screenshots/*.png && rm -rf screenshots/full/*.png"
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,10 @@
     "md5-nodejs": "^1.0.3",
     "node-color-log": "^7.0.0",
     "node-telegram-bot-api": "^0.54.0",
-    "playwright": "^1.21.0"
+    "puppeteer": "^13.6.0",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-adblocker": "^2.12.0",
+    "puppeteer-extra-plugin-stealth": "^2.9.0"
   },
   "devDependencies": {
     "standard": "^16.0.4"
