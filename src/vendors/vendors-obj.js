@@ -25,9 +25,8 @@ exports.vendorsObj = [
         (await page.$$('#buybox-see-all-buying-choices')).length > 0
 
       const ourPrice =
-        (await page.$$('.priceToPay')).length > 0
-          ? (await page.evaluate(() => document.querySelector('.priceToPay').innerText))
-
+        (await page.$$('.apexPriceToPay')).length > 0
+          ? (await page.$$eval('.apexPriceToPay', (nodes) => nodes[0]?.innerText))?.split('\n')[0]
               ?.replace(/\s/g, '')
               .replaceAll('.', '')
           : null
@@ -39,7 +38,6 @@ exports.vendorsObj = [
       const price =
         priceElements.length > 0
           ? (await page.evaluate(() => document.querySelector('.a-price.aok-align-center > .a-offscreen').innerText))
-
               .replace(/\s/g, '')
               .replaceAll('.', '')
           : null
@@ -139,7 +137,6 @@ exports.vendorsObj = [
 
       return stock
         ? (await page.evaluate(() => document.querySelector('.price._big').innerText))
-
             ?.replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
@@ -181,7 +178,6 @@ exports.vendorsObj = [
 
       return stock
         ? (await page.evaluate(() => document.querySelector('.f-priceBox-price').innerText))
-
             .replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
@@ -215,7 +211,6 @@ exports.vendorsObj = [
 
       return stock
         ? (await page.evaluate(() => document.querySelector('.buy-xl.buy-new > .buy--price').innerText))
-
             ?.trim()
             .replace(/\s/g, '')
         : 'NO STOCK'
