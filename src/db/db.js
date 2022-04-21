@@ -2,7 +2,7 @@ const { SERVERID, CHATID, PRIVATEKEY, CLIENTEMAIL } = process.env
 
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const md5 = require('md5-nodejs')
-const { getTimeString } = require('../utils')
+const { getTimeString, getDateTimeString } = require('../utils')
 const { logs } = require('../log/logs')
 const { bot } = require('../telegram/bot')
 
@@ -173,7 +173,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
   }
 }
 
-exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
+exports.updateLastScrap = async ({ bot, endDate, minutesSeconds }) => {
   try {
     await doc.sheetsByTitle.vendors.loadHeaderRow()
     const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
@@ -191,8 +191,8 @@ exports.updateLastScrap = async ({ bot, endDate, totalSeconds }) => {
     const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
     serverCell.value = `${SERVERID}`
-    dateCell.value = `${getTimeString(endDate)}`
-    ellapsedCell.value = `${totalSeconds}s`
+    dateCell.value = `${getDateTimeString(endDate)}`
+    ellapsedCell.value = minutesSeconds
     await sheet.saveCells([serverCell, dateCell, ellapsedCell])
   } catch (err) {
     logs.error(`Error on update last scrap ${err.message}`)

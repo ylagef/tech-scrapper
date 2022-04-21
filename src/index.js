@@ -211,13 +211,14 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
 
     const endDate = new Date()
     totalSeconds = Math.ceil((endDate - startDate) / 1000)
+    const minutesSeconds = `${Math.floor(totalSeconds / 60)}m ${totalSeconds % 60}s`
     logs.log(
       `\n\n🏁 SCRAP FINISHED (${getTimeString(
         endDate
-      )}) - ${Math.floor(totalSeconds / 60)}m ${totalSeconds % 60}s\n\n- - - - - - -`
+      )}) - ${minutesSeconds}\n\n- - - - - - -`
     )
 
-    await updateLastScrap({ bot, endDate, totalSeconds })
+    await updateLastScrap({ bot, endDate, minutesSeconds })
   } catch (err) {
     logs.error(`${err.message.split('=')[0].trim()}`)
     await bot.sendMessage(
