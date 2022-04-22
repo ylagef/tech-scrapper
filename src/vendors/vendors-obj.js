@@ -346,6 +346,13 @@ exports.vendorsObj = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
+      // Hide cookies modal
+      await page.$$eval('#mms-consent-portal-container', (nodes) =>
+        nodes.forEach((node) => {
+          node.style.display = 'none'
+        })
+      )
+
       const items = (
         await page.$$('[data-test="mms-search-srp-productlist-item"]')
       ).length
