@@ -4,7 +4,7 @@
   "description": "Tech scrapper",
   "main": "index.js",
   "scripts": {
-    "start": "forever start --watchDirectory=./src ./src/forever/config.json",
+    "start": "rm log/*.log && forever start --watchDirectory=./src ./src/forever/config.json",
     "stop-all": "forever stopall",
     "stop": "forever stop tech-scrapper",
     "forever-logs": "forever logs 0 -f",
