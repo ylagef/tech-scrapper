@@ -80,6 +80,36 @@ exports.vendorsObj = [
     }
   },
   {
+    key: 'amazonquery',
+    name: 'Amazon query',
+    jsEnabled: false,
+    auth: false,
+    checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '.a-box.a-color-offset-background', true)) {
+        return 'CAPTCHA'
+      } // Check if captcha
+
+      const found = await searchItem(page, '#nav-logo')
+      if (!found) return 'NOT FOUND 😵'
+
+      await page.$$eval('[data-action="sp-cc"]', (nodes) =>
+        nodes.forEach((node) => {
+          node.style.display = 'none'
+        })
+      )
+
+      const items = (await page.$$('.s-result-item.s-asin')).length
+      const stockAmazon = (
+        await page.$$('.s-result-item .a-price-whole')
+      ).length
+      const stockOthers = items - stockAmazon - (
+        await page.$$('[aria-label="No disponible."]')
+      ).length
+
+      return `${items} products (${stockAmazon} amazon - ${stockOthers} others)`
+    }
+  },
+  {
     key: 'ardistel',
     name: 'Ardistel',
     jsEnabled: false,
