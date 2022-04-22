@@ -73,7 +73,7 @@ exports.vendorsObj = [
           : null
 
       return stockOthers
-        ? `STOCK OTHERS (>${othersPrice})`
+        ? `OTHERS (>${othersPrice})`
         : outOfStock
           ? 'NO STOCK'
           : price || ourPrice
