@@ -147,6 +147,9 @@ exports.vendorsObj = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
+      const found = await searchItem(page, '.main-image img')
+      if (!found) return 'NOT FOUND 😵'
+
       const stock =
         (
           await page.$$(
@@ -157,7 +160,7 @@ exports.vendorsObj = [
       const price =
         (
           await page.evaluate(
-            () => document.querySelector('.buybox__price').innerText
+            () => document.querySelector('.buybox__price')?.innerText
           )
         )
           ?.replaceAll('.', '')
@@ -167,7 +170,7 @@ exports.vendorsObj = [
       return stock
         ? (
             await page.evaluate(
-              () => document.querySelector('.buybox__prices > span').innerText
+              () => document.querySelector('.buybox__prices > span')?.innerText
             )
           )
             ?.replaceAll('.', '')
