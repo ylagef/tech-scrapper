@@ -18,10 +18,7 @@ exports.logs = {
     lastLogs += `<b>${msg}</b>\n`
     return logger.bold().log(`${msg}`)
   },
-  info: (msg) => {
-    lastLogs += `ℹ️ ${msg}\n`
-    return logger.color('black').bgColor('cyan').log(` ${msg} `)
-  },
+  info: (msg) => logger.color('black').bgColor('cyan').log(` ${msg} `),
   error: (msg) => {
     lastLogs += `🔴 ${msg}\n`
     return logger.color('black').bgColor('red').log(` ${msg} `)
