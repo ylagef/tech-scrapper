@@ -12,7 +12,7 @@ const {
 } = require('./db/db.js')
 const { initializeBotListeners } = require('./telegram/bot-functions')
 const { getTimeString } = require('./utils')
-const { logs } = require('./log/logs')
+const { logs, clearLogs } = require('./log/logs')
 const { bot } = require('./telegram/bot')
 const puppeteer = require('puppeteer-extra')
 
@@ -75,14 +75,14 @@ const checkItem = async ({ item, vendor }) => {
 
 const handleNavigation = async ({ page, vendor, item, context, price }) => {
   try {
-    logs.dim('Step 1')
+    logs.debug('1')
     await page.goto(item.url, { waitUntil: 'load' })
-    logs.dim('Step 2')
+    logs.debug('2')
     price = await vendor.checkPrice({ context, page })
-    logs.dim('Step 3')
+    logs.debug('3')
     logs.log(`\t${item.name} · ${price}`)
   } catch (err) {
-    logs.dim('Step 4')
+    logs.debug('4')
     await bot.sendMessage(
       CHATID,
       `${vendor.name} - ${item.name} · Err (${err.message
@@ -90,11 +90,11 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
         .trim()})`,
       { disable_notification: true }
     )
-    logs.dim('Step 5')
+    logs.debug('5')
     logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
-    logs.dim('Step 6')
+    logs.debug('6')
   }
-  logs.dim('Step 7')
+  logs.debug('7')
 
   return price
 }
@@ -149,6 +149,8 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
 
 ;(async function scrap() {
   try {
+    clearLogs() // Reset last logs
+
     const startDate = new Date()
     logs.log(`\n🔎 START SCRAPPING... (${getTimeString(startDate)})`)
 
@@ -173,13 +175,13 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         logs.dim('\tNo active items')
       } else {
         for (const item of activeItems) {
-          logs.dim('\nStep check item ' + item.name)
+          logs.debug('check item ' + item.name)
           await checkItem({ item, vendor })
-          logs.dim('Step item checked ✔')
+          logs.debug('item checked ✔')
 
-          logs.dim('Step create context')
+          logs.debug('create context')
           const context = await browser.createIncognitoBrowserContext()
-          logs.dim('Step context created ✔')
+          logs.debug('context created ✔')
           //  await browser.newContext({
           //   javaScriptEnabled: vendor.jsEnabled
           // })
@@ -188,13 +190,13 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
           // if (vendor.auth) {
           //   context.storageState(`state-keys/${vendor.key}.json`)
           // }
-          logs.dim('Step create page')
+          logs.debug('create page')
           const page = await context.newPage()
           await page.setViewport({
             width: 1920,
             height: 1080
           })
-          logs.dim('Step page created ✔')
+          logs.debug('page created ✔')
 
           let price = null
           let image = null
@@ -206,23 +208,23 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
             context,
             price
           })
-          logs.dim('Step 8')
+          logs.debug('8')
 
           // if (vendor.auth) {
           //   await context.storageState({
           //     path: `state-keys/${vendor.key}.json`
           //   })
           // }
-          logs.dim('Step 9')
+          logs.debug('9')
           image = await handleScreenshot({ page, vendor, item, image })
-          logs.dim(`Step 10 ${price} ${item.price}`)
+          logs.debug(`10 ${price} ${item.price}`)
           if (price && item.price !== price) {
             await handleUpdated({ vendor, item, price, image })
           }
-          logs.dim('Step 11')
+          logs.debug('11')
           await page.close()
           await context.close()
-          logs.dim('Step 12')
+          logs.debug('12')
         }
       }
     }

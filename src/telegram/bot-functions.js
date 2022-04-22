@@ -4,7 +4,7 @@ const { addRow, getLastScrap, getVendorsFromDB, getItemsFromDb, updateVendor } =
 const md5 = require('md5-nodejs')
 const { vendorsObj } = require('../vendors/vendors-obj')
 const { getTimeString } = require('../utils.js')
-const { logs } = require('../log/logs.js')
+const { logs, getLastLogs } = require('../log/logs.js')
 const { bot } = require('./bot.js')
 const fs = require('fs')
 
@@ -346,6 +346,17 @@ exports.initializeBotListeners = async () => {
       }
     })
 
+    bot.onText(/\/lastlogs/, async () => {
+      try {
+        logs.info('Asked for last logs')
+
+        const lastLogs = getLastLogs()
+        await bot.sendMessage(CHATID, lastLogs, { caption: 'Log file', parse_mode: 'HTML' })
+      } catch (err) {
+        logs.error(`Error on get last logs ${err.message}`)
+        await this.message({ msg: 'Error on get last logs' })
+      }
+    })
     bot.onText(/\/lastscreenshot/, async () => {
       try {
         logs.info('Last screenshot requested')
