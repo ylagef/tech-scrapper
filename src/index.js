@@ -75,10 +75,14 @@ const checkItem = async ({ item, vendor }) => {
 
 const handleNavigation = async ({ page, vendor, item, context, price }) => {
   try {
+    logs.dim('Step 1')
     await page.goto(item.url, { waitUntil: 'load' })
+    logs.dim('Step 2')
     price = await vendor.checkPrice({ context, page })
+    logs.dim('Step 3')
     logs.log(`\t${item.name} · ${price}`)
   } catch (err) {
+    logs.dim('Step 4')
     await bot.sendMessage(
       CHATID,
       `${vendor.name} - ${item.name} · Err (${err.message
@@ -86,8 +90,11 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
         .trim()})`,
       { disable_notification: true }
     )
+    logs.dim('Step 5')
     logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
+    logs.dim('Step 6')
   }
+  logs.dim('Step 7')
 
   return price
 }
@@ -103,13 +110,13 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
       path: `screenshots/${vendor.key}_${itemName}.png`
     })
   } catch (err) {
-    await bot.sendMessage(
-      CHATID,
-      `${vendor.name} - ${item.name} · Err on screenshot (${err.message
-        .split('=')[0]
-        .trim()})`,
-      { disable_notification: true }
-    )
+    // await bot.sendMessage(
+    //   CHATID,
+    //   `${vendor.name} - ${item.name} · Err on screenshot (${err.message
+    //     .split('=')[0]
+    //     .trim()})`,
+    //   { disable_notification: true }
+    // )
     logs.error(`Err on screenshot (${err.message.split('=')[0].trim()})`)
   }
 
@@ -166,9 +173,13 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         logs.dim('\tNo active items')
       } else {
         for (const item of activeItems) {
+          logs.dim('\nStep check item ' + item.name)
           await checkItem({ item, vendor })
+          logs.dim('Step item checked ✔')
 
+          logs.dim('Step create context')
           const context = await browser.createIncognitoBrowserContext()
+          logs.dim('Step context created ✔')
           //  await browser.newContext({
           //   javaScriptEnabled: vendor.jsEnabled
           // })
@@ -177,8 +188,13 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
           // if (vendor.auth) {
           //   context.storageState(`state-keys/${vendor.key}.json`)
           // }
-
+          logs.dim('Step create page')
           const page = await context.newPage()
+          await page.setViewport({
+            width: 1920,
+            height: 1080
+          })
+          logs.dim('Step page created ✔')
 
           let price = null
           let image = null
@@ -190,21 +206,23 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
             context,
             price
           })
+          logs.dim('Step 8')
 
           // if (vendor.auth) {
           //   await context.storageState({
           //     path: `state-keys/${vendor.key}.json`
           //   })
           // }
-
+          logs.dim('Step 9')
           image = await handleScreenshot({ page, vendor, item, image })
-
+          logs.dim(`Step 10 ${price} ${item.price}`)
           if (price && item.price !== price) {
             await handleUpdated({ vendor, item, price, image })
           }
-
+          logs.dim('Step 11')
           await page.close()
           await context.close()
+          logs.dim('Step 12')
         }
       }
     }
