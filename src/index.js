@@ -136,7 +136,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       opts.disable_notification = false
       opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${
         item?.price || 'NONE'
-      } => ${price}\n<a href='${item.url}'>LINK</a>`
+      } \n↓ ↓ ↓ ↓ ↓\n${price}\n<a href='${item.url}'>LINK</a>`
 
       item.price = price
       item.date = `${new Date().toDateString()} ${getTimeString()}`
