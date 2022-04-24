@@ -8,26 +8,26 @@ export const clearLogs = () => {
 export const getLastLogs = () => lastLogs
 
 export const logs = {
-  log: (msg) => {
+  log: (msg: string) => {
     lastLogs += `${msg}\n`
     return logger.log(`${msg}`)
   },
-  dim: (msg) => {
+  dim: (msg: string) => {
     lastLogs += `<i>${msg}</i>\n`
     return logger.dim().log(`${msg}`)
   },
-  bold: (msg) => {
+  bold: (msg: string) => {
     lastLogs += `<b>${msg}</b>\n`
     return logger.bold().log(`${msg}`)
   },
-  info: (msg) => logger.color('black').bgColor('cyan').log(` ${msg} `),
-  error: (msg) => {
+  info: (msg: string) => logger.color('black').bgColor('cyan').log(` ${msg} `),
+  error: (msg: string) => {
     lastLogs += `🔴 ${msg}\n`
     return logger.color('black').bgColor('red').log(` ${msg} `)
   },
-  success: (msg) => {
+  success: (msg: string) => {
     lastLogs += `🟢 ${msg}\n`
     return logger.color('black').bgColor('green').log(` ${msg} `)
   },
-  debug: (msg) => logger.dim().log(`🐛 ${msg}`)
+  debug: (msg: string) => logger.dim().log(`🐛 ${msg}`)
 }
