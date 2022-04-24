@@ -151,6 +151,11 @@
   "resolved" "https://registry.npmjs.org/@types/firefox-webext-browser/-/firefox-webext-browser-94.0.1.tgz"
   "version" "94.0.1"
 
+"@types/google-spreadsheet@^3.2.1":
+  "integrity" "sha512-k9fMPyRJuWFoRiD4ZU2xTJTBykeXIh+ittw59UHGvNVkyu0b82DorkEJe36LBlaLkqD2qPBAunVz6JZRMFvWIA=="
+  "resolved" "https://registry.npmjs.org/@types/google-spreadsheet/-/google-spreadsheet-3.2.1.tgz"
+  "version" "3.2.1"
+
 "@types/har-format@*":
   "integrity" "sha512-OP6L9VuZNdskgNN3zFQQ54ceYD8OLq5IbqO4VK91ORLfOm7WdT/CiT/pHEBSQEqCInJ2y3O6iCm/zGtPElpgJQ=="
   "resolved" "https://registry.npmjs.org/@types/har-format/-/har-format-1.2.8.tgz"

@@ -5,6 +5,7 @@ import puppeteer from 'puppeteer-extra'
 import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import {
+  addHistoryRow,
   getItemsFromDb,
   getVendorsFromDB,
   initializeDb,
@@ -144,6 +145,8 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       item.date = `${new Date().toDateString()} ${getTimeString()}`
 
       await updatePrice(item)
+      await addHistoryRow(item)
+
       await bot.sendPhoto(CHATID, image, opts)
     }
   }

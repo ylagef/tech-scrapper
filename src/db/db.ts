@@ -139,7 +139,7 @@ export const getItemsFromDb = async () => {
   return items
 }
 
-export const addRow = async ({
+export const addItemRow = async ({
   key,
   date,
   vendor,
@@ -161,10 +161,24 @@ export const addRow = async ({
     ])
     return row.a1Range.split('!')[1]
   } catch (err) {
-    logs.error(`Error on add row ${err.message}`)
+    logs.error(`Error on add item row ${err.message}`)
     await bot.sendMessage(
       CHATID,
-      `<b>(${SERVERID})</b> · Error on add row (${err.message})`,
+      `<b>(${SERVERID})</b> · Error on add item row (${err.message})`,
+      { parse_mode: 'HTML' }
+    )
+  }
+}
+
+export const addHistoryRow = async ({ key, date, vendor, name, price }) => {
+  try {
+    const sheet = doc.sheetsByTitle.history
+    await sheet.addRow([key, date, vendor, name, price])
+  } catch (err) {
+    logs.error(`Error on add history row ${err.message}`)
+    await bot.sendMessage(
+      CHATID,
+      `<b>(${SERVERID})</b> · Error on add history row (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }

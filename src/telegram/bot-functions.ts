@@ -3,7 +3,7 @@ import fs from 'fs'
 import md5 from 'md5-nodejs'
 import { SendMessageOptions } from 'node-telegram-bot-api'
 import {
-  addRow,
+  addItemRow,
   getItemsFromDb,
   getLastScrap,
   getVendorsFromDB,
@@ -31,7 +31,7 @@ export const initializeBotListeners = async () => {
         newItem.key = md5(`${vendor}${name}${url}`)
         newItem.date = `${new Date().toDateString()} ${getTimeString()}`
 
-        await addRow(newItem)
+        await addItemRow(newItem)
 
         logs.success(`${name} was added! 💪🏼`)
         await message({ msg: `${name} was added!` })
