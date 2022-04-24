@@ -1,11 +1,11 @@
 {
-  "type": "module",
   "name": "tech-scrapper",
   "version": "1.0.0",
   "description": "Tech scrapper",
   "main": "dist/index.js",
   "scripts": {
-    "start": "rm -f log/*.log && tsc && forever start --watchDirectory=./src ./src/forever/config.json",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node16 --external:./node_modules/* --outfile=dist/index.js --loader:.ts=ts",
+    "start": "rm -f log/*.log && npm run build && forever start --watchDirectory=./src ./src/forever/config.json",
     "stop-all": "forever stopall",
     "stop": "forever stop tech-scrapper",
     "forever-logs": "forever logs 0 -f",
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/ylagef/tech-scrapper#readme",
   "dependencies": {
     "dotenv": "^10.0.0",
+    "esbuild": "^0.14.38",
     "forever": "^4.0.1",
     "google-spreadsheet": "^3.2.0",
     "md5-nodejs": "^1.0.3",
