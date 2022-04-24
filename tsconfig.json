@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
+    "allowSyntheticDefaultImports": true,
+    "lib": ["ES2021", "DOM"],
+    "module": "ES2020",
     "moduleResolution": "node",
-    "sourceMap": true,
-    "outDir": "dist"
-  },
-  "lib": ["es2015"]
+    "target": "ES2021",
+    "outDir": "./dist"
+  }
 }

@@ -45,9 +45,10 @@ export const vendorsObj: Vendor[] = [
                 await page.$$eval('.a-offscreen', (nodes) =>
                   nodes.map((node: HTMLElement) => node.innerText)
                 )
-              )[0]?.replace(/\s/g, '')
-            : // .replaceAll('.', '')
-              null
+              )[0]
+                ?.replace(/\s/g, '')
+                .replaceAll('.', '')
+            : null
       }
 
       const ourPrice =
@@ -60,8 +61,8 @@ export const vendorsObj: Vendor[] = [
             )
               ?.split('\n')[0]
               ?.replace(/\s/g, '')
-          : // .replaceAll('.', '')
-            null
+              .replaceAll('.', '')
+          : null
 
       const priceElements = await page.$$(
         '.a-price.aok-align-center > .a-offscreen'
@@ -78,9 +79,10 @@ export const vendorsObj: Vendor[] = [
                     ) as HTMLElement
                   ).innerText
               )
-            ).replace(/\s/g, '')
-          : // .replaceAll('.', '')
-            null
+            )
+              .replace(/\s/g, '')
+              .replaceAll('.', '')
+          : null
 
       return stockOthers
         ? `OTHERS (>${othersPrice})`
@@ -125,15 +127,17 @@ export const vendorsObj: Vendor[] = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
-      const price = await page.evaluate(
-        () =>
-          (
-            document.querySelector(
-              "[style='font-size:28px;color:#EC7306;']"
-            ) as HTMLElement
-          ).innerText
-      )
-      // ?.replaceAll(' ', '')
+      const price = (
+        await page.evaluate(
+          () =>
+            (
+              document.querySelector(
+                "[style='font-size:28px;color:#EC7306;']"
+              ) as HTMLElement
+            ).innerText
+        )
+      )?.replaceAll(' ', '')
+
       const stock = (await page.$$('#sistock')).length > 0 ? '' : '(NO STOCK)'
 
       return `${price} ${stock}`
@@ -177,8 +181,8 @@ export const vendorsObj: Vendor[] = [
                 ?.innerText
           )
         )
-          // ?.replaceAll('.', '')
-          // .replaceAll(' ', '')
+          ?.replaceAll('.', '')
+          .replaceAll(' ', '')
           .trim() || ''
 
       return stock
@@ -192,8 +196,8 @@ export const vendorsObj: Vendor[] = [
                 )?.innerText
             )
           )
-            // ?.replaceAll('.', '')
-            // .replaceAll(' ', '')
+            ?.replaceAll('.', '')
+            .replaceAll(' ', '')
             .trim()
         : `${price} (NO STOCK)`
     }
@@ -237,7 +241,7 @@ export const vendorsObj: Vendor[] = [
                 (document.querySelector('.price._big') as HTMLElement).innerText
             )
           )
-            // ?.replaceAll('.', '')
+            ?.replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
     }
@@ -284,7 +288,7 @@ export const vendorsObj: Vendor[] = [
                   .innerText
             )
           )
-            // .replaceAll('.', '')
+            .replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
     }
@@ -438,10 +442,7 @@ export const vendorsObj: Vendor[] = [
         nodes.map((node: HTMLElement) => node.innerText)
       )
 
-      return price[3]
-        ? price[3]
-        : // ?.replaceAll('.', '')
-          'NO STOCK'
+      return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
     }
   },
   {
