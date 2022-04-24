@@ -1,6 +1,16 @@
+import { Page } from 'puppeteer'
+
 const { logs } = require('../log/logs')
 
-exports.vendorsObj = [
+export interface Vendor {
+  key: string
+  name: string
+  jsEnabled: boolean
+  auth: boolean
+  checkPrice: ({ page }: { page: Page }) => Promise<string>
+}
+
+export const vendorsObj: Vendor[] = [
   {
     key: 'amazon',
     name: 'Amazon',
@@ -15,7 +25,7 @@ exports.vendorsObj = [
       if (!found) return 'NOT FOUND 😵'
 
       await page.$$eval('[data-action="sp-cc"]', (nodes) =>
-        nodes.forEach((node) => {
+        nodes.forEach((node: HTMLElement) => {
           node.style.display = 'none'
         })
       )
@@ -33,12 +43,11 @@ exports.vendorsObj = [
           (await page.$$('.a-offscreen')).length > 0
             ? (
                 await page.$$eval('.a-offscreen', (nodes) =>
-                  nodes.map((node) => node.innerText)
+                  nodes.map((node: HTMLElement) => node.innerText)
                 )
-              )[0]
-                ?.replace(/\s/g, '')
-                .replaceAll('.', '')
-            : null
+              )[0]?.replace(/\s/g, '')
+            : // .replaceAll('.', '')
+              null
       }
 
       const ourPrice =
@@ -46,13 +55,13 @@ exports.vendorsObj = [
           ? (
               await page.$$eval(
                 '.apexPriceToPay',
-                (nodes) => nodes[0]?.innerText
+                (nodes: HTMLElement[]) => nodes[0]?.innerText
               )
             )
               ?.split('\n')[0]
               ?.replace(/\s/g, '')
-              .replaceAll('.', '')
-          : null
+          : // .replaceAll('.', '')
+            null
 
       const priceElements = await page.$$(
         '.a-price.aok-align-center > .a-offscreen'
@@ -63,20 +72,21 @@ exports.vendorsObj = [
           ? (
               await page.evaluate(
                 () =>
-                  document.querySelector(
-                    '.a-price.aok-align-center > .a-offscreen'
+                  (
+                    document.querySelector(
+                      '.a-price.aok-align-center > .a-offscreen'
+                    ) as HTMLElement
                   ).innerText
               )
-            )
-              .replace(/\s/g, '')
-              .replaceAll('.', '')
-          : null
+            ).replace(/\s/g, '')
+          : // .replaceAll('.', '')
+            null
 
       return stockOthers
         ? `OTHERS (>${othersPrice})`
         : outOfStock
-          ? 'NO STOCK'
-          : price || ourPrice
+        ? 'NO STOCK'
+        : price || ourPrice
     }
   },
   {
@@ -93,18 +103,18 @@ exports.vendorsObj = [
       if (!found) return 'NOT FOUND 😵'
 
       await page.$$eval('[data-action="sp-cc"]', (nodes) =>
-        nodes.forEach((node) => {
+        nodes.forEach((node: HTMLElement) => {
           node.style.display = 'none'
         })
       )
 
       const items = (await page.$$('.s-result-item.s-asin')).length
-      const stockAmazon = (
-        await page.$$('.s-result-item .a-price-whole')
-      ).length
-      const stockOthers = items - stockAmazon - (
-        await page.$$('[aria-label="No disponible."]')
-      ).length
+      const stockAmazon = (await page.$$('.s-result-item .a-price-whole'))
+        .length
+      const stockOthers =
+        items -
+        stockAmazon -
+        (await page.$$('[aria-label="No disponible."]')).length
 
       return `${items} products (${stockAmazon} amazon - ${stockOthers} others)`
     }
@@ -115,13 +125,15 @@ exports.vendorsObj = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
-      const price = (
-        await page.evaluate(
-          () =>
-            document.querySelector("[style='font-size:28px;color:#EC7306;']")
-              .innerText
-        )
-      )?.replaceAll(' ', '')
+      const price = await page.evaluate(
+        () =>
+          (
+            document.querySelector(
+              "[style='font-size:28px;color:#EC7306;']"
+            ) as HTMLElement
+          ).innerText
+      )
+      // ?.replaceAll(' ', '')
       const stock = (await page.$$('#sistock')).length > 0 ? '' : '(NO STOCK)'
 
       return `${price} ${stock}`
@@ -160,21 +172,28 @@ exports.vendorsObj = [
       const price =
         (
           await page.evaluate(
-            () => document.querySelector('.buybox__price')?.innerText
+            () =>
+              (document.querySelector('.buybox__price') as HTMLElement)
+                ?.innerText
           )
         )
-          ?.replaceAll('.', '')
-          .replaceAll(' ', '')
+          // ?.replaceAll('.', '')
+          // .replaceAll(' ', '')
           .trim() || ''
 
       return stock
         ? (
             await page.evaluate(
-              () => document.querySelector('.buybox__prices > span')?.innerText
+              () =>
+                (
+                  document.querySelector(
+                    '.buybox__prices > span'
+                  ) as HTMLElement
+                )?.innerText
             )
           )
-            ?.replaceAll('.', '')
-            .replaceAll(' ', '')
+            // ?.replaceAll('.', '')
+            // .replaceAll(' ', '')
             .trim()
         : `${price} (NO STOCK)`
     }
@@ -214,10 +233,11 @@ exports.vendorsObj = [
       return stock
         ? (
             await page.evaluate(
-              () => document.querySelector('.price._big').innerText
+              () =>
+                (document.querySelector('.price._big') as HTMLElement).innerText
             )
           )
-            ?.replaceAll('.', '')
+            // ?.replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
     }
@@ -232,7 +252,7 @@ exports.vendorsObj = [
 
       const items = (await page.$$('.products_list-item')).length
       const prices = await page.$$eval('.price._big', (nodes) =>
-        nodes.map((node) => node.innerText)
+        nodes.map((node: HTMLElement) => node.innerText)
       )
       const stock = prices.filter((price) => price !== '').length
       return `${items} products (${stock} stock)`
@@ -259,10 +279,12 @@ exports.vendorsObj = [
       return stock
         ? (
             await page.evaluate(
-              () => document.querySelector('.f-priceBox-price').innerText
+              () =>
+                (document.querySelector('.f-priceBox-price') as HTMLElement)
+                  .innerText
             )
           )
-            .replaceAll('.', '')
+            // .replaceAll('.', '')
             .replace(/\s/g, '')
         : 'NO STOCK'
     }
@@ -297,8 +319,11 @@ exports.vendorsObj = [
         ? (
             await page.evaluate(
               () =>
-                document.querySelector('.buy-xl.buy-new > .buy--price')
-                  .innerText
+                (
+                  document.querySelector(
+                    '.buy-xl.buy-new > .buy--price'
+                  ) as HTMLElement
+                ).innerText
             )
           )
             ?.trim()
@@ -318,7 +343,7 @@ exports.vendorsObj = [
       const items = (await page.$$('.item-info')).length
       const stock = (
         await page.$$eval('.buy--type', (nodes) =>
-          nodes.map((node) => node.innerText)
+          nodes.map((node: HTMLElement) => node.innerText)
         )
       ).length
 
@@ -333,13 +358,13 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       // Hide cookies modal
       await page.$$eval('#mms-consent-portal-container', (nodes) =>
-        nodes.forEach((node) => {
+        nodes.forEach((node: HTMLElement) => {
           node.style.display = 'none'
         })
       )
 
       const nodes = await page.$$eval('td', (nodes) =>
-        nodes.map((node) => node.innerText)
+        nodes.map((node: HTMLElement) => node.innerText)
       )
       const filtered = nodes?.filter((node) => node.includes('€'))
       const price = filtered.length > 0 ? filtered[0]?.replace(/\s/g, '') : ''
@@ -381,7 +406,7 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       // Hide cookies modal
       await page.$$eval('#mms-consent-portal-container', (nodes) =>
-        nodes.forEach((node) => {
+        nodes.forEach((node: HTMLElement) => {
           node.style.display = 'none'
         })
       )
@@ -410,10 +435,13 @@ exports.vendorsObj = [
     auth: false,
     checkPrice: async ({ page }) => {
       const price = await page.$$eval('.mod-precio-mielectro-rojo', (nodes) =>
-        nodes.map((node) => node.innerText)
+        nodes.map((node: HTMLElement) => node.innerText)
       )
 
-      return price[3] ? price[3]?.replaceAll('.', '') : 'NO STOCK'
+      return price[3]
+        ? price[3]
+        : // ?.replaceAll('.', '')
+          'NO STOCK'
     }
   },
   {
@@ -427,7 +455,8 @@ exports.vendorsObj = [
       const hasPrice = (await page.$$('#precio-main')).length > 0
       const price = hasPrice
         ? await page.evaluate(
-            () => document.querySelector('#precio-main').innerText
+            () =>
+              (document.querySelector('#precio-main') as HTMLElement).innerText
           )
         : ''
       const stock =
@@ -449,7 +478,7 @@ exports.vendorsObj = [
       const items = (await page.$$('article')).length
       const availabilities = await page.$$eval(
         '.c-product-card__availability',
-        (nodes) => nodes.map((node) => node.innerText)
+        (nodes) => nodes.map((node: HTMLElement) => node.innerText)
       )
       const stock = availabilities.filter((availability) =>
         availability.includes('Recíbelo')
@@ -466,7 +495,9 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       return (
         await page.evaluate(
-          () => document.querySelector('.current-price > span').innerText
+          () =>
+            (document.querySelector('.current-price > span') as HTMLElement)
+              .innerText
         )
       )
         ?.replace('.', '')
@@ -481,7 +512,7 @@ exports.vendorsObj = [
     checkPrice: async ({ page }) => {
       const itemNames = await page.$$eval(
         '[data-js="tile-title-text"]',
-        (nodes) => nodes.map((node) => node.innerText)
+        (nodes) => nodes.map((node: HTMLElement) => node.innerText)
       )
       const stock = itemNames.filter((itemName) =>
         itemName.toLowerCase().includes('playstation 5')
@@ -503,8 +534,10 @@ exports.vendorsObj = [
       const price = hasPrice
         ? await page.evaluate(
             () =>
-              document.querySelector(
-                '.w-product__price__current.iss-product-current-price'
+              (
+                document.querySelector(
+                  '.w-product__price__current.iss-product-current-price'
+                ) as HTMLElement
               ).innerText
           )
         : ''
@@ -542,7 +575,7 @@ exports.vendorsObj = [
       const items = (await page.$$('.view-smallGridElement')).length
       const buttons = await page.$$eval(
         '.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl',
-        (nodes) => nodes.map((node) => node.innerText)
+        (nodes) => nodes.map((node: HTMLElement) => node.innerText)
       )
       const stock = buttons.filter((button) =>
         button.includes('Añadir a cesta')

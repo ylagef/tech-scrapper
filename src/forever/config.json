@@ -2,8 +2,8 @@
   "uid": "tech-scrapper",
   "append": true,
   "watch": true,
-  "script": "./src/index.js",
+  "script": "./dist/index.js",
   "outFile": "./log/out.log",
   "errFile": "./log/err.log",
-  "killSignal":"SIGTERM"
+  "killSignal": "SIGTERM"
 }

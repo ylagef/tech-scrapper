@@ -1,30 +1,33 @@
 require('dotenv').config()
 const { CHATID, SERVERID, MINUTES } = process.env
 
-const { vendorsObj } = require('./vendors/vendors-obj')
-const {
-  initializeDb,
+import { SendPhotoOptions } from 'node-telegram-bot-api'
+import { Browser } from 'puppeteer'
+import puppeteer from 'puppeteer-extra'
+import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import {
   getItemsFromDb,
-  updatePrice,
-  updateLastScrap,
+  getVendorsFromDB,
+  initializeDb,
+  Item,
   updateKey,
-  getVendorsFromDB
-} = require('./db/db.js')
-const { initializeBotListeners } = require('./telegram/bot-functions')
-const { getTimeString } = require('./utils')
-const { logs, clearLogs } = require('./log/logs')
-const { bot } = require('./telegram/bot')
-const puppeteer = require('puppeteer-extra')
+  updateLastScrap,
+  updatePrice
+} from './db/db'
+import { clearLogs, logs } from './log/logs'
+import { bot } from './telegram/bot'
+import { initializeBotListeners } from './telegram/bot-functions'
+import { getTimeString } from './utils'
+import { vendorsObj } from './vendors/vendors-obj'
 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(StealthPlugin())
 
-const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
 
-let items = null
-let browser = null
-let activeVendors = null
+let items: Item[] = null
+let browser: Browser = null
+let activeVendors: {} = null
 
 let totalSeconds = 0
 
@@ -125,7 +128,7 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
 
 const handleUpdated = async ({ vendor, item, price, image }) => {
   if (item) {
-    const opts = { parse_mode: 'HTML' }
+    const opts: SendPhotoOptions = { parse_mode: 'HTML' }
 
     if (price === 'CAPTCHA' || price === 'NOT FOUND 😵') {
       opts.disable_notification = true
@@ -161,11 +164,10 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       .filter((vendorObj) => Object.keys(activeVendors).includes(vendorObj.key))
 
     for (const vendor of vendors) {
-      logs
-        .bold(`\n${vendor.name}`)
-        // .joint()
-        // .dim()
-        // .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
+      logs.bold(`\n${vendor.name}`)
+      // .joint()
+      // .dim()
+      // .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
 
       const activeItems = items
         .filter((item) => item.vendor === vendor.key)
@@ -230,8 +232,10 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
     }
 
     const endDate = new Date()
-    totalSeconds = Math.ceil((endDate - startDate) / 1000)
-    const minutesSeconds = `${Math.floor(totalSeconds / 60)}m ${totalSeconds % 60}s`
+    totalSeconds = Math.ceil((endDate.getTime() - startDate.getTime()) / 1000)
+    const minutesSeconds = `${Math.floor(totalSeconds / 60)}m ${
+      totalSeconds % 60
+    }s`
     logs.log(
       `\n\n🏁 SCRAP FINISHED (${getTimeString(
         endDate
@@ -248,12 +252,12 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
   }
 
   // Scrap again each ${MINUTES} minutes
-  if (totalSeconds >= MINUTES * 60) {
+  if (totalSeconds >= +MINUTES * 60) {
     scrap()
   } else {
     setTimeout(() => {
       scrap()
-    }, (MINUTES * 60 - totalSeconds) * 1000)
+    }, (+MINUTES * 60 - totalSeconds) * 1000)
   }
 })()
 

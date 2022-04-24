@@ -6,17 +6,37 @@ const { getTimeString, getDateTimeString } = require('../utils')
 const { logs } = require('../log/logs')
 const { bot } = require('../telegram/bot')
 
-const doc = new GoogleSpreadsheet('11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps')
+const doc = new GoogleSpreadsheet(
+  '11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps'
+)
 
-exports.initializeDb = async () => {
+export interface Item {
+  date: string
+  key: string
+  vendor: string
+  name: string
+  price: string
+  active: boolean
+  url: string
+  cells: string
+}
+
+export const initializeDb = async () => {
   try {
     logs.dim('\nInitialize DB...')
-    await doc.useServiceAccountAuth({ client_email: CLIENTEMAIL, private_key: PRIVATEKEY })
+    await doc.useServiceAccountAuth({
+      client_email: CLIENTEMAIL,
+      private_key: PRIVATEKEY
+    })
     await doc.loadInfo()
     logs.dim('Initialize DB ok')
   } catch (err) {
     logs.error('Error on initialize DB', err.message)
-    await bot.sendMessage(CHATID, `<b>(${SERVERID})</b> · Error on initialize DB (${err.message})`, { parse_mode: 'HTML' })
+    await bot.sendMessage(
+      CHATID,
+      `<b>(${SERVERID})</b> · Error on initialize DB (${err.message})`,
+      { parse_mode: 'HTML' }
+    )
   }
 }
 
@@ -24,7 +44,7 @@ const addNewServer = async ({ sheet, servers, server }) => {
   try {
     await sheet.setHeaderRow(['Vendors', ...servers, server])
 
-    const rows = (await sheet.getRows())
+    const rows = await sheet.getRows()
 
     const startCell = rows[0].a1Range.split('!')[1].split(':')[1]
     const endCell = rows[rows.length - 1].a1Range.split('!')[1].split(':')[1]
@@ -40,13 +60,13 @@ const addNewServer = async ({ sheet, servers, server }) => {
     logs.error(`Error on add new server ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on add new server (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on add new server (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 }
 
-exports.getVendorsFromDB = async () => {
+export const getVendorsFromDB = async () => {
   logs.dim('\nGetting vendors...')
   const vendors = {}
 
@@ -60,16 +80,19 @@ exports.getVendorsFromDB = async () => {
       servers.push(SERVERID)
     }
 
-    const rows = (await sheet.getRows())
-    const rowsData = rows.map(row => row._rawData)
+    const rows = await sheet.getRows()
+    const rowsData = rows.map((row) => row._rawData)
     servers.forEach((server, index) => {
       if (!vendors[server]) vendors[server] = {}
-      rowsData.forEach(row => {
+      rowsData.forEach((row) => {
         vendors[server][row[0]] = row[index + 1] === 'TRUE'
       })
     })
 
-    const activeVendors = Object.fromEntries(Object.entries(vendors[SERVERID]).filter(([key, value]) => value)) || {}
+    const activeVendors =
+      Object.fromEntries(
+        Object.entries(vendors[SERVERID]).filter(([_, value]) => value)
+      ) || {}
     logs.dim('Get vendors ok')
 
     return { allVendors: vendors, activeVendors }
@@ -77,20 +100,20 @@ exports.getVendorsFromDB = async () => {
     logs.error(`Error on get vendors ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on get vendors (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on get vendors (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 }
 
-exports.getItemsFromDb = async () => {
+export const getItemsFromDb = async () => {
   logs.dim('\nGetting items...')
-  const items = []
+  const items: Item[] = []
 
   try {
     const sheet = doc.sheetsByTitle.products
     const rows = await sheet.getRows()
-    rows.forEach(row => {
+    rows.forEach((row) => {
       items.push({
         date: row._rawData[0],
         key: row._rawData[1],
@@ -108,30 +131,46 @@ exports.getItemsFromDb = async () => {
     logs.error(`Error on getting items ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on getting items (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on getting items (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 
   return items
 }
 
-exports.addRow = async ({ key, date, vendor, name, price, active, url }) => {
+export const addRow = async ({
+  key,
+  date,
+  vendor,
+  name,
+  price,
+  active,
+  url
+}) => {
   try {
     const sheet = doc.sheetsByTitle.products
-    const row = await sheet.addRow([date, key, vendor, name, price, active, url])
+    const row = await sheet.addRow([
+      date,
+      key,
+      vendor,
+      name,
+      price,
+      active,
+      url
+    ])
     return row.a1Range.split('!')[1]
   } catch (err) {
     logs.error('Error on add row', err.message)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on add row (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on add row (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 }
 
-exports.updatePrice = async (item) => {
+export const updatePrice = async (item) => {
   try {
     const sheet = doc.sheetsByTitle.products
     await sheet.loadCells(item.cells)
@@ -139,20 +178,20 @@ exports.updatePrice = async (item) => {
     const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
     const priceCell = sheet.getCellByA1('E' + item.cells.split(':')[1].slice(1))
 
-    dateCell.value = `${(new Date()).toDateString()} ${getTimeString()}`
+    dateCell.value = `${new Date().toDateString()} ${getTimeString()}`
     priceCell.value = item.price
     await sheet.saveCells([dateCell, priceCell])
   } catch (err) {
     logs.error(`Error on update cells ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 }
 
-exports.updateKey = async ({ bot, item, vendor }) => {
+export const updateKey = async ({ bot, item, vendor }) => {
   try {
     const sheet = doc.sheetsByTitle.products
     await sheet.loadCells(item.cells)
@@ -160,7 +199,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
     const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
     const keyCell = sheet.getCellByA1('B' + item.cells.split(':')[1].slice(1))
 
-    dateCell.value = `${(new Date()).toDateString()} ${getTimeString()}`
+    dateCell.value = `${new Date().toDateString()} ${getTimeString()}`
     keyCell.value = md5(`${vendor.key}${item.name}${item.url}`)
     await sheet.saveCells([dateCell, keyCell])
   } catch (err) {
@@ -173,7 +212,7 @@ exports.updateKey = async ({ bot, item, vendor }) => {
   }
 }
 
-exports.updateLastScrap = async ({ bot, endDate, minutesSeconds }) => {
+export const updateLastScrap = async ({ bot, endDate, minutesSeconds }) => {
   try {
     await doc.sheetsByTitle.vendors.loadHeaderRow()
     const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
@@ -198,20 +237,22 @@ exports.updateLastScrap = async ({ bot, endDate, minutesSeconds }) => {
     logs.error(`Error on update last scrap ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 }
 
-exports.getLastScrap = async () => {
+export const getLastScrap = async () => {
   try {
     const sheet = doc.sheetsByTitle.stats
-    const rows = (await sheet.getRows())
+    const rows = await sheet.getRows()
 
     const message = []
-    rows.forEach(row => {
-      message.push(`<b>${row._rawData[0]}</b> · ${row._rawData[1]} - ${row._rawData[2]}`)
+    rows.forEach((row) => {
+      message.push(
+        `<b>${row._rawData[0]}</b> · ${row._rawData[1]} - ${row._rawData[2]}`
+      )
     })
 
     return message.join('\n')
@@ -225,7 +266,7 @@ exports.getLastScrap = async () => {
   }
 }
 
-exports.updateVendor = async ({ bot, state, vendor }) => {
+export const updateVendor = async ({ bot, state, vendor }) => {
   try {
     await doc.sheetsByTitle.vendors.loadHeaderRow()
     const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
@@ -234,10 +275,37 @@ exports.updateVendor = async ({ bot, state, vendor }) => {
     const sheet = doc.sheetsByTitle.vendors
     const rows = await sheet.getRows()
 
-    const cellsA1 = rows.find(row => row._rawData[0] === vendor).a1Range
+    const cellsA1 = rows.find((row) => row._rawData[0] === vendor).a1Range
     await sheet.loadCells(cellsA1.split('!')[1])
 
-    const colIndex = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'][rowIndex]
+    const colIndex = [
+      'A',
+      'B',
+      'C',
+      'D',
+      'E',
+      'F',
+      'G',
+      'H',
+      'I',
+      'J',
+      'K',
+      'L',
+      'M',
+      'N',
+      'O',
+      'P',
+      'Q',
+      'R',
+      'S',
+      'T',
+      'U',
+      'V',
+      'W',
+      'X',
+      'Y',
+      'Z'
+    ][rowIndex]
     const cellA1 = colIndex + cellsA1.split('!')[1].split(':')[0].slice(1)
     const cell = sheet.getCellByA1(cellA1)
 
@@ -247,8 +315,8 @@ exports.updateVendor = async ({ bot, state, vendor }) => {
     logs.error(`Error on update last scrap ${err.message}`)
     await bot.sendMessage(
       CHATID,
-       `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
-       { parse_mode: 'HTML' }
+      `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
+      { parse_mode: 'HTML' }
     )
   }
 }

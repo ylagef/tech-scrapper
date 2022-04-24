@@ -2,10 +2,12 @@ const logger = require('node-color-log')
 
 let lastLogs = ''
 
-exports.clearLogs = () => { lastLogs = '' }
-exports.getLastLogs = () => lastLogs
+export const clearLogs = () => {
+  lastLogs = ''
+}
+export const getLastLogs = () => lastLogs
 
-exports.logs = {
+export const logs = {
   log: (msg) => {
     lastLogs += `${msg}\n`
     return logger.log(`${msg}`)
