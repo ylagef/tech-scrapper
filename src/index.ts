@@ -1,6 +1,4 @@
-require('dotenv').config()
-const { CHATID, SERVERID, MINUTES } = process.env
-
+import 'dotenv/config'
 import { SendPhotoOptions } from 'node-telegram-bot-api'
 import { Browser } from 'puppeteer'
 import puppeteer from 'puppeteer-extra'
@@ -14,12 +12,13 @@ import {
   updateKey,
   updateLastScrap,
   updatePrice
-} from './db/db'
-import { clearLogs, logs } from './log/logs'
-import { bot } from './telegram/bot'
-import { initializeBotListeners } from './telegram/bot-functions'
-import { getTimeString } from './utils'
-import { vendorsObj } from './vendors/vendors-obj'
+} from './db/db.js'
+import { clearLogs, logs } from './log/logs.js'
+import { initializeBotListeners } from './telegram/bot-functions.js'
+import { bot } from './telegram/bot.js'
+import { getTimeString } from './utils.js'
+import { vendorsObj } from './vendors/vendors-obj.js'
+const { CHATID, SERVERID, MINUTES } = process.env
 
 puppeteer.use(StealthPlugin())
 

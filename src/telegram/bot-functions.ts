@@ -11,7 +11,7 @@ import {
 } from '../db/db.js'
 import { getLastLogs, logs } from '../log/logs.js'
 import { getTimeString } from '../utils.js'
-import { vendorsObj } from '../vendors/vendors-obj'
+import { vendorsObj } from '../vendors/vendors-obj.js'
 import { bot } from './bot.js'
 
 export const initializeBotListeners = async () => {

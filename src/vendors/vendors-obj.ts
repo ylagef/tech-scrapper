@@ -1,6 +1,5 @@
 import { Page } from 'puppeteer'
-
-const { logs } = require('../log/logs')
+import { logs } from '../log/logs.js'
 
 export interface Vendor {
   key: string

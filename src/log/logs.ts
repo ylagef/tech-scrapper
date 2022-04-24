@@ -1,4 +1,4 @@
-const logger = require('node-color-log')
+import logger from 'node-color-log'
 
 let lastLogs = ''
 

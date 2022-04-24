@@ -1,10 +1,10 @@
 const { SERVERID, CHATID, PRIVATEKEY, CLIENTEMAIL } = process.env
 
-const { GoogleSpreadsheet } = require('google-spreadsheet')
-const md5 = require('md5-nodejs')
-const { getTimeString, getDateTimeString } = require('../utils')
-const { logs } = require('../log/logs')
-const { bot } = require('../telegram/bot')
+import { GoogleSpreadsheet } from 'google-spreadsheet'
+import md5 from 'md5-nodejs'
+import { logs } from '../log/logs.js'
+import { bot } from '../telegram/bot.js'
+import { getDateTimeString, getTimeString } from '../utils.js'
 
 const doc = new GoogleSpreadsheet(
   '11yXmT2NEWBRcpvy6_M-_TdDMHidqvHLMs15ctMZxZps'
@@ -31,7 +31,7 @@ export const initializeDb = async () => {
     await doc.loadInfo()
     logs.dim('Initialize DB ok')
   } catch (err) {
-    logs.error('Error on initialize DB', err.message)
+    logs.error(`Error on initialize DB ${err.message}`)
     await bot.sendMessage(
       CHATID,
       `<b>(${SERVERID})</b> · Error on initialize DB (${err.message})`,
@@ -161,7 +161,7 @@ export const addRow = async ({
     ])
     return row.a1Range.split('!')[1]
   } catch (err) {
-    logs.error('Error on add row', err.message)
+    logs.error(`Error on add row ${err.message}`)
     await bot.sendMessage(
       CHATID,
       `<b>(${SERVERID})</b> · Error on add row (${err.message})`,
