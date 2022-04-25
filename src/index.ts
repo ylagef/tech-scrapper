@@ -268,7 +268,11 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
             itemsPromises.length === MAX_CONCURRENT_PROMISES ||
             index === activeItems.length - 1
           ) {
-            logs.dim(`\t\tExecute ${itemsPromises.length} promises...`)
+            logs.dim(
+              `\t\tExecute ${itemsPromises.length} promise${
+                itemsPromises.length > 1 && 's'
+              }...`
+            )
             await Promise.allSettled(itemsPromises)
             itemsPromises = []
           }
