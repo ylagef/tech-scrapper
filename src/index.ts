@@ -249,11 +249,11 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
               // }
               // logs.debug(`${index} take screenshot...`)
               // console.time(`screenshot ${index}`)
-              image = await handleScreenshot({ page, vendor, item })
               // console.timeEnd(`screenshot ${index}`)
 
               // logs.debug(`10 ${price} ${item.price}`)
               if (price && item.price !== price) {
+                image = await handleScreenshot({ page, vendor, item })
                 await handleUpdated({ vendor, item, price, image })
               }
 
