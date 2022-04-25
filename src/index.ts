@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { SendPhotoOptions } from 'node-telegram-bot-api'
-import { Browser } from 'puppeteer'
+import { Browser, Page } from 'puppeteer'
 import puppeteer from 'puppeteer-extra'
 import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
@@ -17,13 +17,15 @@ import {
 import { clearLogs, logs } from './log/logs.js'
 import { initializeBotListeners } from './telegram/bot-functions.js'
 import { bot } from './telegram/bot.js'
-import { getTimeString } from './utils.js'
-import { vendorsObj } from './vendors/vendors-obj.js'
+import { getMinutesSeconds, getTimeString, getTotalSeconds } from './utils.js'
+import { Vendor, vendorsObj } from './vendors/vendors-obj.js'
 const { CHATID, SERVERID, MINUTES } = process.env
 
 puppeteer.use(StealthPlugin())
 
 puppeteer.use(AdblockerPlugin({ blockTrackers: true }))
+
+const MAX_CONCURRENT_PROMISES = 5
 
 let items: Item[] = null
 let browser: Browser = null
@@ -78,14 +80,14 @@ const checkItem = async ({ item, vendor }) => {
 
 const handleNavigation = async ({ page, vendor, item, context, price }) => {
   try {
-    logs.debug('1')
+    // logs.debug('1')
     await page.goto(item.url, { waitUntil: 'load' })
-    logs.debug('2')
+    // logs.debug('2')
     price = await vendor.checkPrice({ context, page })
-    logs.debug('3')
+    // logs.debug('3')
     logs.log(`\t${item.name} · ${price}`)
   } catch (err) {
-    logs.debug('4')
+    // logs.debug('4')
     await bot.sendMessage(
       CHATID,
       `${vendor.name} - ${item.name} · Err (${err.message
@@ -93,25 +95,38 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
         .trim()})`,
       { disable_notification: true }
     )
-    logs.debug('5')
+    // logs.debug('5')
     logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
-    logs.debug('6')
+    // logs.debug('6')
   }
-  logs.debug('7')
+  // logs.debug('7')
 
   return price
 }
 
-const handleScreenshot = async ({ page, vendor, item, image }) => {
+const handleScreenshot = async ({
+  page,
+  vendor,
+  item
+}: {
+  page: Page
+  vendor: Vendor
+  item: Item
+}) => {
   const itemName = item.name.replace(/\s/g, '').toLowerCase()
+
   try {
-    await page.screenshot({
-      path: `screenshots/full/${vendor.key}_${itemName}_full.png`,
-      fullPage: true
+    const image = await page.screenshot({
+      path: `screenshots/${vendor.key}_${itemName}.png`,
+      clip: {
+        x: 0,
+        y: 0,
+        width: 1920,
+        height: 2160
+      }
     })
-    image = await page.screenshot({
-      path: `screenshots/${vendor.key}_${itemName}.png`
-    })
+
+    return image
   } catch (err) {
     // await bot.sendMessage(
     //   CHATID,
@@ -121,9 +136,8 @@ const handleScreenshot = async ({ page, vendor, item, image }) => {
     //   { disable_notification: true }
     // )
     logs.error(`Err on screenshot (${err.message.split('=')[0].trim()})`)
+    return null
   }
-
-  return image
 }
 
 const handleUpdated = async ({ vendor, item, price, image }) => {
@@ -166,78 +180,111 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       .filter((vendorObj) => Object.keys(activeVendors).includes(vendorObj.key))
 
     for (const vendor of vendors) {
-      logs.bold(`\n${vendor.name}`)
-      // .joint()
-      // .dim()
-      // .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
+      const startVendor = new Date()
 
       const activeItems = items
         .filter((item) => item.vendor === vendor.key)
         .filter((item) => item.active)
 
+      logs
+        .bold(`\n${vendor.name}`)
+        .joint()
+        .dim()
+        .log(` (${activeItems.length} items)`)
+      // .joint()
+      // .dim()
+      // .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
+
       if (activeItems.length === 0) {
         logs.dim('\tNo active items')
       } else {
-        for (const item of activeItems) {
-          logs.debug('check item ' + item.name)
-          await checkItem({ item, vendor })
-          logs.debug('item checked ✔')
+        let itemsPromises = []
+        const context = await browser.createIncognitoBrowserContext()
 
-          logs.debug('create context')
-          const context = await browser.createIncognitoBrowserContext()
-          logs.debug('context created ✔')
-          //  await browser.newContext({
-          //   javaScriptEnabled: vendor.jsEnabled
-          // })
+        for (const [index, item] of activeItems.entries()) {
+          itemsPromises.push(
+            new Promise(async (resolve, reject) => {
+              // logs.debug('check item ' + item.name)
+              await checkItem({ item, vendor })
+              // logs.debug('item checked ✔')
 
-          // context.setDefaultTimeout(10000)
-          // if (vendor.auth) {
-          //   context.storageState(`state-keys/${vendor.key}.json`)
-          // }
-          logs.debug('create page')
-          const page = await context.newPage()
-          await page.setViewport({
-            width: 1920,
-            height: 1080
-          })
-          logs.debug('page created ✔')
+              // logs.debug('create context')
+              // logs.debug('context created ✔')
+              //  await browser.newContext({
+              //   javaScriptEnabled: vendor.jsEnabled
+              // })
 
-          let price = null
-          let image = null
+              // context.setDefaultTimeout(10000)
+              // if (vendor.auth) {
+              //   context.storageState(`state-keys/${vendor.key}.json`)
+              // }
+              // logs.debug('create page')
+              const page = await context.newPage()
+              await page.setViewport({
+                width: 1920,
+                height: 1080
+              })
+              // await page.setDefaultNavigationTimeout(10000) // Change timeout
 
-          price = await handleNavigation({
-            page,
-            vendor,
-            item,
-            context,
-            price
-          })
-          logs.debug('8')
+              // logs.debug(`${index} page created ✔`)
 
-          // if (vendor.auth) {
-          //   await context.storageState({
-          //     path: `state-keys/${vendor.key}.json`
-          //   })
-          // }
-          logs.debug('9')
-          image = await handleScreenshot({ page, vendor, item, image })
-          logs.debug(`10 ${price} ${item.price}`)
-          if (price && item.price !== price) {
-            await handleUpdated({ vendor, item, price, image })
+              let price = null
+              let image = null
+
+              // console.time(`navigation ${index}`)
+              price = await handleNavigation({
+                page,
+                vendor,
+                item,
+                context,
+                price
+              })
+              // console.timeEnd(`navigation ${index}`)
+              // logs.debug(`${index} navigated`)
+
+              // if (vendor.auth) {
+              //   await context.storageState({
+              //     path: `state-keys/${vendor.key}.json`
+              //   })
+              // }
+              // logs.debug(`${index} take screenshot...`)
+              // console.time(`screenshot ${index}`)
+              image = await handleScreenshot({ page, vendor, item })
+              // console.timeEnd(`screenshot ${index}`)
+
+              // logs.debug(`10 ${price} ${item.price}`)
+              if (price && item.price !== price) {
+                await handleUpdated({ vendor, item, price, image })
+              }
+
+              // logs.debug('11')
+              await page.close()
+              // logs.debug('12')
+              resolve(true)
+            })
+          )
+
+          if (
+            itemsPromises.length === MAX_CONCURRENT_PROMISES ||
+            index === activeItems.length - 1
+          ) {
+            logs.dim(`\t\tExecute ${itemsPromises.length} promises...`)
+            await Promise.allSettled(itemsPromises)
+            itemsPromises = []
           }
-          logs.debug('11')
-          await page.close()
-          await context.close()
-          logs.debug('12')
         }
+
+        await context.close()
       }
+
+      const endVendor = new Date()
+      const totalVendorSeconds = getTotalSeconds(startVendor, endVendor)
+      logs.dim(`\t${getMinutesSeconds(totalVendorSeconds)}`)
     }
 
     const endDate = new Date()
-    totalSeconds = Math.ceil((endDate.getTime() - startDate.getTime()) / 1000)
-    const minutesSeconds = `${Math.floor(totalSeconds / 60)}m ${
-      totalSeconds % 60
-    }s`
+    totalSeconds = getTotalSeconds(startDate, endDate)
+    const minutesSeconds = getMinutesSeconds(totalSeconds)
     logs.log(
       `\n\n🏁 SCRAP FINISHED (${getTimeString(
         endDate
