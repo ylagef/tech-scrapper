@@ -80,14 +80,12 @@ const checkItem = async ({ item, vendor }) => {
 
 const handleNavigation = async ({ page, vendor, item, context, price }) => {
   try {
-    // logs.debug('1')
     await page.goto(item.url, { waitUntil: 'load' })
-    // logs.debug('2')
+
     price = await vendor.checkPrice({ context, page })
-    // logs.debug('3')
+
     logs.log(`\t${item.name} · ${price}`)
   } catch (err) {
-    // logs.debug('4')
     await bot.sendMessage(
       CHATID,
       `${vendor.name} - ${item.name} · Err (${err.message
@@ -95,11 +93,9 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
         .trim()})`,
       { disable_notification: true }
     )
-    // logs.debug('5')
+
     logs.error(`${item.name} · (${err.message.split('=')[0].trim()})`)
-    // logs.debug('6')
   }
-  // logs.debug('7')
 
   return price
 }
@@ -128,13 +124,6 @@ const handleScreenshot = async ({
 
     return image
   } catch (err) {
-    // await bot.sendMessage(
-    //   CHATID,
-    //   `${vendor.name} - ${item.name} · Err on screenshot (${err.message
-    //     .split('=')[0]
-    //     .trim()})`,
-    //   { disable_notification: true }
-    // )
     logs.error(`Err on screenshot (${err.message.split('=')[0].trim()})`)
     return null
   }
@@ -191,9 +180,6 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         .joint()
         .dim()
         .log(` (${activeItems.length} items)`)
-      // .joint()
-      // .dim()
-      // .log(`${vendor.jsEnabled ? ' (JS enabled)' : ''}`)
 
       if (activeItems.length === 0) {
         logs.dim('\tNo active items')
@@ -204,21 +190,8 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         for (const [index, item] of activeItems.entries()) {
           itemsPromises.push(
             new Promise(async (resolve, reject) => {
-              // logs.debug('check item ' + item.name)
               await checkItem({ item, vendor })
-              // logs.debug('item checked ✔')
 
-              // logs.debug('create context')
-              // logs.debug('context created ✔')
-              //  await browser.newContext({
-              //   javaScriptEnabled: vendor.jsEnabled
-              // })
-
-              // context.setDefaultTimeout(10000)
-              // if (vendor.auth) {
-              //   context.storageState(`state-keys/${vendor.key}.json`)
-              // }
-              // logs.debug('create page')
               const page = await context.newPage()
               await page.setViewport({
                 width: 1920,
@@ -226,12 +199,9 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
               })
               // await page.setDefaultNavigationTimeout(10000) // Change timeout
 
-              // logs.debug(`${index} page created ✔`)
-
               let price = null
               let image = null
 
-              // console.time(`navigation ${index}`)
               price = await handleNavigation({
                 page,
                 vendor,
@@ -239,27 +209,14 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
                 context,
                 price
               })
-              // console.timeEnd(`navigation ${index}`)
-              // logs.debug(`${index} navigated`)
 
-              // if (vendor.auth) {
-              //   await context.storageState({
-              //     path: `state-keys/${vendor.key}.json`
-              //   })
-              // }
-              // logs.debug(`${index} take screenshot...`)
-              // console.time(`screenshot ${index}`)
-              // console.timeEnd(`screenshot ${index}`)
-
-              // logs.debug(`10 ${price} ${item.price}`)
               if (price && item.price !== price) {
                 image = await handleScreenshot({ page, vendor, item })
                 await handleUpdated({ vendor, item, price, image })
               }
 
-              // logs.debug('11')
               await page.close()
-              // logs.debug('12')
+
               resolve(true)
             })
           )
@@ -270,7 +227,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
           ) {
             logs.dim(
               `\t\tExecute ${itemsPromises.length} promise${
-                itemsPromises.length > 1 && 's'
+                itemsPromises.length > 1 ? 's' : ''
               }...`
             )
             await Promise.allSettled(itemsPromises)
