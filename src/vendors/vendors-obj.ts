@@ -165,6 +165,13 @@ export const vendorsObj: Vendor[] = [
       const found = await searchItem(page, '.main-image img')
       if (!found) return 'NOT FOUND 😵'
 
+      // Hide cookies modal
+      await page.$$eval('#onetrust-consent-sdk', (nodes) =>
+        nodes.forEach((node: HTMLElement) => {
+          node.style.display = 'none'
+        })
+      )
+
       const stock =
         (
           await page.$$(
@@ -210,6 +217,12 @@ export const vendorsObj: Vendor[] = [
       const found = await searchItem(page, '.ebx-result-figure__img')
       if (!found) return 'NOT FOUND 😵'
 
+      // Hide cookies modal
+      await page.$$eval('#onetrust-consent-sdk', (nodes) =>
+        nodes.forEach((node: HTMLElement) => {
+          node.style.display = 'none'
+        })
+      )
       const items = (await page.$$('article.ebx-result.ebx-result--normal'))
         .length
       const stock = (
@@ -340,14 +353,16 @@ export const vendorsObj: Vendor[] = [
     jsEnabled: true,
     auth: false,
     checkPrice: async ({ page }) => {
-      const found = await searchItem(page, 'img.img-responsive')
+      const found = await searchItem(page, '.search-item:not(.hidden) img')
       if (!found) return 'NOT FOUND 😵'
 
       const items = (
-        await page.$$eval('.info-wrap .cm-txt', (nodes) =>
-          nodes.filter(
-            (node: HTMLElement) => node.innerText === 'PLAYSTATION 5'
-          )
+        await page.$$eval(
+          '.search-item:not(.hidden) .info-wrap .cm-txt',
+          (nodes) =>
+            nodes.filter(
+              (node: HTMLElement) => node.innerText === 'PLAYSTATION 5'
+            )
         )
       ).length
       const stock = (
