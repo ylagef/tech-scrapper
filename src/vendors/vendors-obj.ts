@@ -343,7 +343,13 @@ export const vendorsObj: Vendor[] = [
       const found = await searchItem(page, 'img.img-responsive')
       if (!found) return 'NOT FOUND 😵'
 
-      const items = (await page.$$('.item-info')).length
+      const items = (
+        await page.$$eval('.info-wrap .cm-txt', (nodes) =>
+          nodes.filter(
+            (node: HTMLElement) => node.innerText === 'PLAYSTATION 5'
+          )
+        )
+      ).length
       const stock = (
         await page.$$eval('.buy--type', (nodes) =>
           nodes.map((node: HTMLElement) => node.innerText)
