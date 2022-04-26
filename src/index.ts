@@ -149,9 +149,9 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
 
       await updatePrice(item)
       await addHistoryRow(item)
-
-      await bot.sendPhoto(CHATID, image, opts)
     }
+
+    await bot.sendPhoto(CHATID, image, opts)
   }
 }
 
