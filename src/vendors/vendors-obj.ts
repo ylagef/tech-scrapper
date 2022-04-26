@@ -214,8 +214,7 @@ export const vendorsObj: Vendor[] = [
     jsEnabled: true,
     auth: false,
     checkPrice: async ({ page }) => {
-      const found = await searchItem(page, '.ebx-result-figure__img')
-      if (!found) return 'NOT FOUND 😵'
+      const found = await searchItem(page, '.ebx-no-results__message-apologies')
 
       // Hide cookies modal
       await page.$$eval('#onetrust-consent-sdk', (nodes) =>
@@ -223,6 +222,9 @@ export const vendorsObj: Vendor[] = [
           node.style.display = 'none'
         })
       )
+
+      if (found) return '0 products'
+
       const items = (await page.$$('article.ebx-result.ebx-result--normal'))
         .length
       const stock = (
