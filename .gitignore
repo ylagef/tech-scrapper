@@ -107,3 +107,4 @@ screenshots
 .DS_Store
 state-keys/*.json
 log/*.log
+full_pages/*.html
