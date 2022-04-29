@@ -243,9 +243,8 @@ export const vendorsObj: Vendor[] = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page, item }) => {
-      // if (await checkCaptcha(page, '.product_detail-main-container', false)) {
-      //   return 'CAPTCHA'
-      // } // Check if captcha
+      if (await checkCaptcha(page, '#sec-text-if', true)) return 'CAPTCHA'
+      // Check if captcha
 
       const found = await searchItem(page, '.product_detail-title')
 
