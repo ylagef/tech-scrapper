@@ -2,7 +2,7 @@
   "uid": "tech-scrapper-monitor",
   "append": true,
   "watch": true,
-  "script": "./src/forever/monitor.js",
+  "script": "./forever/monitor.js",
   "outFile": "./log/monitor-out.log",
   "errFile": "./log/monitor-err.log",
   "killSignal": "SIGTERM"
