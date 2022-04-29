@@ -242,7 +242,7 @@ export const vendorsObj: Vendor[] = [
     name: 'El corte inglés',
     jsEnabled: false,
     auth: false,
-    checkPrice: async ({ page, item }) => {
+    checkPrice: async ({ page }) => {
       if (await checkCaptcha(page, '#sec-text-if', true)) return 'CAPTCHA'
       // Check if captcha
 
