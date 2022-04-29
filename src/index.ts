@@ -59,10 +59,10 @@ const scrapInitialization = async () => {
     logs.dim('\nBrowser launched')
 
     browser.on('disconnected', async () => {
-      logs.error('\n ⚠️  Browser disconected')
+      logs.error('⚠️  Browser disconnected')
       await bot.sendMessage(
         CHATID,
-        `<b>(${SERVERID})</b> · Browser disconected`,
+        `<b>(${SERVERID})</b> · Browser disconnected`,
         { parse_mode: 'HTML' }
       )
     })
