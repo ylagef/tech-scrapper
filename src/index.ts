@@ -82,9 +82,7 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
   try {
     await page.goto(item.url, { waitUntil: 'load' })
 
-    price = await vendor.checkPrice({ context, page })
-
-    logs.log(`\t${item.name} · ${price}`)
+    price = await vendor.checkPrice({ page, item })
   } catch (err) {
     await bot.sendMessage(
       CHATID,
@@ -134,10 +132,18 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
     const opts: SendPhotoOptions = { parse_mode: 'HTML' }
 
     if (price === 'CAPTCHA' || price === 'NOT FOUND 😵') {
+      logs.error(
+        price === 'CAPTCHA'
+          ? `☠️ · ${item.name} · Captcha detected!`
+          : `😵 · ${item.name} · NOT FOUND`
+      )
+
       opts.disable_notification = true
       opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${price}\n<a href='${item.url}'>LINK</a>`
     } else {
-      logs.success(`UPDATED!! (${item?.price || 'NONE'} => ${price}) 👀`)
+      logs.success(
+        `\t${item.name} UPDATED (${item?.price || 'NONE'} => ${price}) 👀`
+      )
 
       opts.disable_notification = false
       opts.caption = `<b>${vendor.name} - ${item.name}</b>\n\n${
@@ -190,6 +196,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         for (const [index, item] of activeItems.entries()) {
           itemsPromises.push(
             new Promise(async (resolve, reject) => {
+              const startItem = new Date()
               await checkItem({ item, vendor })
 
               const page = await context.newPage()
@@ -217,6 +224,15 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
 
               await page.close()
 
+              const endItem = new Date()
+              const totalItemSeconds = getTotalSeconds(startItem, endItem)
+
+              logs
+                .log(`\t${item.name} · ${price}`)
+                .joint()
+                .dim()
+                .log(` (${getMinutesSeconds(totalItemSeconds)})`)
+
               resolve(true)
             })
           )
@@ -226,7 +242,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
             index === activeItems.length - 1
           ) {
             logs.dim(
-              `\t\tExecute ${itemsPromises.length} promise${
+              `\t\tExecuting ${itemsPromises.length} promise${
                 itemsPromises.length > 1 ? 's' : ''
               }...`
             )

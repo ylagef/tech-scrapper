@@ -1,12 +1,14 @@
+import fs from 'fs'
 import { Page } from 'puppeteer'
-import { logs } from '../log/logs.js'
+import { Item } from '../db/db'
+import { logs } from '../log/logs'
 
 export interface Vendor {
   key: string
   name: string
   jsEnabled: boolean
   auth: boolean
-  checkPrice: ({ page }: { page: Page }) => Promise<string>
+  checkPrice: ({ page, item }: { page: Page; item?: Item }) => Promise<string>
 }
 
 export const vendorsObj: Vendor[] = [
@@ -241,22 +243,26 @@ export const vendorsObj: Vendor[] = [
     name: 'El corte inglés',
     jsEnabled: false,
     auth: false,
-    checkPrice: async ({ page }) => {
-      if (await checkCaptcha(page, '.product_detail-main-container', false)) {
-        return 'CAPTCHA'
-      } // Check if captcha
+    checkPrice: async ({ page, item }) => {
+      // if (await checkCaptcha(page, '.product_detail-main-container', false)) {
+      //   return 'CAPTCHA'
+      // } // Check if captcha
 
-      const stock = (await page.$$('.price._big')).length > 0
+      const found = await searchItem(page, '.product_detail-title')
 
+      await saveFullPage(page, `eci_${item.name}`)
+
+      if (!found) return 'NOT FOUND 😵'
+
+      const stock = (await page.$$('.c12.button._normal._disabled')).length > 0
+      logs.debug(`${item.name} stock: ${stock}`)
+      console.log(await page.$$('.c12.button._normal._disabled'))
+
+      const prices = await page.$$eval('.price._big', (nodes) =>
+        nodes.map((node: HTMLElement) => node.innerText)
+      )
       return stock
-        ? (
-            await page.evaluate(
-              () =>
-                (document.querySelector('.price._big') as HTMLElement).innerText
-            )
-          )
-            ?.replaceAll('.', '')
-            .replace(/\s/g, '')
+        ? prices[0]?.replaceAll('.', '').replace(/\s/g, '')
         : 'NO STOCK'
     }
   },
@@ -382,6 +388,8 @@ export const vendorsObj: Vendor[] = [
     jsEnabled: false,
     auth: false,
     checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
+
       // Hide cookies modal
       await page.$$eval('#mms-consent-portal-container', (nodes) =>
         nodes.forEach((node: HTMLElement) => {
@@ -409,6 +417,8 @@ export const vendorsObj: Vendor[] = [
     jsEnabled: true,
     auth: true,
     checkPrice: async ({ page }) => {
+      if (await checkCaptcha(page, '#cf-wrapper', true)) return 'CAPTCHA' // Check if captcha
+
       const found = await searchItem(
         page,
         '.StyledPicture-sc-1s3zfhk-0.jRuVsy img'
@@ -613,7 +623,7 @@ const checkCaptcha = async (page, element, has) => {
   const captcha = (await page.$$(element)).length
 
   if (has ? captcha > 0 : captcha === 0) {
-    logs.error('☠️ · Captcha detected! · ⬇')
+    // logs.error('☠️ · Captcha detected! · ⬇')
     return true
   }
 
@@ -624,9 +634,16 @@ const searchItem = async (page, selector) => {
   try {
     await page.waitForSelector(selector)
   } catch (err) {
-    logs.error('😵 · NOT FOUND · ⬇')
+    // logs.error('😵 · NOT FOUND · ⬇')
     return false
   }
 
   return true
+}
+
+const saveFullPage = async (page, name) => {
+  const content = await page.content()
+
+  // Save content to file
+  fs.writeFileSync(`full_pages/${name}.html`, content)
 }
