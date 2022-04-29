@@ -21,9 +21,6 @@ child.on('watch:restart', (info) => {
   console.log(
     '🤖 MONITOR - Restarting script because ' + info.file + ' changed'
   )
-  console.log('🤖 MONITOR - Stopping...')
-
-  child.stop()
 })
 
 child.on('exit:code', async (code) => {
@@ -33,12 +30,17 @@ child.on('exit:code', async (code) => {
     console.log('🤖 MONITOR - Building...')
     // wait for exec to complete
     const res = await execPromise('npm run build')
-    console.log(`🤖 MONITOR - Build! ${res.stderr}`)
+    console.log(res.stderr)
+    console.log(`🤖 MONITOR - 🟢 Build successful`)
   } catch (error) {
-    console.error('🤖 MONITOR - Error building...')
+    console.error('🤖 MONITOR - 🔴 Error building...')
   }
 
   child.start()
+})
+
+child.on('stop', (info) => {
+  console.log(`🤖 MONITOR - Stopped ${info.uid}!`)
 })
 
 child.start()
