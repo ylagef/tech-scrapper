@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --target=node16 --external:./node_modules/* --outfile=dist/index.js --loader:.ts=ts",
-    "start": "npm run clear-logs && npm run build && forever start --watchDirectory=./forever ./forever/config.json",
+    "start": "npm run clear-logs && npm run clear-full-pages && npm run build && forever start --watchDirectory=./forever ./forever/config.json",
     "start-logs": "npm run start && npm run logs",
     "restart": "npm run stop && npm run start",
     "stop": "forever stop tech-scrapper-monitor",
@@ -14,6 +14,7 @@
     "errors": "tail -f log/monitor-err.log",
     "clear-logs": "rm -f log/*.log",
     "clear-screenshots": "rm screenshots/*.png",
+    "clear-full-pages": "rm full_pages/*.html",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
