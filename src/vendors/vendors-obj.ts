@@ -246,11 +246,8 @@ export const vendorsObj: Vendor[] = [
       if (await checkCaptcha(page, '#sec-text-if', true)) return 'CAPTCHA'
       // Check if captcha
 
-      const found = await searchItem(page, '.product_detail-title')
-
-      await saveFullPage(page, `eci_${item.name}`)
-
-      if (!found) return 'NOT FOUND 😵'
+      if (!(await searchItem(page, '.product_detail-title')))
+        return 'NOT FOUND 😵'
 
       const stock =
         (await page.$$('.c12.button._normal._disabled')).length === 0
