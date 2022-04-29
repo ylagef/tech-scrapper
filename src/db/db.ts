@@ -205,6 +205,34 @@ export const updatePrice = async (item) => {
   }
 }
 
+export const disableItem = async (item, price = false) => {
+  try {
+    const sheet = doc.sheetsByTitle.products
+    await sheet.loadCells(item.cells)
+
+    const dateCell = sheet.getCellByA1(item.cells.split(':')[0])
+    const priceCell = sheet.getCellByA1('E' + item.cells.split(':')[1].slice(1))
+    const activeCell = sheet.getCellByA1(
+      'F' + item.cells.split(':')[1].slice(1)
+    )
+
+    dateCell.value = `${new Date().toDateString()} ${getTimeString()}`
+    if (price) priceCell.value = item.price
+    activeCell.value = 'FALSE'
+    await sheet.saveCells(
+      price ? [dateCell, priceCell, activeCell] : [dateCell, activeCell]
+    )
+    logs.info(`Item ${item.name} disabled`)
+  } catch (err) {
+    logs.error(`Error on update cells ${err.message}`)
+    await bot.sendMessage(
+      CHATID,
+      `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
+      { parse_mode: 'HTML' }
+    )
+  }
+}
+
 export const updateKey = async ({ bot, item, vendor }) => {
   try {
     const sheet = doc.sheetsByTitle.products

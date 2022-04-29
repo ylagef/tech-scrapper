@@ -6,6 +6,7 @@ import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import {
   addHistoryRow,
+  disableItem,
   getItemsFromDb,
   getVendorsFromDB,
   initializeDb,
@@ -140,6 +141,9 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
 
       opts.disable_notification = true
       opts.caption = `<b>${vendor.name} - ${item.name}</b>\n${price}\n<a href='${item.url}'>LINK</a>`
+
+      item.price = price
+      if (price === 'CAPTCHA') await disableItem(item, true)
     } else {
       logs.success(
         `\t${item.name} UPDATED (${item?.price || 'NONE'} => ${price}) 👀`
