@@ -21,6 +21,7 @@ child.on('watch:restart', (info) => {
   console.log(
     '🤖 MONITOR - Restarting script because ' + info.file + ' changed'
   )
+  child.stop()
 })
 
 child.on('exit:code', async (code) => {
@@ -28,7 +29,8 @@ child.on('exit:code', async (code) => {
 
   try {
     console.log('🤖 MONITOR - Building...')
-    // wait for exec to complete
+
+    // Wait until build before start
     const res = await execPromise('npm run build')
     console.log(res.stderr)
     console.log(`🤖 MONITOR - 🟢 Build successful`)
