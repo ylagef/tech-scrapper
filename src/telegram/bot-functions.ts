@@ -271,6 +271,7 @@ export const initializeBotListeners = async () => {
     bot.on('polling_error', async (error) => {
       logs.error(`Err on polling ${error.message}`)
       await message({ msg: `Err on polling ${error.message}` })
+      process.exit(1)
     })
 
     bot.on('webhook_error', async (error) => {
