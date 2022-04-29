@@ -1,9 +1,9 @@
 {
-  "uid": "tech-scrapper",
+  "uid": "tech-scrapper-monitor",
   "append": true,
   "watch": true,
-  "script": "./dist/index.js",
-  "outFile": "./log/out.log",
-  "errFile": "./log/err.log",
+  "script": "./src/forever/monitor.js",
+  "outFile": "./log/monitor-out.log",
+  "errFile": "./log/monitor-err.log",
   "killSignal": "SIGTERM"
 }
