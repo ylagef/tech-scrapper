@@ -189,7 +189,9 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
         .bold(`\n${vendor.name}`)
         .joint()
         .dim()
-        .log(` (${activeItems.length} items)`)
+        .log(
+          ` (${activeItems.length} item${activeItems.length > 1 ? 's' : ''})`
+        )
 
       if (activeItems.length === 0) {
         logs.dim('\tNo active items')
