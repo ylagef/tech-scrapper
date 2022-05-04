@@ -596,11 +596,37 @@ export const vendorsObj: Vendor[] = [
     name: 'Xtralife',
     jsEnabled: true,
     auth: false,
-    checkPrice: async ({ page }) => {
-      const found = await searchItem(page, 'a > img')
+    checkPrice: async ({ page, item }) => {
+      await page.waitForNetworkIdle()
+      const found = await searchItem(page, '.resultCounterInner')
       if (!found) return 'NOT FOUND 😵'
 
-      const items = (await page.$$('.view-smallGridElement')).length
+      await saveFullPage(page, `xtralife_${item.name}`)
+      // const items = (await page.$$('.view-smallGridElement')).length
+
+      let items = await page.evaluate(
+        () =>
+          (
+            document.querySelector(
+              '.resultCounterInner > .fontNormal'
+            ) as HTMLElement
+          )?.innerText
+      )
+      // console.log({ [`items_${item.name}`]: items })
+
+      if (items === undefined) return 'NOT FOUND 😵'
+
+      if (items.startsWith('Mostrando')) items = items.split('Mostrando ')[1]
+
+      if (items.endsWith('resultado')) {
+        items = items.split(' resultado')[0]
+      } else if (items.endsWith('resultados')) {
+        items = items.split(' resultados')[0]
+        if (items.includes('de')) items = items.split(' de ')[1]
+      }
+
+      // console.log({ [`items2_${item.name}`]: items })
+
       const buttons = await page.$$eval(
         '.cursorPointer.fontBold.fontNormal.h-40.primaryButtonYellowXl',
         (nodes) => nodes.map((node: HTMLElement) => node.innerText)
