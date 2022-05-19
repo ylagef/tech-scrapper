@@ -392,11 +392,21 @@ export const vendorsObj: Vendor[] = [
         })
       )
 
-      const nodes = await page.$$eval('td', (nodes) =>
-        nodes.map((node: HTMLElement) => node.innerText)
+      let price = await page.$$eval(
+        '[data-test="mms-branded-price"] [aria-hidden="true"] span',
+        (nodes) => (nodes[1] as HTMLElement).innerText
       )
-      const filtered = nodes?.filter((node) => node.includes('€'))
-      const price = filtered.length > 0 ? filtered[0]?.replace(/\s/g, '') : ''
+
+      if (price) {
+        let sup = await page.$$eval(
+          '[data-test="mms-branded-price"] [aria-hidden="true"] sup',
+          (nodes) => (nodes[0] as HTMLElement).innerText
+        )
+
+        if (sup) price = price + sup
+
+        price = price.replace('–', '00').replace('.', ',') + '€'
+      }
 
       const stock =
         (await page.$$('#pdp-add-to-cart-button')).length > 0
