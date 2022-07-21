@@ -526,6 +526,24 @@ export const vendorsObj: Vendor[] = [
     }
   },
   {
+    key: 'revenidas',
+    name: 'Revenidas acampada',
+    jsEnabled: false,
+    auth: false,
+    checkPrice: async ({ page }) => {
+      await page.select('.et-entrada-cantidad', '1')
+
+      const campingOptions = await page.$$eval(
+        'select[name="8115"] option',
+        (nodes) => nodes.map((node: HTMLElement) => node.innerText)
+      )
+
+      return `${campingOptions?.length - 1} acampada - ${
+        campingOptions?.length > 0 && `[${campingOptions.slice(1).join(', ')}]`
+      }`
+    }
+  },
+  {
     key: 'sonyexperience',
     name: 'Sonyexperience',
     jsEnabled: false,
