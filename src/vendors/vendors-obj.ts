@@ -238,6 +238,21 @@ export const vendorsObj: Vendor[] = [
     }
   },
   {
+    key: 'coldplay',
+    name: 'Coldplay',
+    jsEnabled: false,
+    auth: false,
+    checkPrice: async ({ page }) => {
+      const links = await page.$$('.single-show__venue a')
+
+      if (links.length === 0) return 'NO STOCK'
+
+      return `HAS LINK! - ${await links[0].evaluate((node) =>
+        node.getAttribute('href')
+      )}`
+    }
+  },
+  {
     key: 'elcorteingles',
     name: 'El corte inglés',
     jsEnabled: false,
