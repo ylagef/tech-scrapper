@@ -507,11 +507,13 @@ export const vendorsObj: Vendor[] = [
 
       const hasPrice = (await page.$$('#precio-main')).length > 0
       const price = hasPrice
-        ? await page.evaluate(
-            () =>
-              (document.querySelector('#precio-main') as HTMLElement).innerText
+        ? await page.evaluate(() =>
+            (
+              document.querySelector('#precio-main') as HTMLElement
+            ).innerText.replaceAll('\n', '')
           )
         : ''
+
       const stock =
         (await page.$$('#btnsWishAddBuy > .buy-button')).length > 0
           ? ''
