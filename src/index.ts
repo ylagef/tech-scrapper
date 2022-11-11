@@ -53,10 +53,14 @@ const scrapInitialization = async () => {
       process.exit(1)
     }
 
-    await bot.sendMessage(CHATID, `<b>(${SERVERID})</b> · Browser launched`, {
-      parse_mode: 'HTML',
-      disable_notification: true
-    })
+    await bot.sendMessage(
+      CHATID,
+      `<b>(${SERVERID})</b> · Browser launched · ${MINUTES}min/scrap`,
+      {
+        parse_mode: 'HTML',
+        disable_notification: true
+      }
+    )
     logs.dim('\nBrowser launched')
 
     browser.on('disconnected', async () => {
