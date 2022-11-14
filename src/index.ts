@@ -20,7 +20,7 @@ import { initializeBotListeners } from './telegram/bot-functions.js'
 import { bot } from './telegram/bot.js'
 import { getMinutesSeconds, getTimeString, getTotalSeconds } from './utils.js'
 import { Vendor, vendorsObj } from './vendors/vendors-obj.js'
-const { CHATID, SERVERID, MINUTES } = process.env
+const { CHAT_ID, SERVER_ID, MINUTES } = process.env
 
 puppeteer.use(StealthPlugin())
 
@@ -54,8 +54,8 @@ const scrapInitialization = async () => {
     }
 
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Browser launched · ${MINUTES}min/scrap`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Browser launched · ${MINUTES}min/scrap`,
       {
         parse_mode: 'HTML',
         disable_notification: true
@@ -66,8 +66,8 @@ const scrapInitialization = async () => {
     browser.on('disconnected', async () => {
       logs.error('⚠️  Browser disconnected')
       await bot.sendMessage(
-        CHATID,
-        `<b>(${SERVERID})</b> · Browser disconnected`,
+        CHAT_ID,
+        `<b>(${SERVER_ID})</b> · Browser disconnected`,
         { parse_mode: 'HTML' }
       )
     })
@@ -90,7 +90,7 @@ const handleNavigation = async ({ page, vendor, item, context, price }) => {
     price = await vendor.checkPrice({ page, item })
   } catch (err) {
     await bot.sendMessage(
-      CHATID,
+      CHAT_ID,
       `${vendor.name} - ${item.name} · Err (${err.message
         .split('=')[0]
         .trim()})`,
@@ -165,7 +165,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       await addHistoryRow(item)
     }
 
-    await bot.sendPhoto(CHATID, image, opts)
+    await bot.sendPhoto(CHAT_ID, image, opts)
   }
 }
 
@@ -282,7 +282,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
   } catch (err) {
     logs.error(`${err.message.split('=')[0].trim()}`)
     await bot.sendMessage(
-      CHATID,
+      CHAT_ID,
       `Err on scrap (${err.message.split('=')[0].trim()})`
     )
   }
@@ -300,7 +300,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
 process.on('uncaughtException', async (ev) => {
   process.stdin.resume()
 
-  await bot.sendMessage(CHATID, `CRITICAL (${ev})`)
+  await bot.sendMessage(CHAT_ID, `CRITICAL (${ev})`)
   logs.error(`CRITICAL (${ev})`)
   process.exit(1)
 })

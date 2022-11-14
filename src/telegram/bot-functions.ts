@@ -1,4 +1,4 @@
-const { CHATID, LISTENBOT, SERVERID } = process.env
+const { CHAT_ID, LISTEN_BOT, SERVER_ID } = process.env
 import fs from 'fs'
 import md5 from 'md5-nodejs'
 import { SendMessageOptions } from 'node-telegram-bot-api'
@@ -100,7 +100,7 @@ export const initializeBotListeners = async () => {
 
       const items = await getItemsFromDb()
       const vendors = Object.keys(
-        (await getVendorsFromDB()).allVendors[SERVERID]
+        (await getVendorsFromDB()).allVendors[SERVER_ID]
       ).filter((vendor) =>
         selectedVendor !== 'all' ? vendor === selectedVendor : true
       )
@@ -186,7 +186,7 @@ export const initializeBotListeners = async () => {
       const all = selectedVendor === 'all'
       logs.info(`Selected ${selectedVendor}`)
 
-      const vendors = (await getVendorsFromDB()).allVendors[SERVERID]
+      const vendors = (await getVendorsFromDB()).allVendors[SERVER_ID]
 
       let msg = ''
       if (all) {
@@ -260,14 +260,14 @@ export const initializeBotListeners = async () => {
         })
         return
       }
-      await bot.sendPhoto(CHATID, image, { caption: item.name })
+      await bot.sendPhoto(CHAT_ID, image, { caption: item.name })
     } catch (err) {
       logs.error(`Error on screenshot item ${err.message}`)
       await message({ msg: 'Error on screenshot item' })
     }
   }
 
-  if (LISTENBOT === '1') {
+  if (LISTEN_BOT === '1') {
     bot.on('polling_error', async (error) => {
       logs.error(`Err on polling ${error.message}`)
       await message({ msg: `Err on polling ${error.message}` })
@@ -408,7 +408,7 @@ export const initializeBotListeners = async () => {
         logs.info('Asked for last logs')
 
         const lastLogs = getLastLogs()
-        await bot.sendMessage(CHATID, lastLogs, {
+        await bot.sendMessage(CHAT_ID, lastLogs, {
           parse_mode: 'HTML'
         })
       } catch (err) {
@@ -448,7 +448,7 @@ const getVendorsKeyboard = async ({
     let vendors = (await getVendorsFromDB())[
       filterActive ? 'activeVendors' : 'allVendors'
     ]
-    if (!filterActive) vendors = vendors[SERVERID]
+    if (!filterActive) vendors = vendors[SERVER_ID]
 
     const vendorKeys = Object.keys(vendors)
       .sort()
@@ -519,11 +519,11 @@ export const message = async ({
     if (html) opts.parse_mode = 'HTML'
     opts.disable_web_page_preview = disablePreview
 
-    message = await bot.sendMessage(CHATID, msg, opts)
+    message = await bot.sendMessage(CHAT_ID, msg, opts)
   } catch (err) {
     logs.error(`Error on send message ${err.message}`)
     message = await bot.sendMessage(
-      CHATID,
+      CHAT_ID,
       `Error on send message ${err.message}`
     )
   }

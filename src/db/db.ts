@@ -1,4 +1,4 @@
-const { SERVERID, CHATID, PRIVATEKEY, CLIENTEMAIL } = process.env
+const { SERVER_ID, CHAT_ID, PRIVATE_KEY, CLIENT_EMAIL } = process.env
 
 import { GoogleSpreadsheet } from 'google-spreadsheet'
 import md5 from 'md5-nodejs'
@@ -25,16 +25,16 @@ export const initializeDb = async () => {
   try {
     logs.dim('\nInitialize DB...')
     await doc.useServiceAccountAuth({
-      client_email: CLIENTEMAIL,
-      private_key: PRIVATEKEY
+      client_email: CLIENT_EMAIL,
+      private_key: PRIVATE_KEY
     })
     await doc.loadInfo()
     logs.dim('Initialize DB ok')
   } catch (err) {
     logs.error(`Error on initialize DB ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on initialize DB (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on initialize DB (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -59,8 +59,8 @@ const addNewServer = async ({ sheet, servers, server }) => {
   } catch (err) {
     logs.error(`Error on add new server ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on add new server (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on add new server (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -74,10 +74,10 @@ export const getVendorsFromDB = async () => {
     const sheet = doc.sheetsByTitle.vendors
     await sheet.loadHeaderRow()
     const servers = sheet.headerValues.slice(1)
-    if (!servers.includes(SERVERID)) {
-      logs.info(`NEW server ${SERVERID} found`)
-      await addNewServer({ sheet, servers, server: SERVERID })
-      servers.push(SERVERID)
+    if (!servers.includes(SERVER_ID)) {
+      logs.info(`NEW server ${SERVER_ID} found`)
+      await addNewServer({ sheet, servers, server: SERVER_ID })
+      servers.push(SERVER_ID)
     }
 
     const rows = await sheet.getRows()
@@ -91,7 +91,7 @@ export const getVendorsFromDB = async () => {
 
     const activeVendors =
       Object.fromEntries(
-        Object.entries(vendors[SERVERID]).filter(([_, value]) => value)
+        Object.entries(vendors[SERVER_ID]).filter(([_, value]) => value)
       ) || {}
     logs.dim('Get vendors ok')
 
@@ -99,8 +99,8 @@ export const getVendorsFromDB = async () => {
   } catch (err) {
     logs.error(`Error on get vendors ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on get vendors (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on get vendors (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -130,8 +130,8 @@ export const getItemsFromDb = async () => {
   } catch (err) {
     logs.error(`Error on getting items ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on getting items (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on getting items (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -163,8 +163,8 @@ export const addItemRow = async ({
   } catch (err) {
     logs.error(`Error on add item row ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on add item row (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on add item row (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -177,8 +177,8 @@ export const addHistoryRow = async ({ key, date, vendor, name, price }) => {
   } catch (err) {
     logs.error(`Error on add history row ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on add history row (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on add history row (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -198,8 +198,8 @@ export const updatePrice = async (item) => {
   } catch (err) {
     logs.error(`Error on update cells ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on update cells (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -226,8 +226,8 @@ export const disableItem = async (item, price = false) => {
   } catch (err) {
     logs.error(`Error on update cells ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on update cells (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -247,8 +247,8 @@ export const updateKey = async ({ bot, item, vendor }) => {
   } catch (err) {
     logs.error(`Error on update cells ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on update cells (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on update cells (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -258,7 +258,7 @@ export const updateLastScrap = async ({ bot, endDate, minutesSeconds }) => {
   try {
     await doc.sheetsByTitle.vendors.loadHeaderRow()
     const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
-    const rowIndex = servers.indexOf(SERVERID) + 2
+    const rowIndex = servers.indexOf(SERVER_ID) + 2
 
     const sheet = doc.sheetsByTitle.stats
     await sheet.loadCells(`A${rowIndex}:C${rowIndex}`)
@@ -271,15 +271,15 @@ export const updateLastScrap = async ({ bot, endDate, minutesSeconds }) => {
     const dateCell = sheet.getCellByA1(dateA1)
     const ellapsedCell = sheet.getCellByA1(ellapsedA1)
 
-    serverCell.value = `${SERVERID}`
+    serverCell.value = `${SERVER_ID}`
     dateCell.value = `${getDateTimeString(endDate)}`
     ellapsedCell.value = minutesSeconds
     await sheet.saveCells([serverCell, dateCell, ellapsedCell])
   } catch (err) {
     logs.error(`Error on update last scrap ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on update last scrap (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -301,8 +301,8 @@ export const getLastScrap = async () => {
   } catch (err) {
     logs.error(`Error on get last scrap ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on get last scrap (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on get last scrap (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
@@ -312,7 +312,7 @@ export const updateVendor = async ({ bot, state, vendor }) => {
   try {
     await doc.sheetsByTitle.vendors.loadHeaderRow()
     const servers = doc.sheetsByTitle.vendors.headerValues.slice(1)
-    const rowIndex = servers.indexOf(SERVERID) + 1
+    const rowIndex = servers.indexOf(SERVER_ID) + 1
 
     const sheet = doc.sheetsByTitle.vendors
     const rows = await sheet.getRows()
@@ -356,8 +356,8 @@ export const updateVendor = async ({ bot, state, vendor }) => {
   } catch (err) {
     logs.error(`Error on update last scrap ${err.message}`)
     await bot.sendMessage(
-      CHATID,
-      `<b>(${SERVERID})</b> · Error on update last scrap (${err.message})`,
+      CHAT_ID,
+      `<b>(${SERVER_ID})</b> · Error on update last scrap (${err.message})`,
       { parse_mode: 'HTML' }
     )
   }
