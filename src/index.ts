@@ -149,7 +149,7 @@ const handleUpdated = async ({ vendor, item, price, image }) => {
       item.price = price
       if (price === 'CAPTCHA') await disableItem(item, true)
     } else {
-      logs.success(
+      logs.warn(
         `\t${item.name} UPDATED (${item?.price || 'NONE'} => ${price}) 👀`
       )
 

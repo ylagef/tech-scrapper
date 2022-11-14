@@ -29,5 +29,9 @@ export const logs = {
     lastLogs += `🟢 ${msg}\n`
     return logger.color('black').bgColor('green').log(` ${msg} `)
   },
+  warn: (msg: string) => {
+    lastLogs += `🟢 ${msg}\n`
+    return logger.color('black').bgColor('yellow').log(` ${msg} `)
+  },
   debug: (msg: string) => logger.dim().log(`🐛 ${msg}`)
 }
