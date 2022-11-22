@@ -182,31 +182,16 @@ export const vendorsObj: Vendor[] = [
 
       const price =
         (
-          await page.evaluate(
-            () =>
-              (document.querySelector('.buybox__price') as HTMLElement)
-                ?.innerText
-          )
+          await page.evaluate(() => {
+            const prices = document.querySelectorAll('.buybox__prices > span')
+            return prices[prices.length - 1].innerHTML
+          })
         )
           ?.replaceAll('.', '')
           .replaceAll(' ', '')
           .trim() || ''
 
-      return stock
-        ? (
-            await page.evaluate(
-              () =>
-                (
-                  document.querySelector(
-                    '.buybox__prices > span'
-                  ) as HTMLElement
-                )?.innerText
-            )
-          )
-            ?.replaceAll('.', '')
-            .replaceAll(' ', '')
-            .trim()
-        : `${price} (NO STOCK)`
+      return stock ? price : `${price} (NO STOCK)`
     }
   },
   {
